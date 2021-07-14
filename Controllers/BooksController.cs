@@ -22,7 +22,7 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Book.ToListAsync());
+            return View(await _context.Books.ToListAsync());
         }
 
         // GET: Books/Details/5
@@ -33,7 +33,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Book
+            var book = await _context.Books
                 .FirstOrDefaultAsync(m => m.BookID == id);
             if (book == null)
             {
@@ -73,7 +73,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Book.FindAsync(id);
+            var book = await _context.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -124,7 +124,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Book
+            var book = await _context.Books
                 .FirstOrDefaultAsync(m => m.BookID == id);
             if (book == null)
             {
@@ -139,15 +139,15 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Book.FindAsync(id);
-            _context.Book.Remove(book);
+            var book = await _context.Books.FindAsync(id);
+            _context.Books.Remove(book);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BookExists(int id)
         {
-            return _context.Book.Any(e => e.BookID == id);
+            return _context.Books.Any(e => e.BookID == id);
         }
     }
 }

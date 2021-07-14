@@ -49,7 +49,7 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Requests/Create
         public IActionResult Create()
         {
-            ViewData["BookID"] = new SelectList(_context.Book, "BookID", "BookID");
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID");
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID");
             return View();
         }
@@ -67,7 +67,7 @@ namespace SimpleLibraryWebsite.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BookID"] = new SelectList(_context.Book, "BookID", "BookID", request.BookID);
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", request.BookID);
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
             return View(request);
         }
@@ -85,7 +85,7 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 return NotFound();
             }
-            ViewData["BookID"] = new SelectList(_context.Book, "BookID", "BookID", request.BookID);
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", request.BookID);
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
             return View(request);
         }
@@ -122,7 +122,7 @@ namespace SimpleLibraryWebsite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BookID"] = new SelectList(_context.Book, "BookID", "BookID", request.BookID);
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", request.BookID);
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
             return View(request);
         }

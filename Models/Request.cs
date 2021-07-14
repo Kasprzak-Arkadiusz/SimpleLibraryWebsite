@@ -12,5 +12,7 @@ namespace SimpleLibraryWebsite.Models
         public int NumberOfUpvotes { get; set; }
         public virtual Reader Reader { get; set; }
         public virtual Book Book { get; set; }
+
+        public Request() { }
     }
 }

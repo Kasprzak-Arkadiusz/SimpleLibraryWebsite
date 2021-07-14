@@ -60,6 +60,12 @@ namespace SimpleLibraryWebsite
                 app.UseHsts();
             }
 
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                context.Database.EnsureCreated();
+            }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

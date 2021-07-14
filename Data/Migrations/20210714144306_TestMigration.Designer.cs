@@ -3,20 +3,22 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleLibraryWebsite.Data;
 
 namespace SimpleLibraryWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210714144306_TestMigration")]
+    partial class TestMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Book", b =>
@@ -49,6 +51,17 @@ namespace SimpleLibraryWebsite.Data.Migrations
                     b.HasIndex("ReaderID");
 
                     b.ToTable("Books");
+
+                    b.HasData(
+                        new
+                        {
+                            BookID = 1,
+                            AddingDate = new DateTime(2021, 7, 14, 16, 43, 5, 727, DateTimeKind.Local).AddTicks(7249),
+                            Author = "Adam Mickiewicz",
+                            Genre = 8,
+                            IsBorrowed = true,
+                            Title = "Master Thaddeus"
+                        });
                 });
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Loan", b =>

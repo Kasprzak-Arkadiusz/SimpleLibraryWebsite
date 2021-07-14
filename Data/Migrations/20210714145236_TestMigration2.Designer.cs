@@ -3,20 +3,22 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleLibraryWebsite.Data;
 
 namespace SimpleLibraryWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210714145236_TestMigration2")]
+    partial class TestMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Book", b =>
@@ -49,6 +51,26 @@ namespace SimpleLibraryWebsite.Data.Migrations
                     b.HasIndex("ReaderID");
 
                     b.ToTable("Books");
+
+                    b.HasData(
+                        new
+                        {
+                            BookID = 1,
+                            AddingDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Author = "Adam Mickiewicz",
+                            Genre = 8,
+                            IsBorrowed = false,
+                            Title = "Master Thaddeus"
+                        },
+                        new
+                        {
+                            BookID = 2,
+                            AddingDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Author = "Adam Mickiewicz",
+                            Genre = 8,
+                            IsBorrowed = false,
+                            Title = "Ode to Youth"
+                        });
                 });
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Loan", b =>
