@@ -14,19 +14,19 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="RequestID" />
             <div class="form-group">
-                <label asp-for="ReaderID" class="control-label"></label>
-                <select asp-for="ReaderID" class="form-control" asp-items="ViewBag.ReaderID"></select>
-                <span asp-validation-for="ReaderID" class="text-danger"></span>
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BookID" class="control-label"></label>
-                <select asp-for="BookID" class="form-control" asp-items="ViewBag.BookID"></select>
-                <span asp-validation-for="BookID" class="text-danger"></span>
+                <label asp-for="Author" class="control-label"></label>
+                <input asp-for="Author" class="form-control" />
+                <span asp-validation-for="Author" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NumberOfUpvotes" class="control-label"></label>
-                <input asp-for="NumberOfUpvotes" class="form-control" />
-                <span asp-validation-for="NumberOfUpvotes" class="text-danger"></span>
+                <label asp-for="Genre" class="control-label"></label>
+                <select asp-for="Genre" class="form-control"></select>
+                <span asp-validation-for="Genre" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

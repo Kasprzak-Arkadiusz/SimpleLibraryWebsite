@@ -22,7 +22,7 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Requests
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Requests.Include(r => r.Book).Include(r => r.Reader);
+            var applicationDbContext = _context.Requests.Include(r => r.Reader);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -35,7 +35,6 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var request = await _context.Requests
-                .Include(r => r.Book)
                 .Include(r => r.Reader)
                 .FirstOrDefaultAsync(m => m.RequestID == id);
             if (request == null)
@@ -49,7 +48,6 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Requests/Create
         public IActionResult Create()
         {
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID");
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID");
             return View();
         }
@@ -59,7 +57,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestID,ReaderID,BookID,NumberOfUpvotes")] Request request)
+        public async Task<IActionResult> Create([Bind("RequestID,ReaderID,Title,Author,Genre,NumberOfUpvotes")] Request request)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +65,6 @@ namespace SimpleLibraryWebsite.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", request.BookID);
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
             return View(request);
         }
@@ -85,7 +82,6 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 return NotFound();
             }
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", request.BookID);
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
             return View(request);
         }
@@ -95,7 +91,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RequestID,ReaderID,BookID,NumberOfUpvotes")] Request request)
+        public async Task<IActionResult> Edit(int id, [Bind("RequestID,ReaderID,Title,Author,Genre,NumberOfUpvotes")] Request request)
         {
             if (id != request.RequestID)
             {
@@ -122,7 +118,6 @@ namespace SimpleLibraryWebsite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", request.BookID);
             ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
             return View(request);
         }
@@ -136,7 +131,6 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var request = await _context.Requests
-                .Include(r => r.Book)
                 .Include(r => r.Reader)
                 .FirstOrDefaultAsync(m => m.RequestID == id);
             if (request == null)

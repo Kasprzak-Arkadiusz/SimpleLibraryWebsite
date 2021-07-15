@@ -20,7 +20,7 @@ namespace SimpleLibraryWebsite.Data
 
             var books = new Book[]
             {
-                new Book{Author = "Adam Mickiewicz", Title = "Master Thaddeus",Genre = Genres.Poetry, AddingDate= DateTime.Now, IsBorrowed = true},
+                new Book("Adam Mickiewicz", "Master Thaddeus",Genres.Poetry),
                 new Book("Adam Mickiewicz","Ode to Youth", Genres.Poetry),
                 new Book("Stephen King",  "It",  Genres.Horror),
                 new Book("Jules Verne", "Twenty Thousand Leagues Under the Seas", Genres.Adventure),
@@ -38,7 +38,7 @@ namespace SimpleLibraryWebsite.Data
 
             var readers = new Reader[]
             {
-                new Reader{Name = "John", Surname = "Smith"},
+                new Reader("John",  "Smith"),
                 new Reader("Jimmy", "Johnson"),
                 new Reader("Emily", "Richardson"),
                 new Reader("Elisabeth", "Lee")
@@ -53,7 +53,7 @@ namespace SimpleLibraryWebsite.Data
 
             var loans = new Loan[]
             {
-                new Loan{BookID = 1,ReaderID = 1, LentFrom = DateTime.Now},
+                new Loan(1, 1,  DateTime.Now),
                 new Loan(4, 1, DateTime.Parse("01/02/2021")),
                 new Loan(6, 3, DateTime.Parse("15/04/2021")),
                 new Loan(7, 3, DateTime.Parse("16/05/2021")),
@@ -64,10 +64,16 @@ namespace SimpleLibraryWebsite.Data
                 context.Loans.Add(l);
             }
 
-            /*var Requests = new Request[]
+            var Requests = new Request[]
             {
+                new Request(1, "For Whom the Bell Tolls", "Ernest Hemingway", Genres.Novel),
+                new Request(2, "The Hobbit, or There and Back Again", "J.R.R. Tolkien", Genres.Fantasy)
+            };
 
-            };*/
+            foreach (Request r in Requests)
+            {
+                context.Requests.Add(r);
+            }
 
             context.SaveChanges();
         }
