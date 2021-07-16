@@ -10,35 +10,29 @@
     <h4>Request</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Title)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Author)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Author)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genre)
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Genre)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genre)
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Genre)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfUpvotes)
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.NumberOfUpvotes)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfUpvotes)
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.NumberOfUpvotes)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Reader)
+        <dt class="col-sm-4">@Html.DisplayName("Adding reader name")
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Reader.ReaderID)  </dd>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Reader.Name)
+        </dd>
+        <dt class="col-sm-4">@Html.DisplayName("Adding reader surname")
+        </dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Reader.Surname)</dd>
     </dl>
 </div>
 <div>

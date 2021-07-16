@@ -35,7 +35,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var request = await _context.Requests
-                .Include(r => r.Reader)
+                .Include(r => r.Reader).AsNoTracking()
                 .FirstOrDefaultAsync(m => m.RequestID == id);
             if (request == null)
             {
@@ -57,10 +57,11 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestID,ReaderID,Title,Author,Genre,NumberOfUpvotes")] Request request)
+        public async Task<IActionResult> Create([Bind("RequestID,ReaderID,Title,Author,Genre")] Request request)
         {
             if (ModelState.IsValid)
             {
+                request.FillMissingProperties((Reader)_context.Readers.Find(request.ReaderID));
                 _context.Add(request);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

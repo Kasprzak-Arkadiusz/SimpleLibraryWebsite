@@ -33,7 +33,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
+            var book = await _context.Books.AsNoTracking()
                 .FirstOrDefaultAsync(m => m.BookID == id);
             if (book == null)
             {
@@ -54,10 +54,11 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookID,Author,Title,Genre,AddingDate,IsBorrowed")] Book book)
+        public async Task<IActionResult> Create([Bind("BookID,Author,Title,Genre")] Book book)
         {
             if (ModelState.IsValid)
             {
+                book.FillMissingProperties();
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

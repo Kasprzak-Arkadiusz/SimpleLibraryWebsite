@@ -11,8 +11,6 @@ namespace SimpleLibraryWebsite.Data
     {
         public static void Initialize(ApplicationDbContext context)
         {
-            context.Database.EnsureCreated();
-
             if (context.Books.Any())
             {
                 return;
@@ -38,7 +36,7 @@ namespace SimpleLibraryWebsite.Data
 
             var readers = new Reader[]
             {
-                new Reader("John",  "Smith"),
+                new Reader("John", "Smith"),
                 new Reader("Jimmy", "Johnson"),
                 new Reader("Emily", "Richardson"),
                 new Reader("Elisabeth", "Lee")

@@ -20,7 +20,14 @@ namespace SimpleLibraryWebsite.Models
             Title = title;
             Author = author;
             Genre = genre;
+            NumberOfUpvotes = 0;
         }
         public Request() { }
+
+        public void FillMissingProperties(Reader reader)
+        {
+            Reader = reader;
+            NumberOfUpvotes = 0;
+        }
     }
 }

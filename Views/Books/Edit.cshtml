@@ -25,18 +25,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Genre" class="control-label"></label>
-                <input asp-for="Genre" class="form-control" />
-                <span asp-validation-for="Genre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AddingDate" class="control-label"></label>
-                <input asp-for="AddingDate" class="form-control" />
-                <span asp-validation-for="AddingDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsBorrowed" /> @Html.DisplayNameFor(model => model.IsBorrowed)
-                </label>
+                <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<Genres>()" ></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

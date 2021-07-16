@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimpleLibraryWebsite.Models
 {
-    public enum Genres { Adventure, Novel, SciFi, Fantasy, Romance, Thriller, Horror, Biography, Poetry }
+    public enum Genres { Adventure, Novel, SciFi, Fantasy, Romance, Thriller, Horror, Biography, Poetry, Scientific }
     public class Book
     {
         [Key]
@@ -27,6 +27,12 @@ namespace SimpleLibraryWebsite.Models
 
         public Book()
         {
+        }
+
+        public void FillMissingProperties()
+        {
+            AddingDate = DateTime.Now;
+            IsBorrowed = false;
         }
     }
 }

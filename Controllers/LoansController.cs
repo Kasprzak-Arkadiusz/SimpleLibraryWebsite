@@ -46,6 +46,8 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Loans/Create
         public IActionResult Create()
         {
+            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID");
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID");
             return View();
         }
 
@@ -58,10 +60,13 @@ namespace SimpleLibraryWebsite.Controllers
         {
             if (ModelState.IsValid)
             {
+                loan.FillMissingFields();
                 _context.Add(loan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", loan.ReaderID);
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", loan.BookID);
             return View(loan);
         }
 
@@ -78,6 +83,8 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 return NotFound();
             }
+            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", loan.ReaderID);
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", loan.BookID);
             return View(loan);
         }
 
@@ -113,6 +120,8 @@ namespace SimpleLibraryWebsite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", loan.ReaderID);
+            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", loan.BookID);
             return View(loan);
         }
 

@@ -25,5 +25,12 @@ namespace SimpleLibraryWebsite.Models
         }
 
         public Loan() { }
+
+        public void FillMissingFields()
+        {
+            LentFrom = DateTime.Now;
+            TimeSpan time = new TimeSpan(14, 0, 0, 0);
+            LentTo = LentFrom.Add(time);
+        }
     }
 }
