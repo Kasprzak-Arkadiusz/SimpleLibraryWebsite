@@ -11,8 +11,10 @@ namespace SimpleLibraryWebsite.Models
         public int BookID { get; set; }
         public int ReaderID { get; set; }
         [Display(Name = "Lent from")]
+        [DataType(DataType.Date)]
         public DateTime LentFrom { get; set; }
         [Display(Name = "Lent to")]
+        [DataType(DataType.Date)]
         public DateTime LentTo { get; set; }
 
         public Loan(int bookId, int readerId, DateTime lentFrom)

@@ -11,6 +11,7 @@ namespace SimpleLibraryWebsite.Models
         public int BookID { get; set; }
         public string Author { get; set; }
         public string Title { get; set; }
+        //[Column(TypeName = "nvarchar(50)")]
         public Genres? Genre { get; set; }
         [Display(Name = "Date of adding")]
         public DateTime AddingDate { get; set; }

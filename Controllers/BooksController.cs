@@ -20,9 +20,30 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string bookGenre, string searchString)
         {
-            return View(await _context.Books.ToListAsync());
+            IQueryable<string> genreQuery = from b in _context.Books
+                                            orderby b.Genre
+                                            select b.Genre.ToString();
+
+            var books = from b in _context.Books select b;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                books = books.Where(b => b.Title.Contains(searchString));
+            }
+
+            if (!string.IsNullOrEmpty(bookGenre))
+            {
+                Enum.TryParse(bookGenre, out Genres genre);
+                books = books.Where(b => b.Genre == genre);
+            }
+
+            var bookGenreVM = new BookGenreViewModel();
+            bookGenreVM.Genres = new SelectList(await genreQuery.Distinct().ToListAsync());
+            bookGenreVM.Books = await books.ToListAsync();
+
+            return View(bookGenreVM);
         }
 
         // GET: Books/Details/5
@@ -87,7 +108,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookID,Author,Title,Genre,AddingDate,IsBorrowed")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("BookID,Author,Title,Genre,IsBorrowed")] Book book)
         {
             if (id != book.BookID)
             {
