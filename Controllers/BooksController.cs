@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -39,11 +38,13 @@ namespace SimpleLibraryWebsite.Controllers
                 books = books.Where(b => b.Genre == genre);
             }
 
-            var bookGenreVM = new BookGenreViewModel();
-            bookGenreVM.Genres = new SelectList(await genreQuery.Distinct().ToListAsync());
-            bookGenreVM.Books = await books.ToListAsync();
+            var bookGenreViewModel = new BookGenreViewModel
+            {
+                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                Books = await books.OrderBy(t => t.Title).ToListAsync()
+            };
 
-            return View(bookGenreVM);
+            return View(bookGenreViewModel);
         }
 
         // GET: Books/Details/5

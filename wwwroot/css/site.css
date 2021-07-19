@@ -51,11 +51,18 @@ button.accept-policy {
   line-height: inherit;
 }
 
+.inputField {
+    display: inline-block;
+    width: 130px;
+    margin: 0;
+    margin: 0 0 7px 0;
+}
+​
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
