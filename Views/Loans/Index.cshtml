@@ -1,10 +1,42 @@
-﻿@model IEnumerable<SimpleLibraryWebsite.Models.Loan>
+﻿@model SimpleLibraryWebsite.Models.LoanViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List of loans";
 }
 
-<h1>Index</h1>
+<h1>Here you can see all book loans.</h1>
+    
+<form asp-controller="Loans" asp-action="Index" method="get">
+    <div class="container">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <b>Reader name:</b>
+                    <input type="text" asp-for="ReaderName" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <b>Reader surname:</b>
+                    <input type="text" asp-for="ReaderSurname" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <b>Book title:</b>
+                    <input type="text" asp-for="BookTitle" />
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Filter" />
+    </div>
+</form>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,25 +45,30 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.BookID)
+                @Html.DisplayNameFor(model => model.Loans[0].Book.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LentFrom)
+                @Html.DisplayNameFor(model => model.Loans[0].Reader.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LentTo)
+                @Html.DisplayNameFor(model => model.Loans[0].Reader.Surname)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Loans[0].LentTo)
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Loans) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.BookID)
+                @Html.DisplayFor(modelItem => item.Book.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LentFrom)
+                @Html.DisplayFor(modelItem => item.Reader.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reader.Surname)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LentTo)

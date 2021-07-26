@@ -9,9 +9,10 @@ namespace SimpleLibraryWebsite.Models
     {
         [Key]
         public int BookID { get; set; }
+        [Display(Name = "Book author")]
         public string Author { get; set; }
+        [Display(Name = "Book title")]
         public string Title { get; set; }
-        //[Column(TypeName = "nvarchar(50)")]
         public Genres? Genre { get; set; }
         [Display(Name = "Date of adding")]
         public DateTime AddingDate { get; set; }

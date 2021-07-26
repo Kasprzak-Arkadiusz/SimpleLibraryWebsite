@@ -7,9 +7,10 @@ namespace SimpleLibraryWebsite.Models
     {
         [Key]
         public int ReaderID { get; set; }
+        [Display(Name = "Reader name")]
         public string Name { get; set; }
+        [Display(Name = "Reader surname")]
         public string Surname { get; set; }
-        public virtual ICollection<Book> Books { get; set; }
         public virtual ICollection<Loan> Loans { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
 

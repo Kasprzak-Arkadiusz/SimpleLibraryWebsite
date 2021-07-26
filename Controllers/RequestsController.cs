@@ -37,15 +37,15 @@ namespace SimpleLibraryWebsite.Controllers
                 isAnySearchFieldNotEmpty = true;
             }
 
+            if (!readers.Any())
+            {
+                return View(new RequestViewModel() {Requests = new List<Request>()});
+            }
+
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 requests = from r in requests where r.Title.Contains(bookTitle) select r;
                 isAnySearchFieldNotEmpty = true;
-            }
-
-            if (readers.Count() == 0)
-            {
-                return View(new RequestViewModel() {Requests = new List<Request>()});
             }
 
 
@@ -53,8 +53,10 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 var readersList = await readers.ToListAsync();
                 var requestsList = await requests.ToListAsync();
-                var result = requestsList.Where(r => readersList.Any(read => read.ReaderID == r.ReaderID)).ToList();
-                return View(new RequestViewModel() { Requests = result });
+                var result = requestsList
+                    .Where(r => readersList.Any(read => read.ReaderID == r.ReaderID))
+                    .OrderBy(t => t.Title);
+                return View(new RequestViewModel() { Requests = result.ToList() });
             }
 
             return View(new RequestViewModel() { Requests = await requests.ToListAsync() });

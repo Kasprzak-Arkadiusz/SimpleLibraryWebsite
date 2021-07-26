@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimpleLibraryWebsite.Models
 {
@@ -16,6 +16,9 @@ namespace SimpleLibraryWebsite.Models
         [Display(Name = "Lent to")]
         [DataType(DataType.Date)]
         public DateTime LentTo { get; set; }
+
+        public Book Book { get; set; }
+        public Reader Reader { get; set; }
 
         public Loan(int bookId, int readerId, DateTime lentFrom)
         {

@@ -7,6 +7,7 @@ namespace SimpleLibraryWebsite.Models
         [Key]
         public int RequestID { get; set; }
         public int ReaderID { get; set; }
+        [Display(Name = "Book title")]
         public string Title { get; set; }
         public string Author { get; set; }
         public Genres Genre { get; set; }

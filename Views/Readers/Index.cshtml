@@ -1,10 +1,37 @@
-﻿@model IEnumerable<SimpleLibraryWebsite.Models.Reader>
+﻿@model SimpleLibraryWebsite.Models.ReaderViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List of readers";
 }
 
-<h1>Index</h1>
+<h1>List of readers</h1>
+    
+<p>
+    Below you can view the list of readers.
+</p>
+    
+<form asp-controller="Readers" asp-action="Index" method="get">
+    <div class="container">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <b>Reader name:</b>
+                    <input type="text" asp-for="ReaderName" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <b>Reader surname:</b>
+                    <input type="text" asp-for="ReaderSurname" />
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Filter" />
+    </div>
+</form>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,16 +40,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Readers[0].Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Surname)
+                @Html.DisplayNameFor(model => model.Readers[0].Surname)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Readers) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)

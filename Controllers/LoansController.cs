@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +19,41 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle)
         {
-            return View(await _context.Loans.ToListAsync());
+            var readers = from r in _context.Readers select r;
+            var books = from b in _context.Books select b;
+            var loans = from l in _context.Loans select l;
+
+            if (!string.IsNullOrWhiteSpace(readerName))
+            {
+                readers = from r in readers where r.Name == readerName select r;
+            }
+
+            if (!string.IsNullOrWhiteSpace(readerSurname))
+            {
+                readers = from r in readers where r.Surname == readerSurname select r;
+            }
+
+            if (!readers.Any())
+            {
+                return View(new LoanViewModel() { Loans = new List<Loan>() });
+            }
+
+            if (!string.IsNullOrWhiteSpace(bookTitle))
+            {
+                books = from b in books where b.Title.Contains(bookTitle) select b;
+            }
+
+            var readersList = await readers.ToListAsync();
+            var booksList = await books.ToListAsync();
+            var loansList = await loans.ToListAsync();
+            var result = loansList
+                .Where(l => readersList.Any(read => read.ReaderID == l.ReaderID) &&
+                            booksList.Any(book => book.BookID == l.BookID))
+                .OrderBy(l => l.Book.Title);
+
+            return View(new LoanViewModel { Loans = result.ToList() });
         }
 
         // GET: Loans/Details/5

@@ -38,7 +38,7 @@ namespace SimpleLibraryWebsite.Controllers
                 books = books.Where(b => b.Genre == genre);
             }
 
-            var bookGenreViewModel = new BookGenreViewModel
+            BookGenreViewModel bookGenreViewModel = new BookGenreViewModel
             {
                 Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
                 Books = await books.OrderBy(t => t.Title).ToListAsync()

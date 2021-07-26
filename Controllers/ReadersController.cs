@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
@@ -20,9 +17,21 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string readerName, string readerSurname)
         {
-            return View(await _context.Readers.ToListAsync());
+            var readers = from r in _context.Readers select r;
+
+            if (!string.IsNullOrWhiteSpace(readerName))
+            {
+                readers = from r in readers where r.Name == readerName select r;
+            }
+
+            if (!string.IsNullOrWhiteSpace(readerSurname))
+            {
+                readers = from r in readers where r.Surname == readerSurname select r;
+            }
+
+            return View(new ReaderViewModel { Readers = await readers.OrderBy(s => s.Surname).ToListAsync()});
         }
 
         // GET: Readers/Details/5
