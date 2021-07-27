@@ -26,15 +26,21 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Books[0].Author)
-            </th>
-            <th>@Html.DisplayNameFor(model => model.Books[0].Title)
-            </th>
-            <th>@Html.DisplayNameFor(model => model.Books[0].Genre)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParam"]">
+                 @Html.DisplayNameFor(model => model.Books[0].Author)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
+                 @Html.DisplayNameFor(model => model.Books[0].Title)
+            </a>
+        </th>
+        <th>@Html.DisplayNameFor(model => model.Books[0].Genre)
+        </th>
+
+    </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Books) {

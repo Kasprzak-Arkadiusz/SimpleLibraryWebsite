@@ -13,7 +13,7 @@ namespace SimpleLibraryWebsite.Models
         public Genres Genre { get; set; }
         [Display(Name = "Number of upvotes")]
         public int NumberOfUpvotes { get; set; }
-        public virtual Reader Reader { get; set; }
+        public Reader Reader { get; set; }
 
         public Request(int readerId, string title, string author, Genres genre)
         {

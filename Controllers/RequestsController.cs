@@ -23,18 +23,18 @@ namespace SimpleLibraryWebsite.Controllers
         {
             var requests = from req in _context.Requests select req;
             var readers = from read in _context.Readers select read;
-            bool isAnySearchFieldNotEmpty = false;
+            bool isAnySearchFieldFilled = false;
 
             if (!string.IsNullOrWhiteSpace(readerName))
             {
                 readers = from r in readers where r.Name == readerName select r;
-                isAnySearchFieldNotEmpty = true;
+                isAnySearchFieldFilled = true;
             }
 
             if (!string.IsNullOrWhiteSpace(readerSurname))
             {
                 readers = from r in readers where r.Surname == readerSurname select r;
-                isAnySearchFieldNotEmpty = true;
+                isAnySearchFieldFilled = true;
             }
 
             if (!readers.Any())
@@ -45,11 +45,11 @@ namespace SimpleLibraryWebsite.Controllers
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 requests = from r in requests where r.Title.Contains(bookTitle) select r;
-                isAnySearchFieldNotEmpty = true;
+                isAnySearchFieldFilled = true;
             }
 
 
-            if (isAnySearchFieldNotEmpty)
+            if (isAnySearchFieldFilled)
             {
                 var readersList = await readers.ToListAsync();
                 var requestsList = await requests.ToListAsync();

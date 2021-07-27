@@ -4,7 +4,9 @@
     ViewData["Title"] = "List of loans";
 }
 
-<h1>Here you can see all book loans.</h1>
+<h1>Book loans</h1>
+
+<p>Here you can see all book loans.</p>
     
 <form asp-controller="Loans" asp-action="Index" method="get">
     <div class="container">
@@ -45,13 +47,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Loans[0].Book.Title)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
+                    @Html.DisplayNameFor(model => model.Loans[0].Book.Title)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Loans[0].Reader.Name)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderNameSortParam"]">
+                    @Html.DisplayNameFor(model => model.Loans[0].Reader.Name)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Loans[0].Reader.Surname)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderSurnameSortParam"]">
+                    @Html.DisplayNameFor(model => model.Loans[0].Reader.Surname)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Loans[0].LentTo)
@@ -59,8 +67,9 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Loans) {
+    @foreach (var item in Model.Loans) {
         <tr>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Book.Title)
             </td>

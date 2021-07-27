@@ -19,20 +19,28 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle)
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle, string sortOrder)
         {
+            ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["ReaderNameSortParam"] = sortOrder == "ReaderName" ? "readerName_desc" : "ReaderName";
+            ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
+
+            IQueryable<Loan> loans = _context.Loans.Include(l => l.Reader).Include(l => l.Book);
+
             var readers = from r in _context.Readers select r;
             var books = from b in _context.Books select b;
-            var loans = from l in _context.Loans select l;
+            bool isAnySearchFieldFilled = false;
 
             if (!string.IsNullOrWhiteSpace(readerName))
             {
                 readers = from r in readers where r.Name == readerName select r;
+                isAnySearchFieldFilled = true;
             }
 
             if (!string.IsNullOrWhiteSpace(readerSurname))
             {
                 readers = from r in readers where r.Surname == readerSurname select r;
+                isAnySearchFieldFilled = true;
             }
 
             if (!readers.Any())
@@ -43,17 +51,38 @@ namespace SimpleLibraryWebsite.Controllers
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 books = from b in books where b.Title.Contains(bookTitle) select b;
+                isAnySearchFieldFilled = true;
             }
 
-            var readersList = await readers.ToListAsync();
-            var booksList = await books.ToListAsync();
-            var loansList = await loans.ToListAsync();
-            var result = loansList
-                .Where(l => readersList.Any(read => read.ReaderID == l.ReaderID) &&
-                            booksList.Any(book => book.BookID == l.BookID))
-                .OrderBy(l => l.Book.Title);
+            LoanViewModel loanViewModel = new LoanViewModel();
 
-            return View(new LoanViewModel { Loans = result.ToList() });
+            if (isAnySearchFieldFilled)
+            {
+                var readersList = await readers.ToListAsync();
+                var booksList = await books.ToListAsync();
+                var loansList = await loans.ToListAsync();
+                var result = loansList
+                    .Where(l => readersList.Any(read => read.ReaderID == l.ReaderID) &&
+                                booksList.Any(book => book.BookID == l.BookID))
+                    .OrderBy(l => l.Book.Title);
+                loanViewModel.Loans = result.ToList();
+            }
+            else
+            {
+                loanViewModel.Loans = await loans.ToListAsync();
+            }
+
+            loanViewModel.Loans = sortOrder switch
+            {
+                "title_desc" => loanViewModel.Loans.OrderByDescending(l => l.Book.Title).ToList(),
+                "ReaderName" => loanViewModel.Loans.OrderBy(l => l.Reader.Name).ToList(),
+                "readerName_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Name).ToList(),
+                "ReaderSurname" => loanViewModel.Loans.OrderBy(l => l.Reader.Surname).ToList(),
+                "readerSurname_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Surname).ToList(),
+                _ => loanViewModel.Loans
+            };
+
+            return View(loanViewModel);
         }
 
         // GET: Loans/Details/5
@@ -65,6 +94,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var loan = await _context.Loans
+                .Include(r => r.Reader).AsNoTracking()
                 .FirstOrDefaultAsync(m => m.LoanID == id);
             if (loan == null)
             {

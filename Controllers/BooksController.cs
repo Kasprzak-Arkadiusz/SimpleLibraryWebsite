@@ -19,17 +19,36 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index(string bookGenre, string searchString)
+        public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder)
         {
+            ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
+
+            var books = from b in _context.Books select b;
+
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    books = books.OrderByDescending(b => b.Title);
+                    break;
+                case "Author":
+                    books = books.OrderBy(b => b.Author);
+                    break;
+                case "author_desc":
+                    books = books.OrderByDescending(b => b.Author);
+                    break;
+                default:
+                    books = books.OrderBy(b => b.Title);
+                    break;
+            }
+
             IQueryable<string> genreQuery = from b in _context.Books
                                             orderby b.Genre
                                             select b.Genre.ToString();
 
-            var books = from b in _context.Books select b;
-
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(bookTitle))
             {
-                books = books.Where(b => b.Title.Contains(searchString));
+                books = books.Where(b => b.Title.Contains(bookTitle));
             }
 
             if (!string.IsNullOrEmpty(bookGenre))
@@ -41,7 +60,7 @@ namespace SimpleLibraryWebsite.Controllers
             BookGenreViewModel bookGenreViewModel = new BookGenreViewModel
             {
                 Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                Books = await books.OrderBy(t => t.Title).ToListAsync()
+                Books = await books.ToListAsync()
             };
 
             return View(bookGenreViewModel);
