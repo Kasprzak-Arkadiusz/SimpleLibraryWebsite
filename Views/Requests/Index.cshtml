@@ -1,4 +1,5 @@
-﻿@model SimpleLibraryWebsite.Models.RequestViewModel
+﻿@using System.Linq
+@model SimpleLibraryWebsite.Models.RequestViewModel
 
 @{
     ViewData["Title"] = "Book requests";
@@ -49,11 +50,17 @@
 <table class="table">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Requests[0].Title)
+            <th>
+                <a asp-action="Index" asp-route-sortorder="@Html.ViewData["TitleSortParam"]">
+                    @Html.DisplayNameFor(model => model.Requests.FirstOrDefault().Title)
+                </a>
             </th>
-            <th>@Html.DisplayNameFor(model => model.Requests[0].Author)
+            <th>
+                <a asp-action="Index" asp-route-sortorder="@Html.ViewData["AuthorSortParam"]">
+                    @Html.DisplayNameFor(model => model.Requests.FirstOrDefault().Author)
+                </a>
             </th>
-            <th>@Html.DisplayNameFor(model => model.Requests[0].Genre)
+            <th>@Html.DisplayNameFor(model => model.Requests.FirstOrDefault().Genre)
             </th>
         </tr>
     </thead>

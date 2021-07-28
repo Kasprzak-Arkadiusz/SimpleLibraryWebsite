@@ -40,10 +40,14 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Readers[0].Name)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderNameSortParam"]">
+                    @Html.DisplayNameFor(model => model.Readers.FirstOrDefault().Name)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Readers[0].Surname)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderSurnameSortParam"]"> 
+                    @Html.DisplayNameFor(model => model.Readers.FirstOrDefault().Surname)
+                </a>
             </th>
             <th></th>
         </tr>

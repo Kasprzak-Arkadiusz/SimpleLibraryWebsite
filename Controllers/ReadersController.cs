@@ -17,8 +17,11 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers
-        public async Task<IActionResult> Index(string readerName, string readerSurname)
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string sortOrder)
         {
+            ViewData["ReaderNameSortParam"] =  string.IsNullOrEmpty(sortOrder) ? "readerName_desc" : "";
+            ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
+
             var readers = from r in _context.Readers select r;
 
             if (!string.IsNullOrWhiteSpace(readerName))
@@ -31,7 +34,19 @@ namespace SimpleLibraryWebsite.Controllers
                 readers = from r in readers where r.Surname == readerSurname select r;
             }
 
-            return View(new ReaderViewModel { Readers = await readers.OrderBy(s => s.Surname).ToListAsync()});
+            ReaderViewModel readerViewModel = new ReaderViewModel();
+
+            var results = sortOrder switch
+            {
+                "readerName_desc" => readers.OrderByDescending(r => r.Name),
+                "ReaderSurname" => readers.OrderBy(r => r.Surname),
+                "readerSurname_desc" => readers.OrderByDescending(r => r.Surname),
+                _ => readers.OrderBy(r => r.Name)
+            };
+
+            readerViewModel.Readers = await results.ToListAsync();
+
+            return View(readerViewModel);
         }
 
         // GET: Readers/Details/5

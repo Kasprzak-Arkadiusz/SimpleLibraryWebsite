@@ -19,8 +19,11 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle)
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle, string sortOrder)
         {
+            ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
+
             var requests = from req in _context.Requests select req;
             var readers = from read in _context.Readers select read;
             bool isAnySearchFieldFilled = false;
@@ -48,18 +51,29 @@ namespace SimpleLibraryWebsite.Controllers
                 isAnySearchFieldFilled = true;
             }
 
+            RequestViewModel requestViewModel = new RequestViewModel();
 
             if (isAnySearchFieldFilled)
             {
-                var readersList = await readers.ToListAsync();
-                var requestsList = await requests.ToListAsync();
-                var result = requestsList
-                    .Where(r => readersList.Any(read => read.ReaderID == r.ReaderID))
-                    .OrderBy(t => t.Title);
-                return View(new RequestViewModel() { Requests = result.ToList() });
+                requestViewModel.Requests = requests
+                    .Where(r => requests.Any(read => read.ReaderID == r.ReaderID)).ToList();
+            }
+            else
+            {
+                requestViewModel.Requests = await requests.ToListAsync();
             }
 
-            return View(new RequestViewModel() { Requests = await requests.ToListAsync() });
+            var results= sortOrder switch
+            {
+                "title_desc" => requestViewModel.Requests.OrderByDescending(r => r.Title),
+                "Author" => requestViewModel.Requests.OrderBy(r => r.Author),
+                "author_desc" => requestViewModel.Requests.OrderByDescending(r => r.Author),
+                _ => requestViewModel.Requests.OrderBy(r => r.Title)
+            };
+
+            requestViewModel.Requests = results.ToList();
+
+            return View(requestViewModel);
         }
 
         // GET: Requests/Details/5
