@@ -24,6 +24,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["ReaderNameSortParam"] = sortOrder == "ReaderName" ? "readerName_desc" : "ReaderName";
             ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
+            ViewData["LentToSortParam"] = sortOrder == "LentTo" ? "lentTo_desc" : "LentTo";
 
             IQueryable<Loan> loans = _context.Loans.Include(l => l.Reader).Include(l => l.Book);
 
@@ -58,29 +59,28 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (isAnySearchFieldFilled)
             {
-                var readersList = await readers.ToListAsync();
-                var booksList = await books.ToListAsync();
-                var loansList = await loans.ToListAsync();
-                var result = loansList
-                    .Where(l => readersList.Any(read => read.ReaderID == l.ReaderID) &&
-                                booksList.Any(book => book.BookID == l.BookID))
-                    .OrderBy(l => l.Book.Title);
-                loanViewModel.Loans = result.ToList();
+                loanViewModel.Loans = loans
+                    .Where(l => readers.Any(read => read.ReaderID == l.ReaderID) &&
+                                books.Any(book => book.BookID == l.BookID)).ToList();
             }
             else
             {
                 loanViewModel.Loans = await loans.ToListAsync();
             }
 
-            loanViewModel.Loans = sortOrder switch
+            var results = sortOrder switch
             {
-                "title_desc" => loanViewModel.Loans.OrderByDescending(l => l.Book.Title).ToList(),
-                "ReaderName" => loanViewModel.Loans.OrderBy(l => l.Reader.Name).ToList(),
-                "readerName_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Name).ToList(),
-                "ReaderSurname" => loanViewModel.Loans.OrderBy(l => l.Reader.Surname).ToList(),
-                "readerSurname_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Surname).ToList(),
-                _ => loanViewModel.Loans
+                "title_desc" => loanViewModel.Loans.OrderByDescending(l => l.Book.Title),
+                "ReaderName" => loanViewModel.Loans.OrderBy(l => l.Reader.Name),
+                "readerName_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Name),
+                "ReaderSurname" => loanViewModel.Loans.OrderBy(l => l.Reader.Surname),
+                "readerSurname_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Surname),
+                "LentTo" => loanViewModel.Loans.OrderBy(l => l.LentTo),
+                "lentTo_desc" => loanViewModel.Loans.OrderByDescending(l => l.LentTo),
+                _ => loanViewModel.Loans.OrderBy(l => l.Book.Title)
             };
+
+            loanViewModel.Loans = results.ToList();
 
             return View(loanViewModel);
         }

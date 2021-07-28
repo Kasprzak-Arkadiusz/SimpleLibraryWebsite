@@ -48,21 +48,23 @@
         <tr>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans[0].Book.Title)
+                    @Html.DisplayNameFor(model => model.Loans.First().Book.Title)
                 </a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderNameSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans[0].Reader.Name)
+                    @Html.DisplayNameFor(model => model.Loans.First().Reader.Name)
                 </a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderSurnameSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans[0].Reader.Surname)
+                    @Html.DisplayNameFor(model => model.Loans.First().Reader.Surname)
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Loans[0].LentTo)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["LentToSortParam"]">
+                    @Html.DisplayNameFor(model => model.Loans.First().LentTo)
+                </a>
             </th>
         </tr>
     </thead>

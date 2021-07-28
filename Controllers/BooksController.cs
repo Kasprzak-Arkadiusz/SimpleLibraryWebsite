@@ -24,27 +24,11 @@ namespace SimpleLibraryWebsite.Controllers
             ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
 
-            var books = from b in _context.Books select b;
-
-            switch (sortOrder)
-            {
-                case "title_desc":
-                    books = books.OrderByDescending(b => b.Title);
-                    break;
-                case "Author":
-                    books = books.OrderBy(b => b.Author);
-                    break;
-                case "author_desc":
-                    books = books.OrderByDescending(b => b.Author);
-                    break;
-                default:
-                    books = books.OrderBy(b => b.Title);
-                    break;
-            }
-
             IQueryable<string> genreQuery = from b in _context.Books
                                             orderby b.Genre
                                             select b.Genre.ToString();
+
+            var books = from b in _context.Books select b;
 
             if (!string.IsNullOrEmpty(bookTitle))
             {
@@ -56,6 +40,14 @@ namespace SimpleLibraryWebsite.Controllers
                 Enum.TryParse(bookGenre, out Genres genre);
                 books = books.Where(b => b.Genre == genre);
             }
+
+            books = sortOrder switch
+            {
+                "title_desc" => books.OrderByDescending(b => b.Title),
+                "Author" => books.OrderBy(b => b.Author),
+                "author_desc" => books.OrderByDescending(b => b.Author),
+                _ => books.OrderBy(b => b.Title)
+            };
 
             BookGenreViewModel bookGenreViewModel = new BookGenreViewModel
             {
