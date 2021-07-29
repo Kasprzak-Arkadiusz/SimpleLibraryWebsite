@@ -19,14 +19,20 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder)
+        public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder, string currentFilter, int? pageNumber)
         {
             ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
+            ViewData["CurrentSort"] = sortOrder;
 
-            IQueryable<string> genreQuery = from b in _context.Books
-                                            orderby b.Genre
-                                            select b.Genre.ToString();
+            if (bookTitle is not null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                bookTitle = currentFilter;
+            }
 
             var books = from b in _context.Books select b;
 
@@ -35,9 +41,11 @@ namespace SimpleLibraryWebsite.Controllers
                 books = books.Where(b => b.Title.Contains(bookTitle));
             }
 
+            ViewData["CurrentFilter"] = bookTitle;
+
             if (!string.IsNullOrEmpty(bookGenre))
             {
-                Enum.TryParse(bookGenre, out Genres genre);
+                _ = Enum.TryParse(bookGenre, out Genres genre);
                 books = books.Where(b => b.Genre == genre);
             }
 
@@ -49,10 +57,15 @@ namespace SimpleLibraryWebsite.Controllers
                 _ => books.OrderBy(b => b.Title)
             };
 
+            IQueryable<string> stringGenres = from b in _context.Books
+                                              orderby b.Genre
+                                              select b.Genre.ToString();
+            const int pageSize = 5;
+
             BookGenreViewModel bookGenreViewModel = new BookGenreViewModel
             {
-                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                Books = await books.ToListAsync()
+                Genres = new SelectList(await stringGenres.Distinct().ToListAsync()),
+                PaginatedList = await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ?? 1, pageSize)
             };
 
             return View(bookGenreViewModel);

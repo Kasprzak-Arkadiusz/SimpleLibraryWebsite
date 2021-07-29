@@ -15,7 +15,7 @@
         </select>
 
         Title:
-        <input type="text" asp-for="SearchString" />
+        <input type="text" asp-for="BookTitle" value="@ViewData["CurrentFilter"]"/>
         <input type="submit" value="Filter" />
     </p>
 </form>
@@ -28,22 +28,22 @@
     <thead>
     <tr>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParam"]">
-                 @Html.DisplayNameFor(model => model.Books[0].Author)
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
             </a>
         </th>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
-                 @Html.DisplayNameFor(model => model.Books[0].Title)
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
             </a>
         </th>
-        <th>@Html.DisplayNameFor(model => model.Books[0].Genre)
+        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
         </th>
 
     </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Books) {
+    @foreach (var item in Model.PaginatedList) {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.Author)
             </td>
@@ -57,6 +57,26 @@
                 <a asp-action="Delete" asp-route-id="@item.BookID">Delete</a>
             </td>
         </tr>
-        }
+    }
     </tbody>
 </table>
+
+@{
+    string prevDisabled = !Model.PaginatedList.HasPreviousPage ? "disabled" : "";
+    string nextDisabled = !Model.PaginatedList.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PaginatedList.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PaginatedList.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
