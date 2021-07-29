@@ -17,13 +17,17 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string sortOrder)
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string sortOrder, 
+                                                string currentNameFilter, string currentSurnameFilter,int? pageNumber)
         {
             ViewData["ReaderNameSortParam"] =  string.IsNullOrEmpty(sortOrder) ? "readerName_desc" : "";
             ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
+            ViewData["CurrentSort"] = sortOrder;
+
+            ViewData["CurrentNameFilter"] = SaveFilterValue(ref readerName, currentNameFilter, ref pageNumber);
+            ViewData["CurrentSurnameFilter"] = SaveFilterValue(ref readerSurname, currentSurnameFilter, ref pageNumber);
 
             var readers = from r in _context.Readers select r;
-
             if (!string.IsNullOrWhiteSpace(readerName))
             {
                 readers = from r in readers where r.Name == readerName select r;
@@ -34,8 +38,12 @@ namespace SimpleLibraryWebsite.Controllers
                 readers = from r in readers where r.Surname == readerSurname select r;
             }
 
-            ReaderViewModel readerViewModel = new ReaderViewModel();
+            if (!readers.Any())
+            {
+                return View(new ReaderViewModel {PaginatedList = new PaginatedList<Reader>()});
+            }
 
+            ReaderViewModel readerViewModel = new ReaderViewModel();
             var results = sortOrder switch
             {
                 "readerName_desc" => readers.OrderByDescending(r => r.Name),
@@ -46,7 +54,18 @@ namespace SimpleLibraryWebsite.Controllers
 
             readerViewModel.Readers = await results.ToListAsync();
 
+            const int pageSize = 1;
+            readerViewModel.PaginatedList = PaginatedList<Reader>.Create(readerViewModel.Readers, pageNumber ?? 1, pageSize);
             return View(readerViewModel);
+        }
+        private string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
+        {
+            if (value is not null)
+            {
+                pageNumber = 1;
+            }
+
+            return value ??= valueToSave;
         }
 
         // GET: Readers/Details/5

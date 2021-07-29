@@ -72,7 +72,10 @@
             </a>
         </th>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["LentToSortParam"]">
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["LentToSortParam"]"
+               asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
+               asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]">
                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().LentTo)
             </a>
         </th>

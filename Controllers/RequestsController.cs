@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,61 +18,59 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle, string sortOrder)
+        public async Task<IActionResult> Index(string bookTitle, string author, string sortOrder,
+                                                string currentTitleFilter, string currentAuthorFilter, int? pageNumber)
         {
             ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
+            ViewData["CurrentSort"] = sortOrder;
+
+            ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
+            ViewData["CurrentAuthorFilter"] = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
 
             var requests = from req in _context.Requests select req;
-            var readers = from read in _context.Readers select read;
-            bool isAnySearchFieldFilled = false;
-
-            if (!string.IsNullOrWhiteSpace(readerName))
+            if (!string.IsNullOrWhiteSpace(author))
             {
-                readers = from r in readers where r.Name == readerName select r;
-                isAnySearchFieldFilled = true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(readerSurname))
-            {
-                readers = from r in readers where r.Surname == readerSurname select r;
-                isAnySearchFieldFilled = true;
-            }
-
-            if (!readers.Any())
-            {
-                return View(new RequestViewModel() {Requests = new List<Request>()});
+                requests = from r in requests where r.Author == author select r;
             }
 
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 requests = from r in requests where r.Title.Contains(bookTitle) select r;
-                isAnySearchFieldFilled = true;
             }
 
-            RequestViewModel requestViewModel = new RequestViewModel();
-
-            if (isAnySearchFieldFilled)
+            if (!requests.Any())
             {
-                requestViewModel.Requests = requests
-                    .Where(r => requests.Any(read => read.ReaderID == r.ReaderID)).ToList();
-            }
-            else
-            {
-                requestViewModel.Requests = await requests.ToListAsync();
+                return View(new RequestViewModel() { PaginatedList = new PaginatedList<Request>() });
             }
 
-            var results= sortOrder switch
+            RequestViewModel requestViewModel = new RequestViewModel
+            {
+                Requests = await requests.ToListAsync()
+            };
+
+            var results = sortOrder switch
             {
                 "title_desc" => requestViewModel.Requests.OrderByDescending(r => r.Title),
                 "Author" => requestViewModel.Requests.OrderBy(r => r.Author),
                 "author_desc" => requestViewModel.Requests.OrderByDescending(r => r.Author),
                 _ => requestViewModel.Requests.OrderBy(r => r.Title)
             };
-
             requestViewModel.Requests = results.ToList();
 
+            const int pageSize = 1;
+            requestViewModel.PaginatedList = PaginatedList<Request>.Create(requestViewModel.Requests, pageNumber ?? 1, pageSize);
+
             return View(requestViewModel);
+        }
+        private string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
+        {
+            if (value is not null)
+            {
+                pageNumber = 1;
+            }
+
+            return value ??= valueToSave;
         }
 
         // GET: Requests/Details/5

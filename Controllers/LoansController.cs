@@ -47,7 +47,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (!readers.Any())
             {
-                return View(new LoanViewModel() { PaginatedList = new PaginatedList<Loan>() });
+                return View(new LoanViewModel { PaginatedList = new PaginatedList<Loan>() });
             }
 
             var books = from b in _context.Books select b;

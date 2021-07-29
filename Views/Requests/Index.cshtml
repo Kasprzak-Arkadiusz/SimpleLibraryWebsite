@@ -1,5 +1,4 @@
-﻿@using System.Linq
-@model SimpleLibraryWebsite.Models.RequestViewModel
+﻿@model SimpleLibraryWebsite.Models.RequestViewModel
 
 @{
     ViewData["Title"] = "Book requests";
@@ -18,26 +17,17 @@
         <div class="row">
             <div class="form-group">
                 <div class="col-md-8">
-                    <b>Reader name:</b>
-                    <input type="text" asp-for="ReaderName" />
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="form-group">
-                <div class="col-md-8">
-                    <b>Reader surname:</b>
-                    <input type="text" asp-for="ReaderSurname" />
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="form-group">
-                <div class="col-md-8">
                     <b>Book title:</b>
-                    <input type="text" asp-for="BookTitle" />
+                    <input type="text" asp-for="BookTitle" value="@ViewData["CurrentTitleFilter"]"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <b>Book author:</b>
+                    <input type="text" asp-for="Author" value="@ViewData["CurrentAuthorFilter"]"/>
                 </div>
             </div>
         </div>
@@ -51,21 +41,26 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortorder="@Html.ViewData["TitleSortParam"]">
-                    @Html.DisplayNameFor(model => model.Requests.FirstOrDefault().Title)
+                <a asp-action="Index" asp-route-sortorder="@Html.ViewData["TitleSortParam"]"
+                   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+                   asp-route-currentAuthorFilter="@ViewData["CurrentAuthorFilter"]"
+                   >
+                    @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortorder="@Html.ViewData["AuthorSortParam"]">
-                    @Html.DisplayNameFor(model => model.Requests.FirstOrDefault().Author)
+                <a asp-action="Index" asp-route-sortorder="@Html.ViewData["AuthorSortParam"]"
+                   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+                   asp-route-currentAuthorFilter="@ViewData["CurrentAuthorFilter"]">
+                    @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
                 </a>
             </th>
-            <th>@Html.DisplayNameFor(model => model.Requests.FirstOrDefault().Genre)
+            <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
             </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Requests)
+        @foreach (var item in Model.PaginatedList)
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Title)
@@ -83,3 +78,25 @@
         }
     </tbody>
 </table>
+
+@{
+    string prevDisabled = !Model.PaginatedList.HasPreviousPage ? "disabled" : "";
+    string nextDisabled = !Model.PaginatedList.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PaginatedList.PageIndex - 1)"
+   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+   asp-route-currentAuthorFilter="@ViewData["CurrentAuthorFilter"]"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PaginatedList.PageIndex + 1)"
+   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+   asp-route-currentAuthorFilter="@ViewData["CurrentAuthorFilter"]"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
