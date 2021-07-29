@@ -34,14 +34,14 @@ namespace SimpleLibraryWebsite.Controllers
                 bookTitle = currentFilter;
             }
 
+            ViewData["CurrentFilter"] = bookTitle;
+
             var books = from b in _context.Books select b;
 
             if (!string.IsNullOrEmpty(bookTitle))
             {
                 books = books.Where(b => b.Title.Contains(bookTitle));
             }
-
-            ViewData["CurrentFilter"] = bookTitle;
 
             if (!string.IsNullOrEmpty(bookGenre))
             {

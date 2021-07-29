@@ -14,7 +14,7 @@
             <div class="form-group">
                 <div class="col-md-8">
                     <b>Reader name:</b>
-                    <input type="text" asp-for="ReaderName" />
+                    <input type="text" asp-for="ReaderName" value="@ViewData["CurrentNameFilter"]"/>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
             <div class="form-group">
                 <div class="col-md-8">
                     <b>Reader surname:</b>
-                    <input type="text" asp-for="ReaderSurname" />
+                    <input type="text" asp-for="ReaderSurname" value="@ViewData["CurrentSurnameFilter"]"/>
                 </div>
             </div>
         </div>
@@ -32,10 +32,11 @@
             <div class="form-group">
                 <div class="col-md-8">
                     <b>Book title:</b>
-                    <input type="text" asp-for="BookTitle" />
+                    <input type="text" asp-for="BookTitle" value="@ViewData["CurrentTitleFilter"]" />
                 </div>
             </div>
         </div>
+
         <input type="submit" value="Filter" />
     </div>
 </form>
@@ -45,31 +46,40 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans.FirstOrDefault().Book.Title)
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderNameSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans.FirstOrDefault().Reader.Name)
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderSurnameSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans.FirstOrDefault().Reader.Surname)
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["LentToSortParam"]">
-                    @Html.DisplayNameFor(model => model.Loans.FirstOrDefault().LentTo)
-                </a>
-            </th>
-        </tr>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]" 
+               asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
+               asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Book.Title)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderNameSortParam"]"
+               asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
+               asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Reader.Name)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderSurnameSortParam"]"
+               asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
+               asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Reader.Surname)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["LentToSortParam"]">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().LentTo)
+            </a>
+        </th>
+    </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Loans) {
+    @foreach (var item in Model.PaginatedList) {
         <tr>
 
             <td>
@@ -90,6 +100,30 @@
                 <a asp-action="Delete" asp-route-id="@item.LoanID">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+@{
+    string prevDisabled = !Model.PaginatedList.HasPreviousPage ? "disabled" : "";
+    string nextDisabled = !Model.PaginatedList.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PaginatedList.PageIndex - 1)"
+   asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
+   asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PaginatedList.PageIndex + 1)"
+   asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
+   asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

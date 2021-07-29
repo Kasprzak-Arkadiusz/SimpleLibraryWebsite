@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,19 +18,21 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle, string sortOrder)
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle, string sortOrder,
+                                                string currentNameFilter, string currentSurnameFilter, string currentTitleFilter, int? pageNumber)
         {
             ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["ReaderNameSortParam"] = sortOrder == "ReaderName" ? "readerName_desc" : "ReaderName";
             ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
             ViewData["LentToSortParam"] = sortOrder == "LentTo" ? "lentTo_desc" : "LentTo";
+            ViewData["CurrentSort"] = sortOrder;
 
-            IQueryable<Loan> loans = _context.Loans.Include(l => l.Reader).Include(l => l.Book);
+            ViewData["CurrentNameFilter"] = SaveFilterValue(ref readerName, currentNameFilter, ref pageNumber);
+            ViewData["CurrentSurnameFilter"] = SaveFilterValue(ref readerSurname, currentSurnameFilter, ref pageNumber);
+            ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
 
             var readers = from r in _context.Readers select r;
-            var books = from b in _context.Books select b;
             bool isAnySearchFieldFilled = false;
-
             if (!string.IsNullOrWhiteSpace(readerName))
             {
                 readers = from r in readers where r.Name == readerName select r;
@@ -46,9 +47,10 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (!readers.Any())
             {
-                return View(new LoanViewModel() { Loans = new List<Loan>() });
+                return View(new LoanViewModel() { PaginatedList = new PaginatedList<Loan>() });
             }
 
+            var books = from b in _context.Books select b;
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 books = from b in books where b.Title.Contains(bookTitle) select b;
@@ -56,7 +58,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             LoanViewModel loanViewModel = new LoanViewModel();
-
+            IQueryable<Loan> loans = _context.Loans.Include(l => l.Reader).Include(l => l.Book);
             if (isAnySearchFieldFilled)
             {
                 loanViewModel.Loans = loans
@@ -79,10 +81,22 @@ namespace SimpleLibraryWebsite.Controllers
                 "lentTo_desc" => loanViewModel.Loans.OrderByDescending(l => l.LentTo),
                 _ => loanViewModel.Loans.OrderBy(l => l.Book.Title)
             };
-
             loanViewModel.Loans = results.ToList();
 
+            const int pageSize = 2;
+            loanViewModel.PaginatedList = PaginatedList<Loan>.Create(loanViewModel.Loans, pageNumber ?? 1, pageSize);
+
             return View(loanViewModel);
+        }
+
+        private string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
+        {
+            if (value is not null)
+            {
+               pageNumber = 1;
+            }
+
+            return value ??= valueToSave;
         }
 
         // GET: Loans/Details/5
