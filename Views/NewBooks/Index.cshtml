@@ -1,12 +1,12 @@
 ﻿@model SimpleLibraryWebsite.Models.BookGenreViewModel
 
 @{
-    ViewData["Title"] = "Book list";
+    ViewData["Title"] = "New books";
 }
 
-    <h1>Book list</h1>
+<h1>New books</h1>
 
-<p>Here you can view and search for books.</p>
+<p>Here you can view the newly added books.</p>
 
 <form asp-controller="Books" asp-action="Index" method="get">
     <p>
@@ -16,11 +16,10 @@
         </select>
 
         Title:
-        <input type="text" asp-for="BookTitle" value="@ViewData["CurrentTitleFilter"]"/>
+        <input type="text" asp-for="BookTitle" value="@ViewData["CurrentFilter"]"/>
         <input type="submit" value="Filter"/>
     </p>
 </form>
-
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -32,36 +31,52 @@
             <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParam"]"
                asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
                asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
-               @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
             </a>
         </th>
         <th>
             <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]"
                asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
                asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
-               @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
             </a>
         </th>
-        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
+        <th>
+            <a asp-route-currentFilter="@ViewData["CurrentFilter"]" 
+               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+               asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
+            </a>
+        </th>
+        <th>
+            <a  asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
+                asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
+                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)
+             </a>
         </th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.PaginatedList) {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Author)
-            </td>
-            <td>@Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>@Html.DisplayFor(modelItem => item.Genre)
+@foreach (var item in Model.PaginatedList) {
+    <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.BookID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BookID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BookID">Delete</a>
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
-        </tr>
-    }
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsBorrowed)
+            </td>
+             <td>
+                <a asp-action="Details" asp-route-id="@item.BookID">Details</a>
+             </td>
+    </tr>
+}
     </tbody>
 </table>
 

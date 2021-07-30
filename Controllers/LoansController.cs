@@ -8,7 +8,7 @@ using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite.Controllers
 {
-    public class LoansController : Controller
+    public class LoansController : CustomController
     {
         private readonly ApplicationDbContext _context;
 
@@ -87,16 +87,6 @@ namespace SimpleLibraryWebsite.Controllers
             loanViewModel.PaginatedList = PaginatedList<Loan>.Create(loanViewModel.Loans, pageNumber ?? 1, pageSize);
 
             return View(loanViewModel);
-        }
-
-        private string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
-        {
-            if (value is not null)
-            {
-               pageNumber = 1;
-            }
-
-            return value ??= valueToSave;
         }
 
         // GET: Loans/Details/5

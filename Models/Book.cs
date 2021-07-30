@@ -15,6 +15,7 @@ namespace SimpleLibraryWebsite.Models
         public string Title { get; set; }
         public Genres? Genre { get; set; }
         [Display(Name = "Date of adding")]
+        [DataType(DataType.Date)]
         public DateTime AddingDate { get; set; }
         public bool IsBorrowed { get; set; }
 

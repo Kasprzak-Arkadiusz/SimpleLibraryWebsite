@@ -7,7 +7,7 @@ using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite.Controllers
 {
-    public class ReadersController : Controller
+    public class ReadersController : CustomController
     {
         private readonly ApplicationDbContext _context;
 
@@ -57,15 +57,6 @@ namespace SimpleLibraryWebsite.Controllers
             const int pageSize = 1;
             readerViewModel.PaginatedList = PaginatedList<Reader>.Create(readerViewModel.Readers, pageNumber ?? 1, pageSize);
             return View(readerViewModel);
-        }
-        private string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
-        {
-            if (value is not null)
-            {
-                pageNumber = 1;
-            }
-
-            return value ??= valueToSave;
         }
 
         // GET: Readers/Details/5
