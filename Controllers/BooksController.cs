@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
 
@@ -149,7 +148,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             var bookToUpdate = await _context.Books.FirstOrDefaultAsync(b => b.BookID == id);
 
-            if (await TryUpdateModelAsync<Book>(
+            if (await TryUpdateModelAsync(
                 bookToUpdate,
                 "",
                 b => b.Title, b => b.Author, b => b.Genre))
@@ -195,14 +194,22 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var book = await _context.Books.FindAsync(id);
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            if (book is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-        private bool BookExists(int id)
-        {
-            return _context.Books.Any(e => e.BookID == id);
+            try
+            {
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+            }
         }
     }
 }

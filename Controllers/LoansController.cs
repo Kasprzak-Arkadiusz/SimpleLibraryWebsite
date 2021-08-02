@@ -11,6 +11,7 @@ namespace SimpleLibraryWebsite.Controllers
     public class LoansController : CustomController
     {
         private readonly ApplicationDbContext _context;
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public LoansController(ApplicationDbContext context)
         {
@@ -123,15 +124,24 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LoanID,BookID,ReaderID,LentFrom,LentTo")] Loan loan)
         {
-            if (ModelState.IsValid)
+            try
             {
-                loan.FillMissingFields();
-                _context.Add(loan);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    loan.FillMissingFields();
+                    _context.Add(loan);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", loan.ReaderID);
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", loan.BookID);
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                ModelState.AddModelError("", "Unable to save changes. " +
+                                             "Try again, and if the problem persists " +
+                                             "see your system administrator.");
+            }
+
             return View(loan);
         }
 
@@ -156,38 +166,37 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Loans/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LoanID,BookID,ReaderID,LentFrom,LentTo")] Loan loan)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != loan.LoanID)
+            if (id is null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var loanToUpdate = await _context.Loans.FirstOrDefaultAsync(l => l.LoanID == id);
+
+            if (await TryUpdateModelAsync(
+                loanToUpdate,
+                "",
+                l => l.ReaderID, l => l.BookID, l => l.LentTo))
             {
                 try
                 {
-                    _context.Update(loan);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException ex)
                 {
-                    if (!LoanExists(loan.LoanID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.Error(ex.Message);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", loan.ReaderID);
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", loan.BookID);
-            return View(loan);
+
+            return View(loanToUpdate);
         }
 
         // GET: Loans/Delete/5
@@ -214,14 +223,22 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var loan = await _context.Loans.FindAsync(id);
-            _context.Loans.Remove(loan);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            if (loan is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-        private bool LoanExists(int id)
-        {
-            return _context.Loans.Any(e => e.LoanID == id);
+            try
+            {
+                _context.Loans.Remove(loan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                return RedirectToAction(nameof(Delete), new {id, saveChangesError = true});
+            }
         }
     }
 }

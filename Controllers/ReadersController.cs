@@ -10,6 +10,8 @@ namespace SimpleLibraryWebsite.Controllers
     public class ReadersController : CustomController
     {
         private readonly ApplicationDbContext _context;
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
 
         public ReadersController(ApplicationDbContext context)
         {
@@ -17,10 +19,10 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string sortOrder, 
-                                                string currentNameFilter, string currentSurnameFilter,int? pageNumber)
+        public async Task<IActionResult> Index(string readerName, string readerSurname, string sortOrder,
+                                                string currentNameFilter, string currentSurnameFilter, int? pageNumber)
         {
-            ViewData["ReaderNameSortParam"] =  string.IsNullOrEmpty(sortOrder) ? "readerName_desc" : "";
+            ViewData["ReaderNameSortParam"] = string.IsNullOrEmpty(sortOrder) ? "readerName_desc" : "";
             ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
             ViewData["CurrentSort"] = sortOrder;
 
@@ -40,7 +42,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (!readers.Any())
             {
-                return View(new ReaderViewModel {PaginatedList = new PaginatedList<Reader>()});
+                return View(new ReaderViewModel { PaginatedList = new PaginatedList<Reader>() });
             }
 
             ReaderViewModel readerViewModel = new ReaderViewModel();
@@ -88,14 +90,25 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReaderID,Name,Surname")] Reader reader)
+        public async Task<IActionResult> Create([Bind("Name,Surname")] Reader reader)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(reader);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(reader);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                ModelState.AddModelError("", "Unable to save changes. " +
+                                             "Try again, and if the problem persists " +
+                                             "see your system administrator.");
+            }
+
             return View(reader);
         }
 
@@ -118,36 +131,37 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Readers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReaderID,Name,Surname")] Reader reader)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != reader.ReaderID)
+            if (id is null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var readerToUpdate = await _context.Readers.FirstOrDefaultAsync(r => r.ReaderID == id);
+
+            if (await TryUpdateModelAsync(
+                readerToUpdate,
+                "",
+                r => r.Name, r => r.Surname))
             {
                 try
                 {
-                    _context.Update(reader);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException ex)
                 {
-                    if (!ReaderExists(reader.ReaderID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.Error(ex.Message);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(reader);
+
+            return View(readerToUpdate);
         }
 
         // GET: Readers/Delete/5
@@ -174,14 +188,23 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var reader = await _context.Readers.FindAsync(id);
-            _context.Readers.Remove(reader);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (reader is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                _context.Readers.Remove(reader);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+            }
         }
 
-        private bool ReaderExists(int id)
-        {
-            return _context.Readers.Any(e => e.ReaderID == id);
-        }
     }
 }

@@ -33,8 +33,9 @@ namespace SimpleLibraryWebsite.Models
 
         public static PaginatedList<T> Create(IEnumerable<T> source, int pageIndex, int pageSize)
         {
-            int count = source.Count();
-            var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+            var enumerable = source.ToList();
+            int count = enumerable.Count();
+            var items = enumerable.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
     }

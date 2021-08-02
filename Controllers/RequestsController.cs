@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ namespace SimpleLibraryWebsite.Controllers
     public class RequestsController : CustomController
     {
         private readonly ApplicationDbContext _context;
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public RequestsController(ApplicationDbContext context)
         {
@@ -95,16 +97,23 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RequestID,ReaderID,Title,Author,Genre")] Request request)
+        public async Task<IActionResult> Create([Bind("ReaderID,Title,Author,Genre")] Request request)
         {
-            if (ModelState.IsValid)
+            try
             {
-                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderID));
+                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderID)); //TODO Check if accessing DB is needed
                 _context.Add(request);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                ModelState.AddModelError("", "Unable to save changes. " +
+                                             "Try again, and if the problem persists " +
+                                             "see your system administrator.");
+            }
+
             return View(request);
         }
 
@@ -128,37 +137,37 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Requests/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RequestID,ReaderID,Title,Author,Genre,NumberOfUpvotes")] Request request)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != request.RequestID)
+            if (id is null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var requestToUpdate = await _context.Requests.FirstOrDefaultAsync(r => r.RequestID == id);
+
+            if (await TryUpdateModelAsync(
+                requestToUpdate,
+                "",
+                r => r.Title, r => r.Author, r=> r.Genre, r => r.ReaderID, r => r.NumberOfUpvotes))
             {
                 try
                 {
-                    _context.Update(request);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException ex)
                 {
-                    if (!RequestExists(request.RequestID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.Error(ex.Message);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
-            return View(request);
+
+            return View(requestToUpdate);
         }
 
         // GET: Requests/Delete/5
@@ -186,14 +195,22 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var request = await _context.Requests.FindAsync(id);
-            _context.Requests.Remove(request);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            if (request is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-        private bool RequestExists(int id)
-        {
-            return _context.Requests.Any(e => e.RequestID == id);
+            try
+            {
+                _context.Requests.Remove(request);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+            }
         }
     }
 }
