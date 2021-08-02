@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
 
@@ -12,6 +13,7 @@ namespace SimpleLibraryWebsite.Controllers
     public class BooksController : CustomController
     {
         private readonly ApplicationDbContext _context;
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public BooksController(ApplicationDbContext context)
         {
@@ -60,7 +62,6 @@ namespace SimpleLibraryWebsite.Controllers
                 Genres = new SelectList(await stringGenres.Distinct().ToListAsync()),
                 PaginatedList = await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ?? 1, pageSize)
             };
-            
 
             return View(bookGenreViewModel);
         }
@@ -94,15 +95,26 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookID,Author,Title,Genre")] Book book)
+        public async Task<IActionResult> Create([Bind("Author,Title,Genre")] Book book)
         {
-            if (ModelState.IsValid)
+            try
             {
-                book.FillMissingProperties();
-                _context.Add(book);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    book.FillMissingProperties();
+                    _context.Add(book);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                ModelState.AddModelError("", "Unable to save changes. " +
+                                             "Try again, and if the problem persists " +
+                                             "see your system administrator.");
+            }
+
             return View(book);
         }
 
@@ -119,42 +131,44 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 return NotFound();
             }
+
             return View(book);
         }
 
         // POST: Books/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookID,Author,Title,Genre,IsBorrowed")] Book book)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != book.BookID)
+            if (id is null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var bookToUpdate = await _context.Books.FirstOrDefaultAsync(b => b.BookID == id);
+
+            if (await TryUpdateModelAsync<Book>(
+                bookToUpdate,
+                "",
+                b => b.Title, b => b.Author, b => b.Genre))
             {
                 try
                 {
-                    _context.Update(book);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException ex)
                 {
-                    if (!BookExists(book.BookID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.Error(ex.Message);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(book);
+
+            return View(bookToUpdate);
         }
 
         // GET: Books/Delete/5

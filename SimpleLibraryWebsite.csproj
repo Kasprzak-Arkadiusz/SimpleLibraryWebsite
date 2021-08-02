@@ -9,6 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\PC\.nuget\packages\nlog.schema\4.7.10\contentFiles\any\any\NLog.xsd" />
+    <Content Remove="NLog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\PC\.nuget\packages\nlog.config\4.7.10\contentFiles\any\any\NLog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="NLog.config" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Content Include="C:\Users\PC\.nuget\packages\nlog.config\4.7.10\contentFiles\any\any\NLog.config" />
+  </ItemGroup>-->
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.8" />
@@ -20,6 +37,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="NLog" Version="4.7.10" />
+    <PackageReference Include="NLog.Schema" Version="4.7.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\PC\.nuget\packages\nlog.config\4.7.10\contentFiles\any\any\NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
