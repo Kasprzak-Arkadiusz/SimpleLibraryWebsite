@@ -12,10 +12,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BookID)
+            @Html.DisplayNameFor(model => model.BookId)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BookID)
+            @Html.DisplayFor(model => model.BookId)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.LentFrom)
@@ -32,7 +32,7 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="LoanID" />
+        <input type="hidden" asp-for="LoanId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

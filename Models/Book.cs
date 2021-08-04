@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimpleLibraryWebsite.Models
 {
@@ -8,15 +7,21 @@ namespace SimpleLibraryWebsite.Models
     public class Book
     {
         [Key]
-        public int BookID { get; set; }
+        public int BookId { get; set; }
         [Display(Name = "Book author")]
+        [StringLength(60, MinimumLength = 1)]
+        [Required]
         public string Author { get; set; }
         [Display(Name = "Book title")]
+        [StringLength(120, MinimumLength = 1)]
+        [Required]
         public string Title { get; set; }
+        [Required]
         public Genres? Genre { get; set; }
         [Display(Name = "Date of adding")]
         [DataType(DataType.Date)]
         public DateTime AddingDate { get; set; }
+        [Display(Name = "Is book borrowed?")]
         public bool IsBorrowed { get; set; }
 
         public Book(string author, string title, Genres genre)

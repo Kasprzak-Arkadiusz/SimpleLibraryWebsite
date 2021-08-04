@@ -70,7 +70,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var reader = await _context.Readers
-                .FirstOrDefaultAsync(m => m.ReaderID == id);
+                .FirstOrDefaultAsync(m => m.ReaderId == id);
             if (reader == null)
             {
                 return NotFound();
@@ -140,7 +140,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var readerToUpdate = await _context.Readers.FirstOrDefaultAsync(r => r.ReaderID == id);
+            var readerToUpdate = await _context.Readers.FirstOrDefaultAsync(r => r.ReaderId == id);
 
             if (await TryUpdateModelAsync(
                 readerToUpdate,
@@ -173,7 +173,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var reader = await _context.Readers
-                .FirstOrDefaultAsync(m => m.ReaderID == id);
+                .FirstOrDefaultAsync(m => m.ReaderId == id);
             if (reader == null)
             {
                 return NotFound();

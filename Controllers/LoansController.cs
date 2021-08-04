@@ -63,8 +63,8 @@ namespace SimpleLibraryWebsite.Controllers
             if (isAnySearchFieldFilled)
             {
                 loanViewModel.Loans = loans
-                    .Where(l => readers.Any(read => read.ReaderID == l.ReaderID) &&
-                                books.Any(book => book.BookID == l.BookID)).ToList();
+                    .Where(l => readers.Any(read => read.ReaderId == l.ReaderId) &&
+                                books.Any(book => book.BookId == l.BookId)).ToList();
             }
             else
             {
@@ -100,7 +100,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             var loan = await _context.Loans
                 .Include(r => r.Reader).AsNoTracking()
-                .FirstOrDefaultAsync(m => m.LoanID == id);
+                .FirstOrDefaultAsync(m => m.LoanId == id);
             if (loan == null)
             {
                 return NotFound();
@@ -109,11 +109,36 @@ namespace SimpleLibraryWebsite.Controllers
             return View(loan);
         }
 
+        private void CreateBookIdList()
+        {
+            var bookIdList = (from b in _context.Books
+                select new SelectListItem()
+                {
+                    Text = b.BookId.ToString(),
+                    Value = b.BookId.ToString(),
+                }).ToList();
+
+            ViewBag.ListOfBookId = bookIdList;
+        }
+
+        private void CreateReaderIdList()
+        {
+            var readerIdList = (from r in _context.Readers
+                select new SelectListItem()
+                {
+                    Text = r.ReaderId.ToString(),
+                    Value = r.ReaderId.ToString(),
+                }).ToList();
+
+            ViewBag.ListOfReaderId = readerIdList;
+        }
+
         // GET: Loans/Create
         public IActionResult Create()
         {
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID");
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID");
+            CreateBookIdList();
+            CreateReaderIdList();
+
             return View();
         }
 
@@ -122,7 +147,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LoanID,BookID,ReaderID,LentFrom,LentTo")] Loan loan)
+        public async Task<IActionResult> Create([Bind("BookId,ReaderId,LentFrom,LentTo")] Loan loan)
         {
             try
             {
@@ -158,8 +183,10 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 return NotFound();
             }
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", loan.ReaderID);
-            ViewData["BookID"] = new SelectList(_context.Books, "BookID", "BookID", loan.BookID);
+
+            CreateReaderIdList();
+            CreateBookIdList();
+
             return View(loan);
         }
 
@@ -175,12 +202,12 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var loanToUpdate = await _context.Loans.FirstOrDefaultAsync(l => l.LoanID == id);
+            var loanToUpdate = await _context.Loans.FirstOrDefaultAsync(l => l.LoanId == id);
 
             if (await TryUpdateModelAsync(
                 loanToUpdate,
                 "",
-                l => l.ReaderID, l => l.BookID, l => l.LentTo))
+                l => l.ReaderId, l => l.BookId, l => l.LentTo))
             {
                 try
                 {
@@ -208,7 +235,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var loan = await _context.Loans
-                .FirstOrDefaultAsync(m => m.LoanID == id);
+                .FirstOrDefaultAsync(m => m.LoanId == id);
             if (loan == null)
             {
                 return NotFound();

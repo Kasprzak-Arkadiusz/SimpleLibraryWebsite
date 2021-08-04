@@ -13,8 +13,11 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ReaderID" class="control-label"></label>
-                <select asp-for="ReaderID" class ="form-control" asp-items="ViewBag.ReaderID"></select>
+                <label asp-for="ReaderId" class="control-label"></label>
+                <select asp-for="ReaderId"
+                        class="form-control"
+                        asp-items="@(new SelectList(ViewBag.ListOfReaderId,"Value", "Text"))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>

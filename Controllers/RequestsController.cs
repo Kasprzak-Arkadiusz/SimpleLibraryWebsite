@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -76,7 +75,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             var request = await _context.Requests
                 .Include(r => r.Reader).AsNoTracking()
-                .FirstOrDefaultAsync(m => m.RequestID == id);
+                .FirstOrDefaultAsync(m => m.RequestId == id);
             if (request == null)
             {
                 return NotFound();
@@ -85,10 +84,22 @@ namespace SimpleLibraryWebsite.Controllers
             return View(request);
         }
 
+        private void CreateReaderIdList()
+        {
+            var readerIdList = (from r in _context.Readers
+                                select new SelectListItem()
+                                {
+                                    Text = r.ReaderId.ToString(),
+                                    Value = r.ReaderId.ToString(),
+                                }).ToList();
+
+            ViewBag.ListOfReaderId = readerIdList;
+        }
+
         // GET: Requests/Create
         public IActionResult Create()
         {
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID");
+            CreateReaderIdList();
             return View();
         }
 
@@ -97,11 +108,12 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReaderID,Title,Author,Genre")] Request request)
+        public async Task<IActionResult> Create([Bind("ReaderId,Title,Author,Genre")] Request request)
         {
             try
             {
-                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderID)); //TODO Check if accessing DB is needed
+                CreateReaderIdList();
+                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderId)); //TODO Check if accessing DB is needed
                 _context.Add(request);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -130,7 +142,9 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 return NotFound();
             }
-            ViewData["ReaderID"] = new SelectList(_context.Readers, "ReaderID", "ReaderID", request.ReaderID);
+
+            CreateReaderIdList();
+
             return View(request);
         }
 
@@ -146,12 +160,12 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var requestToUpdate = await _context.Requests.FirstOrDefaultAsync(r => r.RequestID == id);
+            var requestToUpdate = await _context.Requests.FirstOrDefaultAsync(r => r.RequestId == id);
 
             if (await TryUpdateModelAsync(
                 requestToUpdate,
                 "",
-                r => r.Title, r => r.Author, r=> r.Genre, r => r.ReaderID, r => r.NumberOfUpvotes))
+                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId, r => r.NumberOfUpvotes))
             {
                 try
                 {
@@ -180,7 +194,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             var request = await _context.Requests
                 .Include(r => r.Reader)
-                .FirstOrDefaultAsync(m => m.RequestID == id);
+                .FirstOrDefaultAsync(m => m.RequestId == id);
             if (request == null)
             {
                 return NotFound();

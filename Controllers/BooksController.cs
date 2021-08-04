@@ -74,7 +74,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var book = await _context.Books.AsNoTracking()
-                .FirstOrDefaultAsync(m => m.BookID == id);
+                .FirstOrDefaultAsync(m => m.BookId == id);
             if (book == null)
             {
                 return NotFound();
@@ -146,7 +146,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var bookToUpdate = await _context.Books.FirstOrDefaultAsync(b => b.BookID == id);
+            var bookToUpdate = await _context.Books.FirstOrDefaultAsync(b => b.BookId == id);
 
             if (await TryUpdateModelAsync(
                 bookToUpdate,
@@ -179,7 +179,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookID == id);
+                .FirstOrDefaultAsync(m => m.BookId == id);
             if (book == null)
             {
                 return NotFound();

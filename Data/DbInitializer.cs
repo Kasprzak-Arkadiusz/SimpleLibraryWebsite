@@ -62,13 +62,13 @@ namespace SimpleLibraryWebsite.Data
                 context.Loans.Add(l);
             }
 
-            var Requests = new Request[]
+            var requests = new Request[]
             {
                 new Request(1, "For Whom the Bell Tolls", "Ernest Hemingway", Genres.Novel),
                 new Request(2, "The Hobbit, or There and Back Again", "J.R.R. Tolkien", Genres.Fantasy)
             };
 
-            foreach (Request r in Requests)
+            foreach (Request r in requests)
             {
                 context.Requests.Add(r);
             }

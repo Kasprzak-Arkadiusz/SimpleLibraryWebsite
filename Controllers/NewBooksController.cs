@@ -48,7 +48,7 @@ namespace SimpleLibraryWebsite.Controllers
             var culture = CultureInfo.CreateSpecificCulture("en-US");
 
             DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
-            TimeSpan.TryParse(TimeSpan.FromDays(14).ToString(), out TimeSpan borrowingTime);
+            TimeSpan.TryParse(TimeSpan.FromDays(21).ToString(), out TimeSpan borrowingTime);
 
             var newBooksList = newBooks.Where(b => b.AddingDate.Date >= today - borrowingTime).ToList();
 
@@ -83,7 +83,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookID == id);
+                .FirstOrDefaultAsync(m => m.BookId == id);
             if (book == null)
             {
                 return NotFound();
@@ -135,7 +135,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookID == id);
+                .FirstOrDefaultAsync(m => m.BookId == id);
             if (book == null)
             {
                 return NotFound();

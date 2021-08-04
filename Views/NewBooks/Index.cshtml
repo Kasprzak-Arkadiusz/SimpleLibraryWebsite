@@ -8,7 +8,7 @@
 
 <p>Here you can view the newly added books.</p>
 
-<form asp-controller="Books" asp-action="Index" method="get">
+<form asp-controller="NewBooks" asp-action="Index" method="get">
     <p>
         Genre:
         <select asp-for="BookGenre" asp-items="Model.Genres">
@@ -73,7 +73,7 @@
                 @Html.DisplayFor(modelItem => item.IsBorrowed)
             </td>
              <td>
-                <a asp-action="Details" asp-route-id="@item.BookID">Details</a>
+                <a asp-action="Details" asp-route-id="@item.BookId">Details</a>
              </td>
     </tr>
 }
