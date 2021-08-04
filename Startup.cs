@@ -34,9 +34,6 @@ namespace SimpleLibraryWebsite
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
             var builder = services.AddControllersWithViews();
 
             if (Env.IsDevelopment())
