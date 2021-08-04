@@ -160,7 +160,7 @@ namespace SimpleLibraryWebsite.Controllers
                 }
                 catch (DbUpdateException ex)
                 {
-                    _logger.Error(ex.Message);
+                    _logger.Error(ex);
                     ModelState.AddModelError("", "Unable to save changes. " +
                                                  "Try again, and if the problem persists " +
                                                  "see your system administrator.");

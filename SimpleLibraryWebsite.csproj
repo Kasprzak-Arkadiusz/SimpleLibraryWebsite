@@ -10,15 +10,10 @@
 
   <ItemGroup>
     <Content Remove="C:\Users\PC\.nuget\packages\nlog.schema\4.7.10\contentFiles\any\any\NLog.xsd" />
-    <Content Remove="NLog.config" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="C:\Users\PC\.nuget\packages\nlog.config\4.7.10\contentFiles\any\any\NLog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="NLog.config" />
   </ItemGroup>
 
   <!--<ItemGroup>
