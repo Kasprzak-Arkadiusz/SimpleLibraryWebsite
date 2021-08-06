@@ -11,3 +11,20 @@
 
 <h2>Manage your account</h2>
 
+<div>
+    <h4>Change your account settings</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Should I ignore this if everything works fine?-->
+            <partial name="_ManageNav"/>
+        </div>
+        <div class="col-md-9">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

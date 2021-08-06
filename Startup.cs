@@ -34,6 +34,8 @@ namespace SimpleLibraryWebsite
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddScoped<ApplicationDbContext>();
+
             var builder = services.AddControllersWithViews();
 
             if (Env.IsDevelopment())
