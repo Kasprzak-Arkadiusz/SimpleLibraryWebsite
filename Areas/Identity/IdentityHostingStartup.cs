@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Data;
+using SimpleLibraryWebsite.Models;
 
 [assembly: HostingStartup(typeof(SimpleLibraryWebsite.Areas.Identity.IdentityHostingStartup))]
 namespace SimpleLibraryWebsite.Areas.Identity
@@ -17,10 +18,10 @@ namespace SimpleLibraryWebsite.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("DefaultConnection")));
 
-                services
-                    .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+                services.AddIdentity<Reader, IdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
 
                 services.AddScoped<ApplicationDbContext>();
             });

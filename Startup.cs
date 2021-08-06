@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite
 {
@@ -32,9 +33,9 @@ namespace SimpleLibraryWebsite
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddScoped<ApplicationDbContext>();
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             var builder = services.AddControllersWithViews();
 

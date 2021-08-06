@@ -2,12 +2,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 
 namespace SimpleLibraryWebsite.Models
 {
-    public class Reader
+    public class Reader : IdentityUser
     {
         [Key]
         public int ReaderId { get; set; }

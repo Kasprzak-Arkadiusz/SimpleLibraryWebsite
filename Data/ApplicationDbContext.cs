@@ -5,7 +5,7 @@ using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<Reader>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
