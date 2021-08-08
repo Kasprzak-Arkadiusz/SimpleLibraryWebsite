@@ -33,21 +33,26 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+            [Display(Name = "Username")]
+            public string Username { get; set; }
         }
 
         private async Task LoadAsync(Reader user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
+            var firstName = user.Name;
+            var lastName = user.Surname;
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                Username = userName,
+                FirstName = firstName,
+                LastName = lastName
             };
         }
 
@@ -77,15 +82,17 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            var firstName = user.Name;
+            var lastName = user.Surname;
+            if (Input.FirstName != firstName)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
+                user.Name = Input.FirstName;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.LastName != lastName)
+            {
+                user.Surname = Input.LastName;
+                await _userManager.UpdateAsync(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);
