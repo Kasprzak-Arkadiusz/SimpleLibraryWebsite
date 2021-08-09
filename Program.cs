@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Data;
+using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
@@ -23,6 +22,10 @@ namespace SimpleLibraryWebsite
                 try
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
+                    var userManager = services.GetRequiredService<UserManager<Reader>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    await DbInitializer.SeedRolesAsync(userManager, roleManager);
+                    await DbInitializer.SeedAdminAsync(userManager, roleManager);
                     DbInitializer.Initialize(context);
                 }
                 catch (Exception ex)
@@ -31,7 +34,7 @@ namespace SimpleLibraryWebsite
                     logger.LogError(ex, "An error occurred creating the DB.");
                 }
             }
-            host.Run();
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

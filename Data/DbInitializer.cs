@@ -1,14 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite.Data
 {
     public static class DbInitializer
     {
+        public static async Task SeedRolesAsync(UserManager<Reader> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
+            await roleManager.CreateAsync(new IdentityRole(Roles.Librarian.ToString()));
+            await roleManager.CreateAsync(new IdentityRole(Roles.Reader.ToString()));
+        }
+
+        public static async Task SeedAdminAsync(UserManager<Reader> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            var defaultUser = new Reader()
+            {
+                UserName = "superadmin",
+                Email = "superadmin@gmail.com",
+                Name = "James",
+                Surname = "Smith",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+            if (userManager.Users.All(u => u.Id != defaultUser.Id))
+            {
+                var user = await userManager.FindByEmailAsync(defaultUser.Email);
+                if (user is null)
+                {
+                    await userManager.CreateAsync(defaultUser, "123Pa$$word.");
+                    await userManager.AddToRoleAsync(defaultUser, Roles.Admin.ToString());
+                }
+            }
+        }
         public static void Initialize(ApplicationDbContext context)
         {
             if (context.Books.Any())
