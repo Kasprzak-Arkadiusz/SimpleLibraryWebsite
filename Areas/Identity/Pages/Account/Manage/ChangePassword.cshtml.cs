@@ -13,13 +13,13 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
 {
     public class ChangePasswordModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
-        private readonly SignInManager<Reader> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly ILogger<ChangePasswordModel> _logger;
 
         public ChangePasswordModel(
-            UserManager<Reader> userManager,
-            SignInManager<Reader> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             ILogger<ChangePasswordModel> logger)
         {
             _userManager = userManager;

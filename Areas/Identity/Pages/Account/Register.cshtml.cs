@@ -21,14 +21,14 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<Reader> _signInManager;
-        private readonly UserManager<Reader> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<Reader> userManager,
-            SignInManager<Reader> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -89,7 +89,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 MailAddress address = new MailAddress(Input.Email);
-                var user = new Reader()
+                var user = new User()
                 {
                     UserName = Input.UserName,
                     Email = Input.Email,

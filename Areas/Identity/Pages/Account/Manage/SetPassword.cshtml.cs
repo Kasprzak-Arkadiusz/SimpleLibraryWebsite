@@ -12,12 +12,12 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
 {
     public class SetPasswordModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
-        private readonly SignInManager<Reader> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
         public SetPasswordModel(
-            UserManager<Reader> userManager,
-            SignInManager<Reader> signInManager)
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

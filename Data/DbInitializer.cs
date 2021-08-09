@@ -8,16 +8,16 @@ namespace SimpleLibraryWebsite.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedRolesAsync(UserManager<Reader> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedRolesAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
             await roleManager.CreateAsync(new IdentityRole(Roles.Librarian.ToString()));
             await roleManager.CreateAsync(new IdentityRole(Roles.Reader.ToString()));
         }
 
-        public static async Task SeedAdminAsync(UserManager<Reader> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAdminAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
-            var defaultUser = new Reader()
+            var defaultUser = new User()
             {
                 UserName = "superadmin",
                 Email = "superadmin@gmail.com",
@@ -61,15 +61,15 @@ namespace SimpleLibraryWebsite.Data
                 context.Books.Add(b);
             }
 
-            var readers = new Reader[]
+            var readers = new User[]
             {
-                new Reader("John", "Smith"),
-                new Reader("Jimmy", "Johnson"),
-                new Reader("Emily", "Richardson"),
-                new Reader("Elisabeth", "Lee")
+                new User("John", "Smith"),
+                new User("Jimmy", "Johnson"),
+                new User("Emily", "Richardson"),
+                new User("Elisabeth", "Lee")
             };
 
-            foreach (Reader r in readers)
+            foreach (User r in readers)
             {
                 context.Readers.Add(r);
             }

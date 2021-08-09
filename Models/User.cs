@@ -8,7 +8,7 @@ using SimpleLibraryWebsite.Data;
 
 namespace SimpleLibraryWebsite.Models
 {
-    public class Reader : IdentityUser
+    public class User : IdentityUser
     {
         [Key]
         public int ReaderId { get; set; }
@@ -21,13 +21,13 @@ namespace SimpleLibraryWebsite.Models
         [Required]
         public string Surname { get; set; }
 
-        public Reader(string name, string surname)
+        public User(string name, string surname)
         {
             Name = name;
             Surname = surname;
         }
 
-        public Reader() { }
+        public User() { }
 
         public async Task<ICollection<Loan>> GetLoans(ApplicationDbContext context)
         {

@@ -17,7 +17,7 @@ namespace SimpleLibraryWebsite.Models
         public DateTime LentTo { get; set; }
 
         public Book Book { get; set; }
-        public Reader Reader { get; set; }
+        public User Reader { get; set; }
 
         public Loan(int bookId, int readerId, DateTime lentFrom)
         {

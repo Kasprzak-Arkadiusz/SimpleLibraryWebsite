@@ -13,10 +13,10 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IEmailSender _sender;
 
-        public RegisterConfirmationModel(UserManager<Reader> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<User> userManager, IEmailSender sender)
         {
             _userManager = userManager;
             _sender = sender;

@@ -22,7 +22,7 @@ namespace SimpleLibraryWebsite
                 try
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
-                    var userManager = services.GetRequiredService<UserManager<Reader>>();
+                    var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     await DbInitializer.SeedRolesAsync(userManager, roleManager);
                     await DbInitializer.SeedAdminAsync(userManager, roleManager);

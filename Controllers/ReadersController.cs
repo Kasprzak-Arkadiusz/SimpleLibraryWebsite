@@ -42,7 +42,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (!readers.Any())
             {
-                return View(new ReaderViewModel { PaginatedList = new PaginatedList<Reader>() });
+                return View(new ReaderViewModel { PaginatedList = new PaginatedList<User>() });
             }
 
             ReaderViewModel readerViewModel = new ReaderViewModel();
@@ -57,7 +57,7 @@ namespace SimpleLibraryWebsite.Controllers
             readerViewModel.Readers = await results.ToListAsync();
 
             const int pageSize = 1;
-            readerViewModel.PaginatedList = PaginatedList<Reader>.Create(readerViewModel.Readers, pageNumber ?? 1, pageSize);
+            readerViewModel.PaginatedList = PaginatedList<User>.Create(readerViewModel.Readers, pageNumber ?? 1, pageSize);
             return View(readerViewModel);
         }
 
@@ -90,7 +90,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Surname")] Reader reader)
+        public async Task<IActionResult> Create([Bind("Name,Surname")] User reader)
         {
             try
             {

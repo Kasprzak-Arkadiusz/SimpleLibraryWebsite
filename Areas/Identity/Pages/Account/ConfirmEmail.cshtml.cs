@@ -15,9 +15,9 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ConfirmEmailModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public ConfirmEmailModel(UserManager<Reader> userManager)
+        public ConfirmEmailModel(UserManager<User> userManager)
         {
             _userManager = userManager;
         }

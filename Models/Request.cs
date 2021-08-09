@@ -21,7 +21,7 @@ namespace SimpleLibraryWebsite.Models
         [Range(0, int.MaxValue)]
         public int NumberOfUpvotes { get; set; }
 
-        public Reader Reader { get; set; }
+        public User Reader { get; set; }
 
         public Request(int readerId, string title, string author, Genres genre)
         {
@@ -33,7 +33,7 @@ namespace SimpleLibraryWebsite.Models
         }
         public Request() { }
 
-        public void FillMissingProperties(Reader reader)
+        public void FillMissingProperties(User reader)
         {
             Reader = reader;
             NumberOfUpvotes = 0;

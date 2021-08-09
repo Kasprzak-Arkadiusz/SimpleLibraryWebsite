@@ -16,9 +16,9 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ResetPasswordModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public ResetPasswordModel(UserManager<Reader> userManager)
+        public ResetPasswordModel(UserManager<User> userManager)
         {
             _userManager = userManager;
         }

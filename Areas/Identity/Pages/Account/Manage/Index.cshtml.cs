@@ -12,12 +12,12 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
-        private readonly SignInManager<Reader> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
         public IndexModel(
-            UserManager<Reader> userManager,
-            SignInManager<Reader> signInManager)
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -41,7 +41,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
             public string Username { get; set; }
         }
 
-        private async Task LoadAsync(Reader user)
+        private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var firstName = user.Name;

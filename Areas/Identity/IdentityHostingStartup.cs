@@ -18,7 +18,7 @@ namespace SimpleLibraryWebsite.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("DefaultConnection")));
 
-                services.AddIdentity<Reader, IdentityRole>()
+                services.AddIdentity<User, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultUI()
                     .AddDefaultTokenProviders();

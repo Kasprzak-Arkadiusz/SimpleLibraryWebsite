@@ -19,13 +19,13 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<Reader> _userManager;
-        private readonly SignInManager<Reader> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<Reader> signInManager,
+        public LoginModel(SignInManager<User> signInManager,
             ILogger<LoginModel> logger,
-            UserManager<Reader> userManager)
+            UserManager<User> userManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

@@ -12,13 +12,13 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
 {
     public class ResetAuthenticatorModel : PageModel
     {
-        UserManager<Reader> _userManager;
-        private readonly SignInManager<Reader> _signInManager;
+        UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         ILogger<ResetAuthenticatorModel> _logger;
 
         public ResetAuthenticatorModel(
-            UserManager<Reader> userManager,
-            SignInManager<Reader> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             ILogger<ResetAuthenticatorModel> logger)
         {
             _userManager = userManager;
