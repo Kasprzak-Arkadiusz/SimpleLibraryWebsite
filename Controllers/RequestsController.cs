@@ -90,7 +90,7 @@ namespace SimpleLibraryWebsite.Controllers
                                 select new SelectListItem()
                                 {
                                     Text = r.ReaderId.ToString(),
-                                    Value = r.ReaderId.ToString(),
+                                    Value = r.ReaderId.ToString()
                                 }).ToList();
 
             ViewBag.ListOfReaderId = readerIdList;
@@ -113,7 +113,7 @@ namespace SimpleLibraryWebsite.Controllers
             try
             {
                 CreateReaderIdList();
-                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderId)); //TODO Check if accessing DB is needed
+                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderId));
                 _context.Add(request);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

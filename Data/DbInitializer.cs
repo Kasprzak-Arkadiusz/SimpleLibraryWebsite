@@ -2,27 +2,28 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedRolesAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
             await roleManager.CreateAsync(new IdentityRole(Roles.Librarian.ToString()));
             await roleManager.CreateAsync(new IdentityRole(Roles.Reader.ToString()));
         }
 
-        public static async Task SeedAdminAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAdminAsync(UserManager<User> userManager)
         {
             var defaultUser = new User()
             {
                 UserName = "superadmin",
                 Email = "superadmin@gmail.com",
-                Name = "James",
-                Surname = "Smith",
+                FirstName = "James",
+                LastName = "Smith",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true
             };
@@ -36,7 +37,7 @@ namespace SimpleLibraryWebsite.Data
                 }
             }
         }
-        public static void Initialize(ApplicationDbContext context)
+        public static void Initialize(UserManager<User> userManager, ApplicationDbContext context)
         {
             if (context.Books.Any())
             {
@@ -61,27 +62,46 @@ namespace SimpleLibraryWebsite.Data
                 context.Books.Add(b);
             }
 
-            var readers = new User[]
+            var readers = new Reader[]
             {
-                new User("John", "Smith"),
-                new User("Jimmy", "Johnson"),
-                new User("Emily", "Richardson"),
-                new User("Elisabeth", "Lee")
+                new Reader("John", "Smith"),
+                new Reader("Jimmy", "Johnson"),
+                new Reader("Emily", "Richardson"),
+                new Reader("Elisabeth", "Lee")
             };
 
-            foreach (User r in readers)
+            User[] users = new User[readers.Length];
+
+            foreach (Reader r in readers)
             {
                 context.Readers.Add(r);
             }
 
             context.SaveChanges();
 
+            for (int i = 0; i < users.Length; i++)
+            {
+                users[i] = new User
+                {
+                    UserName = "user" + i,
+                    Email = "me" + i + "@gmail.com",
+                    FirstName = "name" + i,
+                    LastName = "surname" + i,
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    Id = readers[i].ReaderId.ToString()
+                };
+                userManager.CreateAsync(users[i], "123Pa$$word.").Wait();
+                userManager.AddToRoleAsync(users[i], Roles.Reader.ToString()).Wait();
+            }
+
+
             var loans = new Loan[]
             {
-                new Loan(1, 1,  DateTime.Now),
-                new Loan(4, 1, DateTime.Parse("01/02/2021")),
-                new Loan(6, 3, DateTime.Parse("15/04/2021")),
-                new Loan(7, 3, DateTime.Parse("16/05/2021")),
+                new Loan(1, readers[0].ReaderId,  DateTime.Now),
+                new Loan(4, readers[1].ReaderId, DateTime.Parse("01/02/2021")),
+                new Loan(6, readers[3].ReaderId, DateTime.Parse("15/04/2021")),
+                new Loan(7, readers[3].ReaderId, DateTime.Parse("16/05/2021")),
             };
 
             foreach (Loan l in loans)
@@ -91,8 +111,8 @@ namespace SimpleLibraryWebsite.Data
 
             var requests = new Request[]
             {
-                new Request(1, "For Whom the Bell Tolls", "Ernest Hemingway", Genres.Novel),
-                new Request(2, "The Hobbit, or There and Back Again", "J.R.R. Tolkien", Genres.Fantasy)
+                new Request(readers[1].ReaderId, "For Whom the Bell Tolls", "Ernest Hemingway", Genres.Novel),
+                new Request(readers[2].ReaderId, "The Hobbit, or There and Back Again", "J.R.R. Tolkien", Genres.Fantasy)
             };
 
             foreach (Request r in requests)
@@ -101,6 +121,29 @@ namespace SimpleLibraryWebsite.Data
             }
 
             context.SaveChanges();
+        }
+
+        public static async Task CreateUsers(UserManager<User> userManager, ApplicationDbContext context)
+        {
+            var readers = await context.Readers.ToArrayAsync();
+
+            User[] users = new User[readers.Length];
+
+            for (int i = 0; i < users.Length; i++)
+            {
+                users[i] = new User
+                {
+                    UserName = "user" + i,
+                    Email = "me" + i + "@gmail.com",
+                    FirstName = "name" + i,
+                    LastName = "surname" + i,
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    Id = readers[i].id
+                };
+                await userManager.CreateAsync(users[i], "123Pa$$word.");
+                userManager.AddToRoleAsync(users[i], Roles.Reader.ToString()).Wait();
+            }
         }
     }
 }

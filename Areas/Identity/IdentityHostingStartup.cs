@@ -22,8 +22,6 @@ namespace SimpleLibraryWebsite.Areas.Identity
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultUI()
                     .AddDefaultTokenProviders();
-
-                services.AddScoped<ApplicationDbContext>();
             });
         }
     }

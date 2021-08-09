@@ -44,8 +44,8 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
         private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            var firstName = user.Name;
-            var lastName = user.Surname;
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
             Username = userName;
 
             Input = new InputModel
@@ -82,16 +82,16 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var firstName = user.Name;
-            var lastName = user.Surname;
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
             if (Input.FirstName != firstName)
             {
-                user.Name = Input.FirstName;
+                user.FirstName = Input.FirstName;
                 await _userManager.UpdateAsync(user);
             }
             if (Input.LastName != lastName)
             {
-                user.Surname = Input.LastName;
+                user.LastName = Input.LastName;
                 await _userManager.UpdateAsync(user);
             }
 

@@ -9,18 +9,18 @@ namespace SimpleLibraryWebsite.Models
         [Key]
         public int BookId { get; set; }
         [Display(Name = "Book author")]
-        [StringLength(60, MinimumLength = 1)]
-        [Required]
+        /*[StringLength(60, MinimumLength = 1)]
+        [Required]*/
         public string Author { get; set; }
         [Display(Name = "Book title")]
-        [StringLength(120, MinimumLength = 1)]
-        [Required]
+        /*[StringLength(120, MinimumLength = 1)]
+        [Required]*/
         public string Title { get; set; }
         [Required]
         public Genres? Genre { get; set; }
         [Display(Name = "Date of adding")]
-        [DataType(DataType.Date)]
-        public DateTime AddingDate { get; set; }
+        /*[DataType(DataType.Date)]*/
+        public DateTime DateOfAdding { get; set; }
         [Display(Name = "Is book borrowed?")]
         public bool IsBorrowed { get; set; }
 
@@ -29,7 +29,7 @@ namespace SimpleLibraryWebsite.Models
             Author = author;
             Title = title;
             Genre = genre;
-            AddingDate = DateTime.Now;
+            DateOfAdding = DateTime.Now;
             IsBorrowed = false;
         }
 
@@ -39,7 +39,7 @@ namespace SimpleLibraryWebsite.Models
 
         public void FillMissingProperties()
         {
-            AddingDate = DateTime.Now;
+            DateOfAdding = DateTime.Now;
             IsBorrowed = false;
         }
     }

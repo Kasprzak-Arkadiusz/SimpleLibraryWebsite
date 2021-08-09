@@ -50,7 +50,7 @@ namespace SimpleLibraryWebsite.Controllers
             DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
             TimeSpan.TryParse(TimeSpan.FromDays(21).ToString(), out TimeSpan borrowingTime);
 
-            var newBooksList = newBooks.Where(b => b.AddingDate.Date >= today - borrowingTime).ToList();
+            var newBooksList = newBooks.Where(b => b.DateOfAdding.Date >= today - borrowingTime).ToList();
 
             var results = sortOrder switch
             {

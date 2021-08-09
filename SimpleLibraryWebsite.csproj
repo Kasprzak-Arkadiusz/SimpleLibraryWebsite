@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\ModelConfiguration\UserConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="C:\Users\PC\.nuget\packages\nlog.schema\4.7.10\contentFiles\any\any\NLog.xsd" />
   </ItemGroup>
 

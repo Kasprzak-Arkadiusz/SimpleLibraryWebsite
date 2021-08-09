@@ -10,8 +10,8 @@ using SimpleLibraryWebsite.Data;
 namespace SimpleLibraryWebsite.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210806080233_ChangedIdentityUser")]
-    partial class ChangedIdentityUser
+    [Migration("20210809171417_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -82,10 +82,16 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -97,10 +103,12 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -118,11 +126,22 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
                     b.ToTable("User");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -212,19 +231,21 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("AddingDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Author")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
+                    b.Property<DateTime>("DateOfAdding")
+                        .HasColumnType("date")
+                        .HasColumnName("Date of adding");
+
                     b.Property<int>("Genre")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsBorrowed")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("Is borrowed?");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -247,103 +268,51 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("LentFrom")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date")
+                        .HasColumnName("Date of adding");
 
                     b.Property<DateTime>("LentTo")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date")
+                        .HasColumnName("Lent to");
 
-                    b.Property<int>("ReaderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReaderId1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("ReaderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LoanId");
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("ReaderId1");
+                    b.HasIndex("ReaderId");
 
                     b.ToTable("Loans");
                 });
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Reader", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<Guid>("ReaderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                    b.HasKey("ReaderId");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ReaderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
+                    b.HasIndex("id")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasFilter("[id] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("Readers");
                 });
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Request", b =>
@@ -361,15 +330,14 @@ namespace SimpleLibraryWebsite.Migrations
                     b.Property<int>("Genre")
                         .HasColumnType("int");
 
-                    b.Property<int>("NumberOfUpvotes")
-                        .HasColumnType("int");
+                    b.Property<long>("NumberOfUpvotes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(1L)
+                        .HasColumnName("Number of upvotes");
 
-                    b.Property<int>("ReaderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReaderId1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("ReaderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -378,9 +346,22 @@ namespace SimpleLibraryWebsite.Migrations
 
                     b.HasKey("RequestId");
 
-                    b.HasIndex("ReaderId1");
+                    b.HasIndex("ReaderId");
 
                     b.ToTable("Requests");
+                });
+
+            modelBuilder.Entity("SimpleLibraryWebsite.Models.User", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -394,7 +375,7 @@ namespace SimpleLibraryWebsite.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("SimpleLibraryWebsite.Models.Reader", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -403,7 +384,7 @@ namespace SimpleLibraryWebsite.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("SimpleLibraryWebsite.Models.Reader", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -418,7 +399,7 @@ namespace SimpleLibraryWebsite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SimpleLibraryWebsite.Models.Reader", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -427,7 +408,7 @@ namespace SimpleLibraryWebsite.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("SimpleLibraryWebsite.Models.Reader", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -443,8 +424,8 @@ namespace SimpleLibraryWebsite.Migrations
                         .IsRequired();
 
                     b.HasOne("SimpleLibraryWebsite.Models.Reader", "Reader")
-                        .WithMany()
-                        .HasForeignKey("ReaderId1")
+                        .WithMany("Loans")
+                        .HasForeignKey("ReaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -453,14 +434,35 @@ namespace SimpleLibraryWebsite.Migrations
                     b.Navigation("Reader");
                 });
 
+            modelBuilder.Entity("SimpleLibraryWebsite.Models.Reader", b =>
+                {
+                    b.HasOne("SimpleLibraryWebsite.Models.User", "User")
+                        .WithOne("Reader")
+                        .HasForeignKey("SimpleLibraryWebsite.Models.Reader", "id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Request", b =>
                 {
                     b.HasOne("SimpleLibraryWebsite.Models.Reader", "Reader")
-                        .WithMany()
-                        .HasForeignKey("ReaderId1")
+                        .WithMany("Requests")
+                        .HasForeignKey("ReaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Reader");
+                });
+
+            modelBuilder.Entity("SimpleLibraryWebsite.Models.Reader", b =>
+                {
+                    b.Navigation("Loans");
+
+                    b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("SimpleLibraryWebsite.Models.User", b =>
+                {
                     b.Navigation("Reader");
                 });
 #pragma warning restore 612, 618

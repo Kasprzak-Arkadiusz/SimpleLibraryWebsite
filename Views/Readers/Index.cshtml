@@ -24,8 +24,8 @@
         <div class="row">
             <div class="form-group">
                 <div class="col-md-8">
-                    <b>Reader surname:</b>
-                    <input type="text" asp-for="ReaderSurname" value="@ViewData["CurrentSurnameFilter"]"/>
+                    <b>Reader LastName:</b>
+                    <input type="text" asp-for="ReaderLastName" value="@ViewData["CurrentLastNameFilter"]"/>
                 </div>
             </div>
         </div>
@@ -43,15 +43,15 @@
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderNameSortParam"]"
                    asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
-                   asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]">
-                    @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Name)
+                   asp-route-currentLastNameFilter="@ViewData["CurrentLastNameFilter"]">
+                    @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().FirstName)
                 </a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderSurnameSortParam"]"
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ReaderLastNameSortParam"]"
                    asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
-                   asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"> 
-                    @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Surname)
+                   asp-route-currentLastNameFilter="@ViewData["CurrentLastNameFilter"]"> 
+                    @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().LastName)
                 </a>
             </th>
             <th></th>
@@ -61,10 +61,10 @@
 @foreach (var item in Model.PaginatedList) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Surname)
+                @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ReaderId">Edit</a> |
@@ -85,7 +85,7 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PaginatedList.PageIndex - 1)"
    asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
-   asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+   asp-route-currentLastNameFilter="@ViewData["CurrentLastNameFilter"]"
    class="btn btn-primary @prevDisabled">
     Previous
 </a>
@@ -93,7 +93,7 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PaginatedList.PageIndex + 1)"
    asp-route-currentNameFilter="@ViewData["CurrentNameFilter"]"
-   asp-route-currentSurnameFilter="@ViewData["CurrentSurnameFilter"]"
+   asp-route-currentLastNameFilter="@ViewData["CurrentLastNameFilter"]"
    class="btn btn-primary @nextDisabled">
     Next
 </a>

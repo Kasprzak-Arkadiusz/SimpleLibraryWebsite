@@ -53,7 +53,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Last Name")]
-            public string Surname { get; set; }
+            public string LastName { get; set; }
 
             [Required]
             [Display(Name = "User Name")]
@@ -93,8 +93,8 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                 {
                     UserName = Input.UserName,
                     Email = Input.Email,
-                    Name = Input.FirstName,
-                    Surname = Input.Surname
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

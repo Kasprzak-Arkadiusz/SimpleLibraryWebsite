@@ -19,30 +19,30 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string bookTitle, string sortOrder,
-                                                string currentNameFilter, string currentSurnameFilter, string currentTitleFilter, int? pageNumber)
+        public async Task<IActionResult> Index(string readerName, string readerLastName, string bookTitle, string sortOrder,
+                                                string currentNameFilter, string currentLastNameFilter, string currentTitleFilter, int? pageNumber)
         {
             ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["ReaderNameSortParam"] = sortOrder == "ReaderName" ? "readerName_desc" : "ReaderName";
-            ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
+            ViewData["ReaderLastNameSortParam"] = sortOrder == "ReaderLastName" ? "readerLastName_desc" : "ReaderLastName";
             ViewData["LentToSortParam"] = sortOrder == "LentTo" ? "lentTo_desc" : "LentTo";
             ViewData["CurrentSort"] = sortOrder;
 
             ViewData["CurrentNameFilter"] = SaveFilterValue(ref readerName, currentNameFilter, ref pageNumber);
-            ViewData["CurrentSurnameFilter"] = SaveFilterValue(ref readerSurname, currentSurnameFilter, ref pageNumber);
+            ViewData["CurrentLastNameFilter"] = SaveFilterValue(ref readerLastName, currentLastNameFilter, ref pageNumber);
             ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
 
             var readers = from r in _context.Readers select r;
             bool isAnySearchFieldFilled = false;
             if (!string.IsNullOrWhiteSpace(readerName))
             {
-                readers = from r in readers where r.Name == readerName select r;
+                readers = from r in readers where r.FirstName == readerName select r;
                 isAnySearchFieldFilled = true;
             }
 
-            if (!string.IsNullOrWhiteSpace(readerSurname))
+            if (!string.IsNullOrWhiteSpace(readerLastName))
             {
-                readers = from r in readers where r.Surname == readerSurname select r;
+                readers = from r in readers where r.LastName == readerLastName select r;
                 isAnySearchFieldFilled = true;
             }
 
@@ -74,10 +74,10 @@ namespace SimpleLibraryWebsite.Controllers
             var results = sortOrder switch
             {
                 "title_desc" => loanViewModel.Loans.OrderByDescending(l => l.Book.Title),
-                "ReaderName" => loanViewModel.Loans.OrderBy(l => l.Reader.Name),
-                "readerName_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Name),
-                "ReaderSurname" => loanViewModel.Loans.OrderBy(l => l.Reader.Surname),
-                "readerSurname_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.Surname),
+                "ReaderName" => loanViewModel.Loans.OrderBy(l => l.Reader.FirstName),
+                "readerName_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.FirstName),
+                "ReaderLastName" => loanViewModel.Loans.OrderBy(l => l.Reader.LastName),
+                "readerLastName_desc" => loanViewModel.Loans.OrderByDescending(l => l.Reader.LastName),
                 "LentTo" => loanViewModel.Loans.OrderBy(l => l.LentTo),
                 "lentTo_desc" => loanViewModel.Loans.OrderByDescending(l => l.LentTo),
                 _ => loanViewModel.Loans.OrderBy(l => l.Book.Title)

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,56 +20,51 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers
-        public async Task<IActionResult> Index(string readerName, string readerSurname, string sortOrder,
-                                                string currentNameFilter, string currentSurnameFilter, int? pageNumber)
+        public async Task<IActionResult> Index(string readerName, string readerLastName, string sortOrder,
+                                                string currentNameFilter, string currentLastNameFilter, int? pageNumber)
         {
             ViewData["ReaderNameSortParam"] = string.IsNullOrEmpty(sortOrder) ? "readerName_desc" : "";
-            ViewData["ReaderSurnameSortParam"] = sortOrder == "ReaderSurname" ? "readerSurname_desc" : "ReaderSurname";
+            ViewData["ReaderLastNameSortParam"] = sortOrder == "ReaderLastName" ? "readerLastName_desc" : "ReaderLastName";
             ViewData["CurrentSort"] = sortOrder;
 
             ViewData["CurrentNameFilter"] = SaveFilterValue(ref readerName, currentNameFilter, ref pageNumber);
-            ViewData["CurrentSurnameFilter"] = SaveFilterValue(ref readerSurname, currentSurnameFilter, ref pageNumber);
+            ViewData["CurrentLastNameFilter"] = SaveFilterValue(ref readerLastName, currentLastNameFilter, ref pageNumber);
 
             var readers = from r in _context.Readers select r;
             if (!string.IsNullOrWhiteSpace(readerName))
             {
-                readers = from r in readers where r.Name == readerName select r;
+                readers = from r in readers where r.FirstName == readerName select r;
             }
 
-            if (!string.IsNullOrWhiteSpace(readerSurname))
+            if (!string.IsNullOrWhiteSpace(readerLastName))
             {
-                readers = from r in readers where r.Surname == readerSurname select r;
+                readers = from r in readers where r.LastName == readerLastName select r;
             }
 
             if (!readers.Any())
             {
-                return View(new ReaderViewModel { PaginatedList = new PaginatedList<User>() });
+                return View(new ReaderViewModel { PaginatedList = new PaginatedList<Reader>() });
             }
 
             ReaderViewModel readerViewModel = new ReaderViewModel();
             var results = sortOrder switch
             {
-                "readerName_desc" => readers.OrderByDescending(r => r.Name),
-                "ReaderSurname" => readers.OrderBy(r => r.Surname),
-                "readerSurname_desc" => readers.OrderByDescending(r => r.Surname),
-                _ => readers.OrderBy(r => r.Name)
+                "readerName_desc" => readers.OrderByDescending(r => r.FirstName),
+                "ReaderLastName" => readers.OrderBy(r => r.LastName),
+                "readerLastName_desc" => readers.OrderByDescending(r => r.LastName),
+                _ => readers.OrderBy(r => r.FirstName)
             };
 
             readerViewModel.Readers = await results.ToListAsync();
 
             const int pageSize = 1;
-            readerViewModel.PaginatedList = PaginatedList<User>.Create(readerViewModel.Readers, pageNumber ?? 1, pageSize);
+            readerViewModel.PaginatedList = PaginatedList<Reader>.Create(readerViewModel.Readers, pageNumber ?? 1, pageSize);
             return View(readerViewModel);
         }
 
         // GET: Readers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var reader = await _context.Readers
                 .FirstOrDefaultAsync(m => m.ReaderId == id);
             if (reader == null)
@@ -90,7 +86,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Surname")] User reader)
+        public async Task<IActionResult> Create([Bind("Name,LastName")] Reader reader)
         {
             try
             {
@@ -133,19 +129,14 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> EditPost(Guid id)
         {
-            if (id is null)
-            {
-                return NotFound();
-            }
-
             var readerToUpdate = await _context.Readers.FirstOrDefaultAsync(r => r.ReaderId == id);
 
             if (await TryUpdateModelAsync(
                 readerToUpdate,
                 "",
-                r => r.Name, r => r.Surname))
+                r => r.FirstName, r => r.LastName))
             {
                 try
                 {
@@ -165,13 +156,8 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var reader = await _context.Readers
                 .FirstOrDefaultAsync(m => m.ReaderId == id);
             if (reader == null)

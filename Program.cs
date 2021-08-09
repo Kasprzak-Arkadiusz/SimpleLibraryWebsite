@@ -24,9 +24,10 @@ namespace SimpleLibraryWebsite
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    await DbInitializer.SeedRolesAsync(userManager, roleManager);
-                    await DbInitializer.SeedAdminAsync(userManager, roleManager);
-                    DbInitializer.Initialize(context);
+                    await DbInitializer.SeedRolesAsync(roleManager);
+                    await DbInitializer.SeedAdminAsync(userManager);
+                    DbInitializer.Initialize(userManager, context);
+                    //await Task.WhenAll(DbInitializer.CreateUsers(userManager, context));
                 }
                 catch (Exception ex)
                 {

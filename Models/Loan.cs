@@ -7,19 +7,19 @@ namespace SimpleLibraryWebsite.Models
     {
         [Key]
         public int LoanId { get; set; }
-        public int BookId { get; set; }
-        public int ReaderId { get; set; }
         [Display(Name = "Lent from")]
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime LentFrom { get; set; }
         [Display(Name = "Lent to")]
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime LentTo { get; set; }
 
+        public int BookId { get; set; }
         public Book Book { get; set; }
-        public User Reader { get; set; }
+        public Guid ReaderId { get; set; }
+        public Reader Reader { get; set; }
 
-        public Loan(int bookId, int readerId, DateTime lentFrom)
+        public Loan(int bookId, Guid readerId, DateTime lentFrom)
         {
             BookId = bookId;
             ReaderId = readerId;

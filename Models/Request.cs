@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SimpleLibraryWebsite.Models
 {
@@ -6,24 +7,24 @@ namespace SimpleLibraryWebsite.Models
     {
         [Key]
         public int RequestId { get; set; }
-        public int ReaderId { get; set; }
         [Display(Name = "Book title")]
-        [StringLength(120, MinimumLength = 1)]
-        [Required]
+        /*[StringLength(120, MinimumLength = 1)]
+        [Required]*/
         public string Title { get; set; }
         [Display(Name = "Book author")]
-        [StringLength(60, MinimumLength = 1)]
-        [Required]
+        /*[StringLength(60, MinimumLength = 1)]
+        [Required]*/
         public string Author { get; set; }
-        [Required]
+        //[Required]
         public Genres Genre { get; set; }
         [Display(Name = "Number of upvotes")]
         [Range(0, int.MaxValue)]
-        public int NumberOfUpvotes { get; set; }
+        public uint NumberOfUpvotes { get; set; }
 
-        public User Reader { get; set; }
+        public Guid ReaderId { get; set; }
+        public Reader Reader { get; set; }
 
-        public Request(int readerId, string title, string author, Genres genre)
+        public Request(Guid readerId, string title, string author, Genres genre)
         {
             ReaderId = readerId;
             Title = title;
@@ -33,7 +34,7 @@ namespace SimpleLibraryWebsite.Models
         }
         public Request() { }
 
-        public void FillMissingProperties(User reader)
+        public void FillMissingProperties(Reader reader)
         {
             Reader = reader;
             NumberOfUpvotes = 0;

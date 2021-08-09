@@ -1,23 +1,39 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
         public DbSet<Book> Books { get; set; }
-        public DbSet<User> Readers { get; set; }
+        public DbSet<Reader> Readers { get; set; }
         public DbSet<Loan> Loans { get; set; }
         public DbSet<Request> Requests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            builder.Entity<Loan>()
+                .HasOne(l => l.Reader)
+                .WithMany(r => r.Loans);
+
+            builder.Entity<Request>()
+                .HasOne(r => r.Reader)
+                .WithMany(r => r.Requests);
+
+            builder.Entity<User>()
+                .HasOne(r => r.Reader)
+                .WithOne(u => u.User)
+                .HasForeignKey<Reader>(r => r.id);
+
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("Identity");
             builder.Entity<IdentityUser>(entity =>
