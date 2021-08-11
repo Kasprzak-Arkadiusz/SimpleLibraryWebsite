@@ -29,10 +29,14 @@ namespace SimpleLibraryWebsite.Data
                 .HasOne(r => r.Reader)
                 .WithMany(r => r.Requests);
 
+            builder.Entity<Reader>()
+                .Property(r => r.ReaderId)
+                .ValueGeneratedOnAdd();
+
             builder.Entity<User>()
                 .HasOne(r => r.Reader)
                 .WithOne(u => u.User)
-                .HasForeignKey<Reader>(r => r.id);
+                .HasForeignKey<Reader>(r => r.Id);
 
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("Identity");

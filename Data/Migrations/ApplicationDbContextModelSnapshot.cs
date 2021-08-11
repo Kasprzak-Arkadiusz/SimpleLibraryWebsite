@@ -273,8 +273,8 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasColumnType("date")
                         .HasColumnName("Lent to");
 
-                    b.Property<Guid>("ReaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ReaderId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoanId");
 
@@ -287,28 +287,34 @@ namespace SimpleLibraryWebsite.Migrations
 
             modelBuilder.Entity("SimpleLibraryWebsite.Models.Reader", b =>
                 {
-                    b.Property<Guid>("ReaderId")
+                    b.Property<string>("ReaderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<string>("id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("NumberOfLoans")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfRequests")
+                        .HasColumnType("int");
 
                     b.HasKey("ReaderId");
 
-                    b.HasIndex("id")
+                    b.HasIndex("Id")
                         .IsUnique()
-                        .HasFilter("[id] IS NOT NULL");
+                        .HasFilter("[Id] IS NOT NULL");
 
                     b.ToTable("Readers");
                 });
@@ -334,8 +340,8 @@ namespace SimpleLibraryWebsite.Migrations
                         .HasDefaultValue(1L)
                         .HasColumnName("Number of upvotes");
 
-                    b.Property<Guid>("ReaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ReaderId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -423,9 +429,7 @@ namespace SimpleLibraryWebsite.Migrations
 
                     b.HasOne("SimpleLibraryWebsite.Models.Reader", "Reader")
                         .WithMany("Loans")
-                        .HasForeignKey("ReaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReaderId");
 
                     b.Navigation("Book");
 
@@ -436,7 +440,7 @@ namespace SimpleLibraryWebsite.Migrations
                 {
                     b.HasOne("SimpleLibraryWebsite.Models.User", "User")
                         .WithOne("Reader")
-                        .HasForeignKey("SimpleLibraryWebsite.Models.Reader", "id");
+                        .HasForeignKey("SimpleLibraryWebsite.Models.Reader", "Id");
 
                     b.Navigation("User");
                 });
@@ -445,9 +449,7 @@ namespace SimpleLibraryWebsite.Migrations
                 {
                     b.HasOne("SimpleLibraryWebsite.Models.Reader", "Reader")
                         .WithMany("Requests")
-                        .HasForeignKey("ReaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReaderId");
 
                     b.Navigation("Reader");
                 });

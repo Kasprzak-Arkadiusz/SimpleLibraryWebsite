@@ -83,13 +83,13 @@ namespace SimpleLibraryWebsite.Data
             {
                 users[i] = new User
                 {
-                    UserName = "user" + i,
+                    UserName = readers[i].FirstName + readers[i].LastName,
                     Email = "me" + i + "@gmail.com",
-                    FirstName = "name" + i,
-                    LastName = "surname" + i,
+                    FirstName = readers[i].FirstName,
+                    LastName = readers[i].LastName,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
-                    Id = readers[i].ReaderId.ToString()
+                    Id = readers[i].ReaderId
                 };
                 userManager.CreateAsync(users[i], "123Pa$$word.").Wait();
                 userManager.AddToRoleAsync(users[i], Roles.Reader.ToString()).Wait();
@@ -121,29 +121,6 @@ namespace SimpleLibraryWebsite.Data
             }
 
             context.SaveChanges();
-        }
-
-        public static async Task CreateUsers(UserManager<User> userManager, ApplicationDbContext context)
-        {
-            var readers = await context.Readers.ToArrayAsync();
-
-            User[] users = new User[readers.Length];
-
-            for (int i = 0; i < users.Length; i++)
-            {
-                users[i] = new User
-                {
-                    UserName = "user" + i,
-                    Email = "me" + i + "@gmail.com",
-                    FirstName = "name" + i,
-                    LastName = "surname" + i,
-                    EmailConfirmed = true,
-                    PhoneNumberConfirmed = true,
-                    Id = readers[i].id
-                };
-                await userManager.CreateAsync(users[i], "123Pa$$word.");
-                userManager.AddToRoleAsync(users[i], Roles.Reader.ToString()).Wait();
-            }
         }
     }
 }

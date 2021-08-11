@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using SimpleLibraryWebsite.Data;
 
 namespace SimpleLibraryWebsite.Models
 {
     public class Reader
     {
         [Key] 
-        public Guid ReaderId { get; set; }
+        public string ReaderId { get; set; }
         [Display(Name = "Reader name")] 
         /*[StringLength(60, MinimumLength = 1)]
         [Required]*/
@@ -22,9 +15,13 @@ namespace SimpleLibraryWebsite.Models
         /*[StringLength(60, MinimumLength = 1)]
         [Required]*/
         public string LastName { get; set; }
+        [Display(Name = "Number of loans")]
+        public int NumberOfLoans { get; set; } = 0;
+        [Display(Name = "Number of requests")]
+        public int NumberOfRequests { get; set; } = 0;
 
         public User User { get; set; }
-        public string id { get; set; }
+        public string Id { get; set; }
         public ICollection<Loan> Loans { get; set; }
         public ICollection<Request> Requests { get; set; }
 

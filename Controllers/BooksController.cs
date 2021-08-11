@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +14,13 @@ namespace SimpleLibraryWebsite.Controllers
     public class BooksController : CustomController
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public BooksController(ApplicationDbContext context)
+        public BooksController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Books
@@ -81,6 +85,22 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             return View(book);
+        }
+
+        // POST: Books/Borrow/5
+        public async Task<IActionResult> Borrow(int? bookId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
+            if (bookId == null || userId == null)
+            {
+                return NotFound();
+            }
+
+            Loan loan = new Loan(bookId.GetValueOrDefault(), userId , DateTime.Today);
+            _context.Loans.Add(loan);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Books/Create

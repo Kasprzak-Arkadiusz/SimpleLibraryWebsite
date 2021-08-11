@@ -27,7 +27,6 @@ namespace SimpleLibraryWebsite
                     await DbInitializer.SeedRolesAsync(roleManager);
                     await DbInitializer.SeedAdminAsync(userManager);
                     DbInitializer.Initialize(userManager, context);
-                    //await Task.WhenAll(DbInitializer.CreateUsers(userManager, context));
                 }
                 catch (Exception ex)
                 {

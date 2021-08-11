@@ -100,17 +100,19 @@ namespace SimpleLibraryWebsite.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    ReaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReaderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
-                    id = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    NumberOfLoans = table.Column<int>(type: "int", nullable: false),
+                    NumberOfRequests = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Readers", x => x.ReaderId);
                     table.ForeignKey(
-                        name: "FK_Readers_User_id",
-                        column: x => x.id,
+                        name: "FK_Readers_User_Id",
+                        column: x => x.Id,
                         principalSchema: "Identity",
                         principalTable: "User",
                         principalColumn: "Id",
@@ -221,7 +223,7 @@ namespace SimpleLibraryWebsite.Migrations
                     Dateofadding = table.Column<DateTime>(name: "Date of adding", type: "date", nullable: false),
                     Lentto = table.Column<DateTime>(name: "Lent to", type: "date", nullable: false),
                     BookId = table.Column<int>(type: "int", nullable: false),
-                    ReaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ReaderId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -239,7 +241,7 @@ namespace SimpleLibraryWebsite.Migrations
                         principalSchema: "Identity",
                         principalTable: "Readers",
                         principalColumn: "ReaderId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -253,7 +255,7 @@ namespace SimpleLibraryWebsite.Migrations
                     Author = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     Genre = table.Column<int>(type: "int", nullable: false),
                     Numberofupvotes = table.Column<long>(name: "Number of upvotes", type: "bigint", nullable: false, defaultValue: 1L),
-                    ReaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ReaderId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -264,7 +266,7 @@ namespace SimpleLibraryWebsite.Migrations
                         principalSchema: "Identity",
                         principalTable: "Readers",
                         principalColumn: "ReaderId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -280,12 +282,12 @@ namespace SimpleLibraryWebsite.Migrations
                 column: "ReaderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Readers_id",
+                name: "IX_Readers_Id",
                 schema: "Identity",
                 table: "Readers",
-                column: "id",
+                column: "Id",
                 unique: true,
-                filter: "[id] IS NOT NULL");
+                filter: "[Id] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Requests_ReaderId",

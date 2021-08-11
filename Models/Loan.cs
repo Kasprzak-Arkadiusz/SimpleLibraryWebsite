@@ -16,10 +16,10 @@ namespace SimpleLibraryWebsite.Models
 
         public int BookId { get; set; }
         public Book Book { get; set; }
-        public Guid ReaderId { get; set; }
+        public string ReaderId { get; set; }
         public Reader Reader { get; set; }
 
-        public Loan(int bookId, Guid readerId, DateTime lentFrom)
+        public Loan(int bookId, string readerId, DateTime lentFrom)
         {
             BookId = bookId;
             ReaderId = readerId;

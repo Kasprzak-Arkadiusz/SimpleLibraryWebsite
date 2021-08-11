@@ -63,7 +63,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers/Details/5
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(string id)
         {
             var reader = await _context.Readers
                 .FirstOrDefaultAsync(m => m.ReaderId == id);
@@ -129,7 +129,7 @@ namespace SimpleLibraryWebsite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(Guid id)
+        public async Task<IActionResult> EditPost(string id)
         {
             var readerToUpdate = await _context.Readers.FirstOrDefaultAsync(r => r.ReaderId == id);
 
@@ -156,7 +156,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Readers/Delete/5
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(string id)
         {
             var reader = await _context.Readers
                 .FirstOrDefaultAsync(m => m.ReaderId == id);

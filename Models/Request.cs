@@ -21,10 +21,10 @@ namespace SimpleLibraryWebsite.Models
         [Range(0, int.MaxValue)]
         public uint NumberOfUpvotes { get; set; }
 
-        public Guid ReaderId { get; set; }
+        public string ReaderId { get; set; }
         public Reader Reader { get; set; }
 
-        public Request(Guid readerId, string title, string author, Genres genre)
+        public Request(string readerId, string title, string author, Genres genre)
         {
             ReaderId = readerId;
             Title = title;
