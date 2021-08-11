@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,8 @@ namespace SimpleLibraryWebsite.Data
 {
     public static class DbInitializer
     {
+        public static ApplicationDbContext Context;
+
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
@@ -37,9 +40,11 @@ namespace SimpleLibraryWebsite.Data
                 }
             }
         }
-        public static void Initialize(UserManager<User> userManager, ApplicationDbContext context)
+
+        public static void Initialize(UserManager<User> userManager)
         {
-            if (context.Books.Any())
+
+            if (Context.Books.Any())
             {
                 return;
             }
@@ -57,9 +62,14 @@ namespace SimpleLibraryWebsite.Data
                 new Book("Walter Isaacson", "Steve Jobs", Genres.Biography)
             };
 
+            foreach (var i in new List<int>{0,3,5,6})
+            {
+                books[i].IsBorrowed = true;
+            }
+
             foreach (Book b in books)
             {
-                context.Books.Add(b);
+                Context.Books.Add(b);
             }
 
             var readers = new Reader[]
@@ -74,10 +84,10 @@ namespace SimpleLibraryWebsite.Data
 
             foreach (Reader r in readers)
             {
-                context.Readers.Add(r);
+                Context.Readers.Add(r);
             }
 
-            context.SaveChanges();
+            Context.SaveChanges();
 
             for (int i = 0; i < users.Length; i++)
             {
@@ -106,7 +116,7 @@ namespace SimpleLibraryWebsite.Data
 
             foreach (Loan l in loans)
             {
-                context.Loans.Add(l);
+                Context.Loans.Add(l);
             }
 
             var requests = new Request[]
@@ -117,10 +127,10 @@ namespace SimpleLibraryWebsite.Data
 
             foreach (Request r in requests)
             {
-                context.Requests.Add(r);
+                Context.Requests.Add(r);
             }
 
-            context.SaveChanges();
+            Context.SaveChanges();
         }
     }
 }

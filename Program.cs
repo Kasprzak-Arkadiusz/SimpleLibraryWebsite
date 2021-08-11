@@ -26,7 +26,8 @@ namespace SimpleLibraryWebsite
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     await DbInitializer.SeedRolesAsync(roleManager);
                     await DbInitializer.SeedAdminAsync(userManager);
-                    DbInitializer.Initialize(userManager, context);
+                    DbInitializer.Context = context;
+                    DbInitializer.Initialize(userManager);
                 }
                 catch (Exception ex)
                 {

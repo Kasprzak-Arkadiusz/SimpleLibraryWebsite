@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleLibraryWebsite.Models
+namespace SimpleLibraryWebsite.Models.ViewModels
 {
     public class RequestViewModel
     {

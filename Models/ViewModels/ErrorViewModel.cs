@@ -1,6 +1,4 @@
-using System;
-
-namespace SimpleLibraryWebsite.Models
+namespace SimpleLibraryWebsite.Models.ViewModels
 {
     public class ErrorViewModel
     {

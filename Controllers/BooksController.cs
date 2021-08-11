@@ -2,25 +2,23 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Models.ViewModels;
 
 namespace SimpleLibraryWebsite.Controllers
 {
     public class BooksController : CustomController
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public BooksController(ApplicationDbContext context, UserManager<User> userManager)
+        public BooksController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         // GET: Books
@@ -87,20 +85,77 @@ namespace SimpleLibraryWebsite.Controllers
             return View(book);
         }
 
-        // POST: Books/Borrow/5
+        // Get: Books/Borrow/5
         public async Task<IActionResult> Borrow(int? bookId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            if (bookId == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            BookBorrowViewModel bookBorrowViewModel = new(book);
+
+            return View(bookBorrowViewModel);
+        }
+
+        // POST: Books/BorrowPost/5
+        [HttpPost, ActionName("Borrow")]
+        public async Task<IActionResult> BorrowPost(int? bookId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (bookId == null || userId == null)
             {
                 return NotFound();
             }
 
-            Loan loan = new Loan(bookId.GetValueOrDefault(), userId , DateTime.Today);
-            _context.Loans.Add(loan);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            Reader borrowingReader = await _context.Readers.SingleOrDefaultAsync(r => r.ReaderId == userId);
+            Book borrowedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == bookId);
+
+            if (borrowingReader.NumberOfLoans == Reader.BookLoansLimit)
+            {
+                ModelState.AddModelError("", "You have exceeded the limit of borrowed books.\n "
+                                                        + $"You can borrow a maximum of {Reader.BookLoansLimit} books.\n"
+                                                        + "Return some books before borrowing a new book");
+                return View(new BookBorrowViewModel(borrowedBook));
+            }
+
+            if (borrowedBook.IsBorrowed)
+            {
+                ModelState.AddModelError("", "This book is already on loan. Try another time.");
+
+                return View(new BookBorrowViewModel(borrowedBook));
+            }
+
+            borrowedBook.IsBorrowed = true;
+            if (await TryUpdateModelAsync(
+                borrowedBook,
+                "",
+                b => b.IsBorrowed))
+            {
+                try
+                {
+                    Loan loan = new(bookId.GetValueOrDefault(), userId, DateTime.Today);
+                    _context.Loans.Add(loan);
+                    borrowingReader.NumberOfLoans++;
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.Error(ex);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
+                    return View(new BookBorrowViewModel(borrowedBook));
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Books/Create

@@ -12,7 +12,7 @@ namespace SimpleLibraryWebsite.Data.ModelConfiguration
             builder.Property(l => l.LentFrom)
                 .IsRequired()
                 .HasColumnType("date")
-                .HasColumnName("Date of adding");
+                .HasColumnName("Lent from");
             builder.Property(l => l.LentTo)
                 .IsRequired()
                 .HasColumnType("date")

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace SimpleLibraryWebsite.Models
+namespace SimpleLibraryWebsite.Models.ViewModels
 {
     public class BookGenreViewModel
     {

@@ -8,10 +8,10 @@ namespace SimpleLibraryWebsite.Models
         [Key]
         public int LoanId { get; set; }
         [Display(Name = "Lent from")]
-        //[DataType(DataType.Date)]
+        [DataType(DataType.Date)]
         public DateTime LentFrom { get; set; }
         [Display(Name = "Lent to")]
-        //[DataType(DataType.Date)]
+        [DataType(DataType.Date)]
         public DateTime LentTo { get; set; }
 
         public int BookId { get; set; }

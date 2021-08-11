@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SimpleLibraryWebsite.Models
 {
@@ -8,14 +7,9 @@ namespace SimpleLibraryWebsite.Models
         [Key]
         public int RequestId { get; set; }
         [Display(Name = "Book title")]
-        /*[StringLength(120, MinimumLength = 1)]
-        [Required]*/
         public string Title { get; set; }
         [Display(Name = "Book author")]
-        /*[StringLength(60, MinimumLength = 1)]
-        [Required]*/
         public string Author { get; set; }
-        //[Required]
         public Genres Genre { get; set; }
         [Display(Name = "Number of upvotes")]
         [Range(0, int.MaxValue)]
