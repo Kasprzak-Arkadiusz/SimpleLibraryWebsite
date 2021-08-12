@@ -42,18 +42,13 @@
             </a>
         </th>
         <th>
-            <a asp-route-currentFilter="@ViewData["CurrentFilter"]" 
-               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
-               asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
-                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
-            </a>
+            @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
         </th>
         <th>
-            <a  asp-route-currentFilter="@ViewData["CurrentFilter"]"
-                asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
-                asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
-                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)
-             </a>
+            @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().DateOfAdding)
         </th>
     </tr>
     </thead>
@@ -71,6 +66,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsBorrowed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfAdding)
             </td>
              <td>
                 <a asp-action="Details" asp-route-id="@item.BookId">Details</a>

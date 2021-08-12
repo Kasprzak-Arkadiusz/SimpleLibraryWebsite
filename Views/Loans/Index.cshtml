@@ -98,9 +98,9 @@
                 @Html.DisplayFor(modelItem => item.LentTo)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.LoanId">Edit</a> |
+                <a asp-action="Return" asp-route-id="@item.LoanId">Return</a> |
                 <a asp-action="Details" asp-route-id="@item.LoanId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LoanId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.LoanId">Edit</a>
             </td>
         </tr>
     }

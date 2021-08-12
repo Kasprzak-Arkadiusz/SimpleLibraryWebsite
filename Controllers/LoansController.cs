@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -108,6 +110,65 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             return View(loan);
+        }
+
+        // GET: Loans/Return/5
+        public async Task<IActionResult> Return(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var loan = await _context.Loans.FindAsync(id);
+            if (loan == null)
+            {
+                return NotFound();
+            }
+
+            Book returnedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == loan.BookId);
+            Reader reader = await _context.Readers.SingleOrDefaultAsync(b => b.ReaderId == loan.ReaderId);
+            BookReturnViewModel bookReturnViewModel = new(loan, returnedBook, reader);
+
+            return View(bookReturnViewModel);
+        }
+
+        // POST: Books/Return/5
+        [HttpPost, ActionName("Return")]
+        public async Task<IActionResult> ReturnPost(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Loan loan = await _context.Loans.SingleOrDefaultAsync(l => l.LoanId == id);
+            Book returnedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == loan.BookId);
+            Reader reader = await _context.Readers.SingleOrDefaultAsync(r => r.ReaderId == loan.ReaderId);
+            BookReturnViewModel bookReturnViewModel = new(loan, returnedBook, reader);
+
+            returnedBook.IsBorrowed = false;
+            if (await TryUpdateModelAsync(
+                returnedBook,
+                "",
+                b => b.IsBorrowed))
+            {
+                try
+                {
+                    _context.Loans.Remove(loan);
+                    reader.NumberOfLoans--;
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.Error(ex);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
+                    return View(bookReturnViewModel);
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         private void CreateBookIdList()

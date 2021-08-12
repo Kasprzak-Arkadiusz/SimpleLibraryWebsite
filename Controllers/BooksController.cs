@@ -86,14 +86,14 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // Get: Books/Borrow/5
-        public async Task<IActionResult> Borrow(int? bookId)
+        public async Task<IActionResult> Borrow(int? id)
         {
-            if (bookId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(bookId);
+            var book = await _context.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -106,17 +106,17 @@ namespace SimpleLibraryWebsite.Controllers
 
         // POST: Books/BorrowPost/5
         [HttpPost, ActionName("Borrow")]
-        public async Task<IActionResult> BorrowPost(int? bookId)
+        public async Task<IActionResult> BorrowPost(int? id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (bookId == null || userId == null)
+            if (id == null || userId == null)
             {
                 return NotFound();
             }
 
             Reader borrowingReader = await _context.Readers.SingleOrDefaultAsync(r => r.ReaderId == userId);
-            Book borrowedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == bookId);
+            Book borrowedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == id);
 
             if (borrowingReader.NumberOfLoans == Reader.BookLoansLimit)
             {
@@ -141,7 +141,7 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
-                    Loan loan = new(bookId.GetValueOrDefault(), userId, DateTime.Today);
+                    Loan loan = new(id.GetValueOrDefault(), userId, DateTime.Today);
                     _context.Loans.Add(loan);
                     borrowingReader.NumberOfLoans++;
                     await _context.SaveChangesAsync();

@@ -37,7 +37,7 @@
     <a asp-action="Edit" asp-route-id="@Model.BookId">Edit</a> |
     @if (!Model.IsBorrowed)
     {
-        <a asp-action="Borrow" asp-route-bookid="@Model.BookId">Borrow</a> <span>|</span>
+        <a asp-action="Borrow" asp-route-id="@Model.BookId">Borrow</a> <span>|</span>
     }
     <a asp-action="Index">Back to List</a>
 </div>
