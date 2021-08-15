@@ -1,6 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
@@ -11,14 +12,15 @@ namespace SimpleLibraryWebsite.Controllers
 {
     public class ReadersController : CustomController
     {
-        private readonly ApplicationDbContext _context;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
 
-        public ReadersController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public ReadersController(
+            ApplicationDbContext context,
+            IAuthorizationService authorizationService,
+            UserManager<User> userManager)
+            : base(context, authorizationService, userManager)
+        { }
 
         // GET: Readers
         public async Task<IActionResult> Index(string readerName, string readerLastName, string sortOrder,
@@ -31,7 +33,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewData["CurrentNameFilter"] = SaveFilterValue(ref readerName, currentNameFilter, ref pageNumber);
             ViewData["CurrentLastNameFilter"] = SaveFilterValue(ref readerLastName, currentLastNameFilter, ref pageNumber);
 
-            var readers = from r in _context.Readers select r;
+            var readers = from r in Context.Readers select r;
             if (!string.IsNullOrWhiteSpace(readerName))
             {
                 readers = from r in readers where r.FirstName == readerName select r;
@@ -66,7 +68,7 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Readers/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            var reader = await _context.Readers
+            var reader = await Context.Readers
                 .FirstOrDefaultAsync(m => m.ReaderId == id);
             if (reader == null)
             {
@@ -93,8 +95,8 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _context.Add(reader);
-                    await _context.SaveChangesAsync();
+                    Context.Add(reader);
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -117,7 +119,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var reader = await _context.Readers.FindAsync(id);
+            var reader = await Context.Readers.FindAsync(id);
             if (reader == null)
             {
                 return NotFound();
@@ -132,7 +134,7 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPost(string id)
         {
-            var readerToUpdate = await _context.Readers.FirstOrDefaultAsync(r => r.ReaderId == id);
+            var readerToUpdate = await Context.Readers.FirstOrDefaultAsync(r => r.ReaderId == id);
 
             if (await TryUpdateModelAsync(
                 readerToUpdate,
@@ -141,7 +143,7 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex)
@@ -159,7 +161,7 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Readers/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            var reader = await _context.Readers
+            var reader = await Context.Readers
                 .FirstOrDefaultAsync(m => m.ReaderId == id);
             if (reader == null)
             {
@@ -174,7 +176,7 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reader = await _context.Readers.FindAsync(id);
+            var reader = await Context.Readers.FindAsync(id);
             if (reader is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -182,8 +184,8 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
-                _context.Readers.Remove(reader);
-                await _context.SaveChangesAsync();
+                Context.Readers.Remove(reader);
+                await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)

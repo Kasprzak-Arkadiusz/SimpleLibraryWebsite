@@ -4,52 +4,106 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Models.Authorization;
 
 namespace SimpleLibraryWebsite.Data
 {
     public static class DbInitializer
     {
-        public static ApplicationDbContext Context;
-
-        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task Initialize(IServiceProvider serviceProvider, string testUserPw)
         {
-            await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
-            await roleManager.CreateAsync(new IdentityRole(Roles.Librarian.ToString()));
-            await roleManager.CreateAsync(new IdentityRole(Roles.Reader.ToString()));
+            await using (var context = new ApplicationDbContext(
+                serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
+            {
+                var adminId = await EnsureUser(serviceProvider, testUserPw, "superAdmin", "admin@contoso.com");
+                await EnsureRole(serviceProvider, adminId, Roles.Admin.ToString());
+
+                var librarianId = await EnsureUser(serviceProvider, testUserPw, "justALibrarian", "librarian@contoso.com");
+                await EnsureRole(serviceProvider, librarianId, Roles.Librarian.ToString());
+
+
+                var dummy = await SeedDb(context, serviceProvider);
+            }
         }
 
-        public static async Task SeedAdminAsync(UserManager<User> userManager)
+        private static async Task<string> EnsureUser(IServiceProvider serviceProvider,
+            string testUserPw, string userName, string email)
         {
-            var defaultUser = new User()
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
             {
-                UserName = "superadmin",
-                Email = "superadmin@gmail.com",
-                FirstName = "James",
-                LastName = "Smith",
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true
-            };
-            if (userManager.Users.All(u => u.Id != defaultUser.Id))
-            {
-                var user = await userManager.FindByEmailAsync(defaultUser.Email);
-                if (user is null)
+                user = new User
                 {
-                    await userManager.CreateAsync(defaultUser, "123Pa$$word.");
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Admin.ToString());
-                }
+                    UserName = userName,
+                    Email = email,
+                    FirstName = "James",
+                    LastName = "Smith",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true
+                };
+                await userManager.CreateAsync(user, testUserPw);
             }
+
+            if (user == null)
+            {
+                throw new Exception("The password is probably not strong enough!");
+            }
+
+            return user.Id;
         }
 
-        public static void Initialize(UserManager<User> userManager)
+        private static async Task<IdentityResult> EnsureRole(IServiceProvider serviceProvider,
+            string uid, string role)
         {
+            IdentityResult ir;
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
 
-            if (Context.Books.Any())
+            if (roleManager == null)
             {
-                return;
+                throw new Exception("roleManager null");
             }
 
-            var books = new Book[]
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                ir = await roleManager.CreateAsync(new IdentityRole(role));
+            }
+
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            var user = await userManager.FindByIdAsync(uid);
+
+            if (user == null)
+            {
+                throw new Exception("The testUserPw password was probably not strong enough!");
+            }
+
+            ir = await userManager.AddToRoleAsync(user, role);
+
+            return ir;
+        }
+
+        private static async Task<string> CreateUser(IServiceProvider serviceProvider, User user, string password)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            await userManager.CreateAsync(user, password);
+
+            return user.Id;
+        }
+
+        private static async Task<string> SeedDb(ApplicationDbContext context, IServiceProvider serviceProvider)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            if (context.Books.Any())
+            {
+                return string.Empty;
+            }
+
+            var books = new[]
             {
                 new Book("Adam Mickiewicz", "Master Thaddeus",Genres.Poetry),
                 new Book("Adam Mickiewicz","Ode to Youth", Genres.Poetry),
@@ -62,32 +116,32 @@ namespace SimpleLibraryWebsite.Data
                 new Book("Walter Isaacson", "Steve Jobs", Genres.Biography)
             };
 
-            foreach (var i in new List<int>{0,3,5,6})
+            foreach (var i in new List<int> { 0, 3, 5, 6 })
             {
                 books[i].IsBorrowed = true;
             }
 
             foreach (Book b in books)
             {
-                Context.Books.Add(b);
+                context.Books.Add(b);
             }
 
-            var readers = new Reader[]
+            var readers = new[]
             {
-                new Reader("John", "Smith"),
-                new Reader("Jimmy", "Johnson"),
-                new Reader("Emily", "Richardson"),
-                new Reader("Elisabeth", "Lee")
+                new Reader{FirstName = "John", LastName = "Smith", NumberOfLoans = 1},
+                new Reader{FirstName = "Jimmy", LastName = "Johnson", NumberOfRequests = 1, NumberOfLoans = 1},
+                new Reader{FirstName = "Emily", LastName = "Richardson", NumberOfRequests = 1},
+                new Reader{FirstName = "Elisabeth", LastName = "Lee", NumberOfLoans = 2}
             };
 
             User[] users = new User[readers.Length];
 
             foreach (Reader r in readers)
             {
-                Context.Readers.Add(r);
+                context.Readers.Add(r);
             }
 
-            Context.SaveChanges();
+            await context.SaveChangesAsync();
 
             for (int i = 0; i < users.Length; i++)
             {
@@ -101,12 +155,13 @@ namespace SimpleLibraryWebsite.Data
                     PhoneNumberConfirmed = true,
                     Id = readers[i].ReaderId
                 };
-                userManager.CreateAsync(users[i], "123Pa$$word.").Wait();
-                userManager.AddToRoleAsync(users[i], Roles.Reader.ToString()).Wait();
+
+                string userId = await CreateUser(serviceProvider, users[i], "123Pa$$word.");
+                await EnsureRole(serviceProvider, userId, Roles.Reader.ToString());
             }
 
 
-            var loans = new Loan[]
+            var loans = new[]
             {
                 new Loan(1, readers[0].ReaderId,  DateTime.Now),
                 new Loan(4, readers[1].ReaderId, DateTime.Parse("01/02/2021")),
@@ -116,10 +171,10 @@ namespace SimpleLibraryWebsite.Data
 
             foreach (Loan l in loans)
             {
-                Context.Loans.Add(l);
+                context.Loans.Add(l);
             }
 
-            var requests = new Request[]
+            var requests = new[]
             {
                 new Request(readers[1].ReaderId, "For Whom the Bell Tolls", "Ernest Hemingway", Genres.Novel),
                 new Request(readers[2].ReaderId, "The Hobbit, or There and Back Again", "J.R.R. Tolkien", Genres.Fantasy)
@@ -127,10 +182,12 @@ namespace SimpleLibraryWebsite.Data
 
             foreach (Request r in requests)
             {
-                Context.Requests.Add(r);
+                context.Requests.Add(r);
             }
 
-            Context.SaveChanges();
+            await context.SaveChangesAsync();
+
+            return string.Empty;
         }
     }
 }

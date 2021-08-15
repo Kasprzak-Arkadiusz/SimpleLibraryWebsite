@@ -3,10 +3,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Data;
-using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite
 {
@@ -19,15 +18,18 @@ namespace SimpleLibraryWebsite
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+
                 try
                 {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
-                    var userManager = services.GetRequiredService<UserManager<User>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    await DbInitializer.SeedRolesAsync(roleManager);
-                    await DbInitializer.SeedAdminAsync(userManager);
-                    DbInitializer.Context = context;
-                    DbInitializer.Initialize(userManager);
+                    var config = services.GetRequiredService<IConfiguration>();
+
+                    var testUserPw = config["SeedUserPW"];
+
+                    /*DbInitializer.Service = services;
+                    await DbInitializer.SeedRolesAsync();
+                    await DbInitializer.SeedAdminAsync();*/
+
+                    DbInitializer.Initialize(services, testUserPw).Wait();
                 }
                 catch (Exception ex)
                 {

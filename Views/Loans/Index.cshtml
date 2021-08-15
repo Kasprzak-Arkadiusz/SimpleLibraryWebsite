@@ -1,4 +1,7 @@
-﻿@model SimpleLibraryWebsite.Models.ViewModels.LoanViewModel
+﻿@using SimpleLibraryWebsite.Models.Authorization
+@model SimpleLibraryWebsite.Models.ViewModels.LoanViewModel
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService _authorizationService
 
 @{
     ViewData["Title"] = "List of loans";
@@ -98,9 +101,22 @@
                 @Html.DisplayFor(modelItem => item.LentTo)
             </td>
             <td>
-                <a asp-action="Return" asp-route-id="@item.LoanId">Return</a> |
-                <a asp-action="Details" asp-route-id="@item.LoanId">Details</a> |
-                <a asp-action="Edit" asp-route-id="@item.LoanId">Edit</a>
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    ContactOperations.Return)).Succeeded)
+                {
+                    <a asp-action="Return" asp-route-id="@item.LoanId">Return</a>
+                    <text> | </text>
+                }
+                <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
+                    <text> | </text>
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    ContactOperations.Return)).Succeeded)
+                {
+                        <a asp-action="Edit" asp-route-id="@item.LoanId">Edit</a>
+                        <text> | </text>
+                }
             </td>
         </tr>
     }

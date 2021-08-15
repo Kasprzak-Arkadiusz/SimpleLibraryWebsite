@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +13,14 @@ namespace SimpleLibraryWebsite.Controllers
 {
     public class RequestsController : CustomController
     {
-        private readonly ApplicationDbContext _context;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public RequestsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public RequestsController(
+            ApplicationDbContext context,
+            IAuthorizationService authorizationService,
+            UserManager<User> userManager)
+            : base(context, authorizationService, userManager)
+        { }
 
         // GET: Requests
         public async Task<IActionResult> Index(string bookTitle, string author, string sortOrder,
@@ -30,7 +33,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
             ViewData["CurrentAuthorFilter"] = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
 
-            var requests = from req in _context.Requests select req;
+            var requests = from req in Context.Requests select req;
             if (!string.IsNullOrWhiteSpace(author))
             {
                 requests = from r in requests where r.Author == author select r;
@@ -74,7 +77,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var request = await _context.Requests
+            var request = await Context.Requests
                 .Include(r => r.Reader).AsNoTracking()
                 .FirstOrDefaultAsync(m => m.RequestId == id);
             if (request == null)
@@ -87,7 +90,7 @@ namespace SimpleLibraryWebsite.Controllers
 
         private void CreateReaderIdList()
         {
-            var readerIdList = (from r in _context.Readers
+            var readerIdList = (from r in Context.Readers
                                 select new SelectListItem()
                                 {
                                     Text = r.ReaderId.ToString(),
@@ -114,9 +117,9 @@ namespace SimpleLibraryWebsite.Controllers
             try
             {
                 CreateReaderIdList();
-                request.FillMissingProperties(await _context.Readers.FindAsync(request.ReaderId));
-                _context.Add(request);
-                await _context.SaveChangesAsync();
+                request.FillMissingProperties(await Context.Readers.FindAsync(request.ReaderId));
+                Context.Add(request);
+                await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -138,7 +141,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var request = await _context.Requests.FindAsync(id);
+            var request = await Context.Requests.FindAsync(id);
             if (request == null)
             {
                 return NotFound();
@@ -161,7 +164,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var requestToUpdate = await _context.Requests.FirstOrDefaultAsync(r => r.RequestId == id);
+            var requestToUpdate = await Context.Requests.FirstOrDefaultAsync(r => r.RequestId == id);
 
             if (await TryUpdateModelAsync(
                 requestToUpdate,
@@ -170,7 +173,7 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex)
@@ -193,7 +196,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var request = await _context.Requests
+            var request = await Context.Requests
                 .Include(r => r.Reader)
                 .FirstOrDefaultAsync(m => m.RequestId == id);
             if (request == null)
@@ -209,7 +212,7 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var request = await _context.Requests.FindAsync(id);
+            var request = await Context.Requests.FindAsync(id);
             if (request is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -217,8 +220,8 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
-                _context.Requests.Remove(request);
-                await _context.SaveChangesAsync();
+                Context.Requests.Remove(request);
+                await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)

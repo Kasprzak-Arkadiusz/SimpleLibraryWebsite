@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,13 +15,14 @@ namespace SimpleLibraryWebsite.Controllers
 {
     public class BooksController : CustomController
     {
-        private readonly ApplicationDbContext _context;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public BooksController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public BooksController(
+            ApplicationDbContext context,
+            IAuthorizationService authorizationService,
+            UserManager<User> userManager)
+            : base(context, authorizationService, userManager)
+        { }
 
         // GET: Books
         public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder,
@@ -32,7 +35,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
             ViewData["CurrentGenreFilter"] = SaveFilterValue(ref bookGenre, currentGenreFilter, ref pageNumber);
 
-            var books = from b in _context.Books select b;
+            var books = from b in Context.Books select b;
 
             if (!string.IsNullOrEmpty(bookTitle))
             {
@@ -53,7 +56,7 @@ namespace SimpleLibraryWebsite.Controllers
                 _ => books.OrderBy(b => b.Title)
             };
 
-            IQueryable<string> stringGenres = from b in _context.Books
+            IQueryable<string> stringGenres = from b in Context.Books
                                               orderby b.Genre
                                               select b.Genre.ToString();
             const int pageSize = 5;
@@ -75,7 +78,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.AsNoTracking()
+            var book = await Context.Books.AsNoTracking()
                 .FirstOrDefaultAsync(m => m.BookId == id);
             if (book == null)
             {
@@ -93,7 +96,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await Context.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -115,8 +118,8 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            Reader borrowingReader = await _context.Readers.SingleOrDefaultAsync(r => r.ReaderId == userId);
-            Book borrowedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == id);
+            Reader borrowingReader = await Context.Readers.SingleOrDefaultAsync(r => r.ReaderId == userId);
+            Book borrowedBook = await Context.Books.SingleOrDefaultAsync(b => b.BookId == id);
 
             if (borrowingReader.NumberOfLoans == Reader.BookLoansLimit)
             {
@@ -142,9 +145,9 @@ namespace SimpleLibraryWebsite.Controllers
                 try
                 {
                     Loan loan = new(id.GetValueOrDefault(), userId, DateTime.Today);
-                    _context.Loans.Add(loan);
+                    Context.Loans.Add(loan);
                     borrowingReader.NumberOfLoans++;
-                    await _context.SaveChangesAsync();
+                    await Context.SaveChangesAsync();
                 }
                 catch (DbUpdateException ex)
                 {
@@ -176,8 +179,8 @@ namespace SimpleLibraryWebsite.Controllers
                 if (ModelState.IsValid)
                 {
                     book.FillMissingProperties();
-                    _context.Add(book);
-                    await _context.SaveChangesAsync();
+                    Context.Add(book);
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -200,7 +203,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await Context.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -221,7 +224,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var bookToUpdate = await _context.Books.FirstOrDefaultAsync(b => b.BookId == id);
+            var bookToUpdate = await Context.Books.FirstOrDefaultAsync(b => b.BookId == id);
 
             if (await TryUpdateModelAsync(
                 bookToUpdate,
@@ -230,7 +233,7 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex)
@@ -253,7 +256,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
+            var book = await Context.Books
                 .FirstOrDefaultAsync(m => m.BookId == id);
             if (book == null)
             {
@@ -268,7 +271,7 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var book = await Context.Books.FindAsync(id);
             if (book is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -276,8 +279,8 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
+                Context.Books.Remove(book);
+                await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)

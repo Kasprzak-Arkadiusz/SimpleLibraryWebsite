@@ -1,25 +1,28 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Models.Authorization;
 using SimpleLibraryWebsite.Models.ViewModels;
 
 namespace SimpleLibraryWebsite.Controllers
 {
     public class LoansController : CustomController
     {
-        private readonly ApplicationDbContext _context;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public LoansController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public LoansController(
+            ApplicationDbContext context,
+            IAuthorizationService authorizationService,
+            UserManager<User> userManager)
+            : base(context, authorizationService, userManager)
+        { }
 
         // GET: Loans
         public async Task<IActionResult> Index(string readerName, string readerLastName, string bookTitle, string sortOrder,
@@ -35,7 +38,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewData["CurrentLastNameFilter"] = SaveFilterValue(ref readerLastName, currentLastNameFilter, ref pageNumber);
             ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
 
-            var readers = from r in _context.Readers select r;
+            var readers = from r in Context.Readers select r;
             bool isAnySearchFieldFilled = false;
             if (!string.IsNullOrWhiteSpace(readerName))
             {
@@ -54,7 +57,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return View(new LoanViewModel { PaginatedList = new PaginatedList<Loan>() });
             }
 
-            var books = from b in _context.Books select b;
+            var books = from b in Context.Books select b;
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 books = from b in books where b.Title.Contains(bookTitle) select b;
@@ -62,7 +65,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             LoanViewModel loanViewModel = new LoanViewModel();
-            IQueryable<Loan> loans = _context.Loans.Include(l => l.Reader).Include(l => l.Book);
+            IQueryable<Loan> loans = Context.Loans.Include(l => l.Reader).Include(l => l.Book);
             if (isAnySearchFieldFilled)
             {
                 loanViewModel.Loans = loans
@@ -101,7 +104,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var loan = await _context.Loans
+            var loan = await Context.Loans
                 .Include(r => r.Reader).AsNoTracking()
                 .FirstOrDefaultAsync(m => m.LoanId == id);
             if (loan == null)
@@ -120,14 +123,14 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var loan = await _context.Loans.FindAsync(id);
+            var loan = await Context.Loans.FindAsync(id);
             if (loan == null)
             {
                 return NotFound();
             }
 
-            Book returnedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == loan.BookId);
-            Reader reader = await _context.Readers.SingleOrDefaultAsync(b => b.ReaderId == loan.ReaderId);
+            Book returnedBook = await Context.Books.SingleOrDefaultAsync(b => b.BookId == loan.BookId);
+            Reader reader = await Context.Readers.SingleOrDefaultAsync(b => b.ReaderId == loan.ReaderId);
             BookReturnViewModel bookReturnViewModel = new(loan, returnedBook, reader);
 
             return View(bookReturnViewModel);
@@ -142,9 +145,9 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            Loan loan = await _context.Loans.SingleOrDefaultAsync(l => l.LoanId == id);
-            Book returnedBook = await _context.Books.SingleOrDefaultAsync(b => b.BookId == loan.BookId);
-            Reader reader = await _context.Readers.SingleOrDefaultAsync(r => r.ReaderId == loan.ReaderId);
+            Loan loan = await Context.Loans.SingleOrDefaultAsync(l => l.LoanId == id);
+            Book returnedBook = await Context.Books.SingleOrDefaultAsync(b => b.BookId == loan.BookId);
+            Reader reader = await Context.Readers.SingleOrDefaultAsync(r => r.ReaderId == loan.ReaderId);
             BookReturnViewModel bookReturnViewModel = new(loan, returnedBook, reader);
 
             returnedBook.IsBorrowed = false;
@@ -155,9 +158,9 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
-                    _context.Loans.Remove(loan);
+                    Context.Loans.Remove(loan);
                     reader.NumberOfLoans--;
-                    await _context.SaveChangesAsync();
+                    await Context.SaveChangesAsync();
                 }
                 catch (DbUpdateException ex)
                 {
@@ -173,24 +176,24 @@ namespace SimpleLibraryWebsite.Controllers
 
         private void CreateBookIdList()
         {
-            var bookIdList = (from b in _context.Books
-                select new SelectListItem()
-                {
-                    Text = b.BookId.ToString(),
-                    Value = b.BookId.ToString(),
-                }).ToList();
+            var bookIdList = (from b in Context.Books
+                              select new SelectListItem()
+                              {
+                                  Text = b.BookId.ToString(),
+                                  Value = b.BookId.ToString(),
+                              }).ToList();
 
             ViewBag.ListOfBookId = bookIdList;
         }
 
         private void CreateReaderIdList()
         {
-            var readerIdList = (from r in _context.Readers
-                select new SelectListItem()
-                {
-                    Text = r.ReaderId.ToString(),
-                    Value = r.ReaderId.ToString(),
-                }).ToList();
+            var readerIdList = (from r in Context.Readers
+                                select new SelectListItem()
+                                {
+                                    Text = r.ReaderId.ToString(),
+                                    Value = r.ReaderId.ToString(),
+                                }).ToList();
 
             ViewBag.ListOfReaderId = readerIdList;
         }
@@ -216,8 +219,8 @@ namespace SimpleLibraryWebsite.Controllers
                 if (ModelState.IsValid)
                 {
                     loan.FillMissingFields();
-                    _context.Add(loan);
-                    await _context.SaveChangesAsync();
+                    Context.Add(loan);
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -240,10 +243,18 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var loan = await _context.Loans.FindAsync(id);
+            var loan = await Context.Loans.FindAsync(id);
             if (loan == null)
             {
                 return NotFound();
+            }
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, loan, ContactOperations.Create);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
             }
 
             CreateReaderIdList();
@@ -264,7 +275,21 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var loanToUpdate = await _context.Loans.FirstOrDefaultAsync(l => l.LoanId == id);
+            var loan = await Context
+                .Loans.AsNoTracking()
+                .FirstOrDefaultAsync(m => m.LoanId == id);
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, loan,
+                ContactOperations.Update);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
+
+            var loanToUpdate = await Context.Loans.FirstOrDefaultAsync(l => l.LoanId == id);
 
             if (await TryUpdateModelAsync(
                 loanToUpdate,
@@ -273,7 +298,7 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await Context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex)
@@ -296,11 +321,21 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var loan = await _context.Loans
+            var loan = await Context.Loans
                 .FirstOrDefaultAsync(m => m.LoanId == id);
+
             if (loan == null)
             {
                 return NotFound();
+            }
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, loan,
+                ContactOperations.Delete);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
             }
 
             return View(loan);
@@ -311,22 +346,31 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var loan = await _context.Loans.FindAsync(id);
+            var loan = await Context.Loans.FindAsync(id);
             if (loan is null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, loan,
+                ContactOperations.Delete);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
             try
             {
-                _context.Loans.Remove(loan);
-                await _context.SaveChangesAsync();
+                Context.Loans.Remove(loan);
+                await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
             {
                 _logger.Error(ex.Message);
-                return RedirectToAction(nameof(Delete), new {id, saveChangesError = true});
+                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
             }
         }
     }

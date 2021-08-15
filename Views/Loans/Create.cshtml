@@ -1,4 +1,6 @@
 ﻿@model SimpleLibraryWebsite.Models.Loan
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService _authorizationService
 
 @{
     ViewData["Title"] = "Create";
