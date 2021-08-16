@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace SimpleLibraryWebsite.Models.Authorization
 {
-    public class LoanAdministratorsAuthorizationHandler
-        : AuthorizationHandler<OperationAuthorizationRequirement, Loan>
+    public class AdministratorsAuthorizationHandler<T>
+        : AuthorizationHandler<OperationAuthorizationRequirement, T>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             OperationAuthorizationRequirement requirement, 
-            Loan resource)
+            T resource)
         {
             if (resource == null)
             {

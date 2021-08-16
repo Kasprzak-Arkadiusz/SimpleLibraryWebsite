@@ -1,4 +1,7 @@
 ﻿@model SimpleLibraryWebsite.Models.Request
+@using SimpleLibraryWebsite.Models.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService _authorizationService
 
 @{
     ViewData["Title"] = "Details";
@@ -36,6 +39,12 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.RequestId">Edit</a> |
+    @if ((await _authorizationService.AuthorizeAsync(
+        User, Model,
+        ContactOperations.Update)).Succeeded)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.RequestId">Edit</a> <text>|</text>
+    }
+
     <a asp-action="Index">Back to List</a>
 </div>

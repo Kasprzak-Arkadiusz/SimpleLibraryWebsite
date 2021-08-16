@@ -1,5 +1,5 @@
-﻿@using SimpleLibraryWebsite.Models.Authorization
-@model SimpleLibraryWebsite.Models.ViewModels.LoanViewModel
+﻿@model SimpleLibraryWebsite.Models.ViewModels.LoanViewModel
+@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService _authorizationService
 
@@ -106,10 +106,10 @@
                     <text> | </text>
                 }
                 <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
-                    <text> | </text>
             </td>
         </tr>
     }
+
     </tbody>
 </table>
 

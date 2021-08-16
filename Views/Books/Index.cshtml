@@ -1,4 +1,7 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.BookGenreViewModel
+@using SimpleLibraryWebsite.Models.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService _authorizationService
 
 @{
     ViewData["Title"] = "Book list";
@@ -60,13 +63,36 @@
             <td>@Html.DisplayFor(modelItem => item.IsBorrowed)
             </td>
             <td>
-                @if (!item.IsBorrowed)
+                
+                
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    ContactOperations.Borrow)).Succeeded)
                 {
-                    <a asp-action="Borrow" asp-route-id="@item.BookId">Borrow</a> <span>|</span>
+                    @if (!item.IsBorrowed)
+                    {
+                        <a asp-action="Borrow" asp-route-id="@item.BookId">Borrow</a> 
+                        <text>|</text>
+                    }
                 }
-                <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BookId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
+                
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    ContactOperations.Update)).Succeeded)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a>
+                    <text>|</text>
+                }
+
+                    <a asp-action="Details" asp-route-id="@item.BookId">Details</a> 
+
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    ContactOperations.Delete)).Succeeded)
+                {
+                    <text>|</text>
+                    <a asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
+                }
             </td>
         </tr>
     }

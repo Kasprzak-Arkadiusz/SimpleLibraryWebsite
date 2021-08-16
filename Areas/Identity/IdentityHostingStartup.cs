@@ -39,14 +39,7 @@ namespace SimpleLibraryWebsite.Areas.Identity
                         .Build();
                 });
 
-                services.AddSingleton<IAuthorizationHandler,
-                    LoanAdministratorsAuthorizationHandler>();
-
-                services.AddSingleton<IAuthorizationHandler,
-                    LoanLibrarianAuthorizationHandler>();
-
-                services.AddSingleton<IAuthorizationHandler,
-                    LoanReaderAuthorizationHandler>();
+                ServiceConfigurationForAuthorizationHandlers.Configure(services);
             });
         }
     }

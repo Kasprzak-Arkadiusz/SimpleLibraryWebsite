@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using SimpleLibraryWebsite.Models.Authorization;
 
 namespace SimpleLibraryWebsite.Models
 {

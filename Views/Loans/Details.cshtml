@@ -1,4 +1,7 @@
 ﻿@model SimpleLibraryWebsite.Models.Loan
+@using SimpleLibraryWebsite.Models.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService _authorizationService
 
 @{
     ViewData["Title"] = "Details";
@@ -37,6 +40,12 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Return" asp-route-id="@Model.LoanId">Return</a> |
+    @if ((await _authorizationService.AuthorizeAsync(
+        User, Model,
+        ContactOperations.Return)).Succeeded)
+    {
+        <a asp-action="Return" asp-route-id="@Model.LoanId">Return</a>
+        <text> | </text>
+    }
     <a asp-action="Index">Back to List</a>
 </div>
