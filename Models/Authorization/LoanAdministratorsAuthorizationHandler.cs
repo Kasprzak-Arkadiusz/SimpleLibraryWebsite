@@ -21,7 +21,7 @@ namespace SimpleLibraryWebsite.Models.Authorization
             }
 
             // Administrators can do anything.
-            if (context.User.IsInRole(Roles.Admin.ToString()))
+            if (context.User.IsInRole(Role.Admin.ToString()))
             {
                 context.Succeed(requirement);
             }

@@ -13,7 +13,7 @@ namespace SimpleLibraryWebsite.Models
         [Display(Name = "Book title")]
         public string Title { get; set; }
         [Required]
-        public Genres? Genre { get; set; }
+        public Genres Genre { get; set; }
         [Display(Name = "Date of adding")]
         [DataType(DataType.Date)]
         public DateTime DateOfAdding { get; set; }
@@ -31,6 +31,11 @@ namespace SimpleLibraryWebsite.Models
 
         public Book()
         {
+        }
+
+        public bool AnyFieldIsNullOrEmpty()
+        {
+            return Author is null || Title is null;
         }
 
         public void FillMissingProperties()

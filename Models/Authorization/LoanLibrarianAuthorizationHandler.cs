@@ -23,7 +23,7 @@ namespace SimpleLibraryWebsite.Models.Authorization
                 return Task.CompletedTask;
             }
 
-            if (context.User.IsInRole(Roles.Librarian.ToString()))
+            if (context.User.IsInRole(Role.Librarian.ToString()))
             {
                 context.Succeed(requirement);
             }

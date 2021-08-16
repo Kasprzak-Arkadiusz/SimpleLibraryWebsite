@@ -44,9 +44,6 @@
     </div>
 </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
     <tr>
@@ -110,13 +107,6 @@
                 }
                 <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
                     <text> | </text>
-                @if ((await _authorizationService.AuthorizeAsync(
-                    User, item,
-                    ContactOperations.Return)).Succeeded)
-                {
-                        <a asp-action="Edit" asp-route-id="@item.LoanId">Edit</a>
-                        <text> | </text>
-                }
             </td>
         </tr>
     }

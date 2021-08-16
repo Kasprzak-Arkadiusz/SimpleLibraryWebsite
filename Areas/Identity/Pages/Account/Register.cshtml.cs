@@ -105,7 +105,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    await _userManager.AddToRoleAsync(user, Roles.Reader.ToString());
+                    await _userManager.AddToRoleAsync(user, Role.Reader.ToString());
                     await _context.Readers.AddAsync(new Reader(user));
                     await _context.SaveChangesAsync();
 

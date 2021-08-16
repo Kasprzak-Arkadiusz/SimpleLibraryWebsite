@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -101,23 +102,44 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Create
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
         public IActionResult Create()
         {
-            CreateReaderIdList();
             return View();
         }
 
         // POST: Requests/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReaderId,Title,Author,Genre")] Request request)
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        public async Task<IActionResult> Create([Bind("Title,Author,Genre")] Request request)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Reader requestingReader = await Context.Readers.SingleOrDefaultAsync(r => r.ReaderId == userId);
+
+            if (requestingReader.NumberOfRequests == Reader.BookRequestLimit)
+            {
+                ModelState.AddModelError("", "You have exceeded the limit of requested books.\n "
+                                             + $"You can request a maximum of {Reader.BookRequestLimit} books.\n"
+                                             + "Wait for the librarian to fulfill your request or\n"
+                                             + "remove other requests");
+                return View(request);
+            }
+
+            if (request == null || userId == null)
+            {
+                return NotFound();
+            }
+
+            if (request.AnyFieldIsNullOrEmpty())
+            {
+                ModelState.AddModelError("", "All fields must be filled");
+                return View(request);
+            }
+
             try
             {
-                CreateReaderIdList();
-                request.FillMissingProperties(await Context.Readers.FindAsync(request.ReaderId));
+                request.ReaderId = userId;
                 Context.Add(request);
                 await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -134,6 +156,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Edit/5
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -153,10 +176,9 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: Requests/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName(nameof(Edit))]
         [ValidateAntiForgeryToken]
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
         public async Task<IActionResult> EditPost(int? id)
         {
             if (id is null)
@@ -189,6 +211,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Delete/5
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -208,8 +231,9 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: Requests/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(nameof(Delete))]
         [ValidateAntiForgeryToken]
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var request = await Context.Requests.FindAsync(id);

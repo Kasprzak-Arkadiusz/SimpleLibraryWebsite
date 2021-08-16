@@ -22,12 +22,7 @@ namespace SimpleLibraryWebsite
                 try
                 {
                     var config = services.GetRequiredService<IConfiguration>();
-
                     var testUserPw = config["SeedUserPW"];
-
-                    /*DbInitializer.Service = services;
-                    await DbInitializer.SeedRolesAsync();
-                    await DbInitializer.SeedAdminAsync();*/
 
                     DbInitializer.Initialize(services, testUserPw).Wait();
                 }

@@ -26,6 +26,7 @@ namespace SimpleLibraryWebsite.Controllers
         { }
 
         // GET: NewBooks
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder,
                                                 string currentGenreFilter, string currentTitleFilter, int? pageNumber)
         {
@@ -52,7 +53,7 @@ namespace SimpleLibraryWebsite.Controllers
             var culture = CultureInfo.CreateSpecificCulture("en-US");
 
             DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
-            TimeSpan.TryParse(TimeSpan.FromDays(21).ToString(), out TimeSpan borrowingTime);
+            TimeSpan.TryParse(TimeSpan.FromDays(14).ToString(), out TimeSpan borrowingTime);
 
             var newBooksList = newBooks.Where(b => b.DateOfAdding.Date >= today - borrowingTime).ToList();
 
@@ -79,6 +80,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: NewBooks/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -97,16 +99,16 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: NewBooks/Create
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: NewBooks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Create([Bind("Author,Title,Genre")] Book book)
         {
             try
@@ -131,6 +133,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: NewBooks/Delete/5
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -149,8 +152,9 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: NewBooks/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(nameof(Delete))]
         [ValidateAntiForgeryToken]
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var book = await Context.Books.FindAsync(id);

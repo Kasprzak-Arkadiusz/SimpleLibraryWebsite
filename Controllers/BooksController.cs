@@ -25,6 +25,7 @@ namespace SimpleLibraryWebsite.Controllers
         { }
 
         // GET: Books
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder,
                                                 string currentGenreFilter, string currentTitleFilter, int? pageNumber)
         {
@@ -71,6 +72,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -88,7 +90,8 @@ namespace SimpleLibraryWebsite.Controllers
             return View(book);
         }
 
-        // Get: Books/Borrow/5
+        // GET: Books/Borrow/5
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Borrow(int? id)
         {
             if (id == null)
@@ -107,8 +110,10 @@ namespace SimpleLibraryWebsite.Controllers
             return View(bookBorrowViewModel);
         }
 
+        
         // POST: Books/BorrowPost/5
-        [HttpPost, ActionName("Borrow")]
+        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [HttpPost, ActionName(nameof(Borrow))]
         public async Task<IActionResult> BorrowPost(int? id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -162,18 +167,24 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books/Create
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Books/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Create([Bind("Author,Title,Genre")] Book book)
         {
+            if (book.AnyFieldIsNullOrEmpty())
+            {
+                ModelState.AddModelError("", "All fields must be filled");
+                return View(book);
+            }
+
             try
             {
                 if (ModelState.IsValid)
@@ -196,6 +207,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books/Edit/5
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -213,9 +225,8 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: Books/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [HttpPost, ActionName(nameof(Edit))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPost(int? id)
         {
@@ -249,6 +260,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Books/Delete/5
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -267,7 +279,8 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: Books/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [HttpPost, ActionName(nameof(Delete))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

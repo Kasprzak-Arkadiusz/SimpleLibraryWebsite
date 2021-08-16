@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
-using SimpleLibraryWebsite.Models.Authorization;
 using SimpleLibraryWebsite.Models.ViewModels;
 
 namespace SimpleLibraryWebsite.Controllers
@@ -25,6 +22,7 @@ namespace SimpleLibraryWebsite.Controllers
         { }
 
         // GET: Loans
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Index(string readerName, string readerLastName, string bookTitle, string sortOrder,
                                                 string currentNameFilter, string currentLastNameFilter, string currentTitleFilter, int? pageNumber)
         {
@@ -97,6 +95,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans/Details/5
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -116,6 +115,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans/Return/5
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Return(int? id)
         {
             if (id == null)
@@ -137,7 +137,8 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: Books/Return/5
-        [HttpPost, ActionName("Return")]
+        [HttpPost, ActionName(nameof(Return))]
+        [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> ReturnPost(int? id)
         {
             if (id == null)
@@ -172,206 +173,6 @@ namespace SimpleLibraryWebsite.Controllers
                 }
             }
             return RedirectToAction(nameof(Index));
-        }
-
-        private void CreateBookIdList()
-        {
-            var bookIdList = (from b in Context.Books
-                              select new SelectListItem()
-                              {
-                                  Text = b.BookId.ToString(),
-                                  Value = b.BookId.ToString(),
-                              }).ToList();
-
-            ViewBag.ListOfBookId = bookIdList;
-        }
-
-        private void CreateReaderIdList()
-        {
-            var readerIdList = (from r in Context.Readers
-                                select new SelectListItem()
-                                {
-                                    Text = r.ReaderId.ToString(),
-                                    Value = r.ReaderId.ToString(),
-                                }).ToList();
-
-            ViewBag.ListOfReaderId = readerIdList;
-        }
-
-        // GET: Loans/Create
-        public IActionResult Create()
-        {
-            CreateBookIdList();
-            CreateReaderIdList();
-
-            return View();
-        }
-
-        // POST: Loans/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookId,ReaderId,LentFrom,LentTo")] Loan loan)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    loan.FillMissingFields();
-                    Context.Add(loan);
-                    await Context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.Error(ex.Message);
-                ModelState.AddModelError("", "Unable to save changes. " +
-                                             "Try again, and if the problem persists " +
-                                             "see your system administrator.");
-            }
-
-            return View(loan);
-        }
-
-        // GET: Loans/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var loan = await Context.Loans.FindAsync(id);
-            if (loan == null)
-            {
-                return NotFound();
-            }
-
-            var isAuthorized = await AuthorizationService.AuthorizeAsync(
-                User, loan, ContactOperations.Create);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return Forbid();
-            }
-
-            CreateReaderIdList();
-            CreateBookIdList();
-
-            return View(loan);
-        }
-
-        // POST: Loans/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
-        {
-            if (id is null)
-            {
-                return NotFound();
-            }
-
-            var loan = await Context
-                .Loans.AsNoTracking()
-                .FirstOrDefaultAsync(m => m.LoanId == id);
-
-            var isAuthorized = await AuthorizationService.AuthorizeAsync(
-                User, loan,
-                ContactOperations.Update);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return Forbid();
-            }
-
-
-            var loanToUpdate = await Context.Loans.FirstOrDefaultAsync(l => l.LoanId == id);
-
-            if (await TryUpdateModelAsync(
-                loanToUpdate,
-                "",
-                l => l.ReaderId, l => l.BookId, l => l.LentTo))
-            {
-                try
-                {
-                    await Context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException ex)
-                {
-                    _logger.Error(ex.Message);
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                                                 "Try again, and if the problem persists " +
-                                                 "see your system administrator.");
-                }
-            }
-
-            return View(loanToUpdate);
-        }
-
-        // GET: Loans/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var loan = await Context.Loans
-                .FirstOrDefaultAsync(m => m.LoanId == id);
-
-            if (loan == null)
-            {
-                return NotFound();
-            }
-
-            var isAuthorized = await AuthorizationService.AuthorizeAsync(
-                User, loan,
-                ContactOperations.Delete);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return Forbid();
-            }
-
-            return View(loan);
-        }
-
-        // POST: Loans/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var loan = await Context.Loans.FindAsync(id);
-            if (loan is null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            var isAuthorized = await AuthorizationService.AuthorizeAsync(
-                User, loan,
-                ContactOperations.Delete);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return Forbid();
-            }
-
-            try
-            {
-                Context.Loans.Remove(loan);
-                await Context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.Error(ex.Message);
-                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
-            }
         }
     }
 }

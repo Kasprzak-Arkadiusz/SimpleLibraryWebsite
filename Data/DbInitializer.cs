@@ -18,13 +18,19 @@ namespace SimpleLibraryWebsite.Data
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
                 var adminId = await EnsureUser(serviceProvider, testUserPw, "superAdmin", "admin@contoso.com");
-                await EnsureRole(serviceProvider, adminId, Roles.Admin.ToString());
+                await EnsureRole(serviceProvider, adminId, Role.Admin.ToString());
+                await context.Readers.AddAsync(new Reader
+                {
+                    ReaderId = adminId,
+                    FirstName = "James",
+                    LastName = "Smith",
+                });
+                await context.SaveChangesAsync();
 
                 var librarianId = await EnsureUser(serviceProvider, testUserPw, "justALibrarian", "librarian@contoso.com");
-                await EnsureRole(serviceProvider, librarianId, Roles.Librarian.ToString());
+                await EnsureRole(serviceProvider, librarianId, Role.Librarian.ToString());
 
-
-                var dummy = await SeedDb(context, serviceProvider);
+                await SeedDb(context, serviceProvider);
             }
         }
 
@@ -157,9 +163,8 @@ namespace SimpleLibraryWebsite.Data
                 };
 
                 string userId = await CreateUser(serviceProvider, users[i], "123Pa$$word.");
-                await EnsureRole(serviceProvider, userId, Roles.Reader.ToString());
+                await EnsureRole(serviceProvider, userId, Role.Reader.ToString());
             }
-
 
             var loans = new[]
             {

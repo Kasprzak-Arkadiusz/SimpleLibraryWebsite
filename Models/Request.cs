@@ -26,12 +26,15 @@ namespace SimpleLibraryWebsite.Models
             Genre = genre;
             NumberOfUpvotes = 0;
         }
-        public Request() { }
 
-        public void FillMissingProperties(Reader reader)
+        public Request()
         {
-            Reader = reader;
-            NumberOfUpvotes = 0;
+            
+        }
+
+        public bool AnyFieldIsNullOrEmpty()
+        {
+            return Author is null || Title is null;
         }
     }
 }
