@@ -85,7 +85,7 @@
 
 <a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PaginatedList.PageIndex - 1)"
+   asp-route-pageNumber="@(Model.PaginatedList.PageNumber - 1)"
    asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
    asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]"
    class="btn btn-primary @prevDisabled">
@@ -93,7 +93,7 @@
 </a>
 <a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PaginatedList.PageIndex + 1)"
+   asp-route-pageNumber="@(Model.PaginatedList.PageNumber + 1)"
    asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
    asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]"
    class="btn btn-primary @nextDisabled">

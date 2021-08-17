@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
 {
@@ -24,17 +25,17 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Loans
         [AuthorizeEnum(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Index(string readerName, string readerLastName, string bookTitle, string sortOrder,
-                                                string currentNameFilter, string currentLastNameFilter, string currentTitleFilter, int? pageNumber)
+                                                string currentFirstNameFilter, string currentLastNameFilter, string currentTitleFilter, int? pageNumber)
         {
-            ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
-            ViewData["ReaderNameSortParam"] = sortOrder == "ReaderName" ? "readerName_desc" : "ReaderName";
-            ViewData["ReaderLastNameSortParam"] = sortOrder == "ReaderLastName" ? "readerLastName_desc" : "ReaderLastName";
-            ViewData["LentToSortParam"] = sortOrder == "LentTo" ? "lentTo_desc" : "LentTo";
-            ViewData["CurrentSort"] = sortOrder;
+            ViewBag.TitleSortParam = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.ReaderFirstNameSortParam = sortOrder == "ReaderName" ? "readerName_desc" : "ReaderName";
+            ViewBag.ReaderLastNameSortParam = sortOrder == "ReaderLastName" ? "readerLastName_desc" : "ReaderLastName";
+            ViewBag.LentToSortParam = sortOrder == "LentTo" ? "lentTo_desc" : "LentTo";
+            ViewBag.CurrentSort = sortOrder;
 
-            ViewData["CurrentNameFilter"] = SaveFilterValue(ref readerName, currentNameFilter, ref pageNumber);
-            ViewData["CurrentLastNameFilter"] = SaveFilterValue(ref readerLastName, currentLastNameFilter, ref pageNumber);
-            ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
+            ViewBag.CurrentFirstNameFilter = SaveFilterValue(ref readerName, currentFirstNameFilter, ref pageNumber);
+            ViewBag.CurrentLastNameFilter = SaveFilterValue(ref readerLastName, currentLastNameFilter, ref pageNumber);
+            ViewBag.CurrentTitleFilter = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
 
             var readers = from r in Context.Readers select r;
             bool isAnySearchFieldFilled = false;
@@ -48,11 +49,6 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 readers = from r in readers where r.LastName == readerLastName select r;
                 isAnySearchFieldFilled = true;
-            }
-
-            if (!readers.Any())
-            {
-                return View(new LoanViewModel { PaginatedList = new PaginatedList<Loan>() });
             }
 
             var books = from b in Context.Books select b;
@@ -89,7 +85,7 @@ namespace SimpleLibraryWebsite.Controllers
             loanViewModel.Loans = results.ToList();
 
             const int pageSize = 2;
-            loanViewModel.PaginatedList = PaginatedList<Loan>.Create(loanViewModel.Loans, pageNumber ?? 1, pageSize);
+            loanViewModel.PaginatedList = loanViewModel.Loans.ToPagedList(pageNumber ?? 1, pageSize);
 
             return View(loanViewModel);
         }

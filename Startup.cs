@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
 
 namespace SimpleLibraryWebsite
@@ -35,6 +36,10 @@ namespace SimpleLibraryWebsite
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<ApplicationDbContext>();
+
+            services.AddScoped<IBookRepository, BookRepository>();
+
+
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             var builder = services.AddControllersWithViews();

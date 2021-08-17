@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -8,8 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
+using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
 {
@@ -29,12 +32,12 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder,
                                                 string currentGenreFilter, string currentTitleFilter, int? pageNumber)
         {
-            ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
-            ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
-            ViewData["CurrentSort"] = sortOrder;
+            ViewBag.TitleSortParam = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.AuthorSortParam = sortOrder == "Author" ? "author_desc" : "Author";
+            ViewBag.CurrentSort = sortOrder;
 
-            ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
-            ViewData["CurrentGenreFilter"] = SaveFilterValue(ref bookGenre, currentGenreFilter, ref pageNumber);
+            ViewBag.CurrentTitleFilter = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
+            ViewBag.CurrentGenreFilter = SaveFilterValue(ref bookGenre, currentGenreFilter, ref pageNumber);
 
             var books = from b in Context.Books select b;
 
@@ -57,7 +60,7 @@ namespace SimpleLibraryWebsite.Controllers
                 _ => books.OrderBy(b => b.Title)
             };
 
-            IQueryable<string> stringGenres = from b in Context.Books
+            IEnumerable<string> stringGenres = from b in Context.Books
                                               orderby b.Genre
                                               select b.Genre.ToString();
             const int pageSize = 5;
@@ -65,7 +68,7 @@ namespace SimpleLibraryWebsite.Controllers
             BookGenreViewModel bookGenreViewModel = new BookGenreViewModel
             {
                 Genres = new SelectList(await stringGenres.Distinct().ToListAsync()),
-                PaginatedList = await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ?? 1, pageSize)
+                PaginatedList = books.ToPagedList(pageNumber ?? 1, pageSize)
             };
 
             return View(bookGenreViewModel);
@@ -110,7 +113,7 @@ namespace SimpleLibraryWebsite.Controllers
             return View(bookBorrowViewModel);
         }
 
-        
+
         // POST: Books/BorrowPost/5
         [AuthorizeEnum(Role.Reader, Role.Admin)]
         [HttpPost, ActionName(nameof(Borrow))]

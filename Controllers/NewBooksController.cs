@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
 {
@@ -73,7 +74,7 @@ namespace SimpleLibraryWebsite.Controllers
             BookGenreViewModel bookGenreViewModel = new BookGenreViewModel
             {
                 Genres = new SelectList(await stringGenres.Distinct().ToListAsync()),
-                PaginatedList = PaginatedList<Book>.Create(results, pageNumber ?? 1, pageSize)
+                PaginatedList = results.ToPagedList(pageNumber ?? 1, pageSize)
             };
 
             return View(bookGenreViewModel);

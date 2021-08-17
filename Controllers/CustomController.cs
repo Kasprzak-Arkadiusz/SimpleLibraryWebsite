@@ -20,6 +20,15 @@ namespace SimpleLibraryWebsite.Controllers
             UserManager = userManager;
             AuthorizationService = authorizationService;
         }
+
+        public CustomController(
+            IAuthorizationService authorizationService,
+            UserManager<User> userManager)
+        {
+            UserManager = userManager;
+            AuthorizationService = authorizationService;
+        }
+
         protected string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
         {
             if (value is not null)
