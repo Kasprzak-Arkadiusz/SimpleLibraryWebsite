@@ -17,10 +17,6 @@ namespace SimpleLibraryWebsite.Areas.Identity
         {
             builder.ConfigureServices((context, services) =>
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("DefaultConnection")));
-
                 services.AddIdentity<User, IdentityRole>(
                             options =>
                             {

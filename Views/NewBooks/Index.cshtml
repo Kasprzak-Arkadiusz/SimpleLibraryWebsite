@@ -1,7 +1,12 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.BookGenreViewModel
+@using Microsoft.AspNetCore.Authorization
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@inject IAuthorizationService _authorizationService
 
 @{
     ViewData["Title"] = "New books";
+    IPagedList<Book> bookPages = Model.PaginatedList;
 }
 
 <h1>New books</h1>
@@ -28,16 +33,18 @@
     <thead>
     <tr>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParam"]"
-               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
-               asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
+            <a asp-action="Index" asp-route-sortorder="@ViewBag.AuthorSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">
                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
             </a>
         </th>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]"
-               asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
-               asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]">
+            <a asp-action="Index" asp-route-sortorder="@ViewBag.TitleSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">
                 @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
             </a>
         </th>
@@ -78,24 +85,12 @@
     </tbody>
 </table>
 
-@{
-    string prevDisabled = !Model.PaginatedList.HasPreviousPage ? "disabled" : "";
-    string nextDisabled = !Model.PaginatedList.HasNextPage ? "disabled" : "";
-}
-
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PaginatedList.PageNumber - 1)"
-   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
-   asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]"
-   class="btn btn-primary @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PaginatedList.PageNumber + 1)"
-   asp-route-currentTitleFilter="@ViewData["CurrentTitleFilter"]"
-   asp-route-CurrentGenreFilter="@ViewData["CurrentGenreFilter"]"
-   class="btn btn-primary @nextDisabled">
-    Next
-</a>
+Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
+@Html.PagedListPager(bookPages, pageNumber => 
+    Url.Action("Index", new
+    {
+        pageNumber,
+        sortOrder = ViewBag.CurrentSort,
+        currentTitleFilter = ViewBag.CurrentTitleFilter,
+        currentGenreFilter = ViewBag.CurrentGenreFilter
+    }) )

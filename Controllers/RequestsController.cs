@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
 {
@@ -27,12 +28,12 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> Index(string bookTitle, string author, string sortOrder,
                                                 string currentTitleFilter, string currentAuthorFilter, int? pageNumber)
         {
-            ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
-            ViewData["AuthorSortParam"] = sortOrder == "Author" ? "author_desc" : "Author";
-            ViewData["CurrentSort"] = sortOrder;
+            ViewBag.TitleSortParam = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.AuthorSortParam = sortOrder == "Author" ? "author_desc" : "Author";
+            ViewBag.CurrentSort = sortOrder;
 
-            ViewData["CurrentTitleFilter"] = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
-            ViewData["CurrentAuthorFilter"] = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
+            ViewBag.CurrentTitleFilter = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
+            ViewBag.CurrentAuthorFilter = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
 
             var requests = from req in Context.Requests select req;
             if (!string.IsNullOrWhiteSpace(author))
@@ -43,11 +44,6 @@ namespace SimpleLibraryWebsite.Controllers
             if (!string.IsNullOrWhiteSpace(bookTitle))
             {
                 requests = from r in requests where r.Title.Contains(bookTitle) select r;
-            }
-
-            if (!requests.Any())
-            {
-                return View(new RequestViewModel() { PaginatedList = new PaginatedList<Request>() });
             }
 
             RequestViewModel requestViewModel = new RequestViewModel
@@ -65,7 +61,7 @@ namespace SimpleLibraryWebsite.Controllers
             requestViewModel.Requests = results.ToList();
 
             const int pageSize = 1;
-            requestViewModel.PaginatedList = PaginatedList<Request>.Create(requestViewModel.Requests, pageNumber ?? 1, pageSize);
+            requestViewModel.PaginatedList = requestViewModel.Requests.ToPagedList(pageNumber ?? 1, pageSize);
 
             return View(requestViewModel);
         }
@@ -140,6 +136,7 @@ namespace SimpleLibraryWebsite.Controllers
             try
             {
                 request.ReaderId = userId;
+                requestingReader.NumberOfRequests++;
                 Context.Add(request);
                 await Context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.Authorization;
@@ -17,21 +18,50 @@ namespace SimpleLibraryWebsite.Data
             await using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
-                var adminId = await EnsureUser(serviceProvider, testUserPw, "superAdmin", "admin@contoso.com");
-                await EnsureRole(serviceProvider, adminId, Role.Admin.ToString());
-                await context.Readers.AddAsync(new Reader
-                {
-                    ReaderId = adminId,
-                    FirstName = "James",
-                    LastName = "Smith",
-                });
-                await context.SaveChangesAsync();
+                await CreateAdminAccount(context, serviceProvider);
 
-                var librarianId = await EnsureUser(serviceProvider, testUserPw, "justALibrarian", "librarian@contoso.com");
+                var librarianId = await EnsureUser(serviceProvider, testUserPw, "justALibrarian", "librarian@gmail.com");
                 await EnsureRole(serviceProvider, librarianId, Role.Librarian.ToString());
 
                 await SeedDb(context, serviceProvider);
             }
+        }
+
+        private static async Task CreateAdminAccount(ApplicationDbContext context, IServiceProvider serviceProvider)
+        {
+            var config = serviceProvider.GetRequiredService<IConfiguration>();
+            string userName = "superAdmin";
+            string email = "admin@gmail.com";
+            string testUserPw = config["SeedUserPW"];
+
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = userName,
+                    Email = email,
+                    FirstName = "James",
+                    LastName = "Smith",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true
+                };
+                await userManager.CreateAsync(user, testUserPw);
+
+                Reader reader = new Reader(user);
+                context.Readers.Add(reader);
+                await context.SaveChangesAsync();
+            }
+
+            if (user == null)
+            {
+                throw new Exception("The password is probably not strong enough!");
+            }
+
+            await EnsureRole(serviceProvider, user.Id, Role.Admin.ToString());
+            await EnsureRole(serviceProvider, user.Id, Role.Reader.ToString());
         }
 
         private static async Task<string> EnsureUser(IServiceProvider serviceProvider,
@@ -62,10 +92,9 @@ namespace SimpleLibraryWebsite.Data
             return user.Id;
         }
 
-        private static async Task<IdentityResult> EnsureRole(IServiceProvider serviceProvider,
+        private static async Task EnsureRole(IServiceProvider serviceProvider,
             string uid, string role)
         {
-            IdentityResult ir;
             var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
 
             if (roleManager == null)
@@ -75,7 +104,7 @@ namespace SimpleLibraryWebsite.Data
 
             if (!await roleManager.RoleExistsAsync(role))
             {
-                ir = await roleManager.CreateAsync(new IdentityRole(role));
+                 await roleManager.CreateAsync(new IdentityRole(role));
             }
 
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
@@ -87,9 +116,7 @@ namespace SimpleLibraryWebsite.Data
                 throw new Exception("The testUserPw password was probably not strong enough!");
             }
 
-            ir = await userManager.AddToRoleAsync(user, role);
-
-            return ir;
+            await userManager.AddToRoleAsync(user, role);
         }
 
         private static async Task<string> CreateUser(IServiceProvider serviceProvider, User user, string password)

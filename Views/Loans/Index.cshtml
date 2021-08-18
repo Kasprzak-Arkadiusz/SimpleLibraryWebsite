@@ -11,116 +11,106 @@
     IPagedList<Loan> loanPages = Model.PaginatedList;
 }
 
-<h1>Book loans</h1>
+        <h1>Book loans</h1>
 
-<p>Here you can see all book loans.</p>
-    
-<form asp-controller="Loans" asp-action="Index" method="get">
-    <div class="container">
-        <div class="row">
-            <div class="form-group">
-                <div class="col-md-8">
-                    <b>Reader name:</b>
-                    <input type="text" asp-for="ReaderName" value="@ViewBag.CurrentNameFilter"/>
+        <p>Here you can see all book loans.</p>
+
+        <form asp-controller="Loans" asp-action="Index" method="get">
+            <div class="container">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <b>Reader name:</b>
+                            <input type="text" asp-for="ReaderName" value="@ViewBag.CurrentNameFilter" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="form-group">
-                <div class="col-md-8">
-                    <b>Reader LastName:</b>
-                    <input type="text" asp-for="ReaderLastName" value="@ViewBag.CurrentLastNameFilter"/>
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <b>Reader LastName:</b>
+                            <input type="text" asp-for="ReaderLastName" value="@ViewBag.CurrentLastNameFilter" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="form-group">
-                <div class="col-md-8">
-                    <b>Book title:</b>
-                    <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <b>Book title:</b>
+                            <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
+                        </div>
+                    </div>
                 </div>
+
+                <input type="submit" value="Filter" />
             </div>
-        </div>
+        </form>
 
-        <input type="submit" value="Filter" />
-    </div>
-</form>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewBag.TitleSortParam" 
-               asp-route-currentFirstNameFilter="@ViewBag.CurrentFirstNameFilter"
-               asp-route-currentLastNameFilter="@ViewBag.CurrentLastNameFilter"
-               asp-route-currentTitleFilter="@ViewBag.CurrentTitleFilter"
-               asp-route-pageNumber="@Model.PaginatedList.PageNumber">
-                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Book.Title)
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewBag.ReaderFirstNameSortParam" 
-               asp-route-currentFirstNameFilter="@ViewBag.CurrentFirstNameFilter"
-               asp-route-currentLastNameFilter="@ViewBag.CurrentLastNameFilter"
-               asp-route-currentTitleFilter="@ViewBag.CurrentTitleFilter"
-               asp-route-pageNumber="@Model.PaginatedList.PageNumber">
-                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Reader.FirstName)
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewBag.ReaderLastNameSortParam" 
-               asp-route-currentFirstNameFilter="@ViewBag.CurrentFirstNameFilter"
-               asp-route-currentLastNameFilter="@ViewBag.CurrentLastNameFilter"
-               asp-route-currentTitleFilter="@ViewBag.CurrentTitleFilter"
-               asp-route-pageNumber="@Model.PaginatedList.PageNumber">
-                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Reader.LastName)
-            </a>
-        </th>
-        <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewBag.LentToSortParam" 
-               asp-route-currentFirstNameFilter="@ViewBag.CurrentFirstNameFilter"
-               asp-route-currentLastNameFilter="@ViewBag.CurrentLastNameFilter"
-               asp-route-currentTitleFilter="@ViewBag.CurrentTitleFilter"
-               asp-route-pageNumber="@Model.PaginatedList.PageNumber">
-                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().LentTo)
-            </a>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.PaginatedList) {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-action="Index" asp-route-sortorder="@ViewBag.TitleSortParam"
+                            asp-route-currentfirstnamefilter="@ViewBag.CurrentFirstNameFilter"
+                            asp-route-currentlastnamefilter="@ViewBag.CurrentLastNameFilter"
+                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Book.Title)
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortorder="@ViewBag.ReaderFirstNameSortParam"
+                            asp-route-currentfirstnamefilter="@ViewBag.CurrentFirstNameFilter"
+                            asp-route-currentlastnamefilter="@ViewBag.CurrentLastNameFilter"
+                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Reader.FirstName)
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortorder="@ViewBag.ReaderLastNameSortParam"
+                            asp-route-currentfirstnamefilter="@ViewBag.CurrentFirstNameFilter"
+                            asp-route-currentlastnamefilter="@ViewBag.CurrentLastNameFilter"
+                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Reader.LastName)
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortorder="@ViewBag.LentToSortParam"
+                            asp-route-currentfirstnamefilter="@ViewBag.CurrentFirstNameFilter"
+                            asp-route-currentlastnamefilter="@ViewBag.CurrentLastNameFilter"
+                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().LentTo)
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.PaginatedList) {
         <tr>
 
-            <td>
-                @Html.DisplayFor(modelItem => item.Book.Title)
+            <td>@Html.DisplayFor(modelItem => item.Book.Title)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reader.FirstName)
+            <td>@Html.DisplayFor(modelItem => item.Reader.FirstName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reader.LastName)
+            <td>@Html.DisplayFor(modelItem => item.Reader.LastName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LentTo)
+            <td>@Html.DisplayFor(modelItem => item.LentTo)
             </td>
-            <td>
-                @if ((await _authorizationService.AuthorizeAsync(
+            <td>@if ((await _authorizationService.AuthorizeAsync(
                     User, item,
                     ContactOperations.Return)).Succeeded)
                 {
                     <a asp-action="Return" asp-route-id="@item.LoanId">Return</a>
-                    <text> | </text>
+                <text>| </text>
                 }
                 <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
             </td>
         </tr>
-    }
+                }
 
-    </tbody>
-</table>
-
+            </tbody>
+        </table>
 Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
 @Html.PagedListPager(loanPages, pageNumber => 
     Url.Action("Index", new
