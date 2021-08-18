@@ -100,7 +100,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: NewBooks/Create
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public IActionResult Create()
         {
             return View();
@@ -109,7 +109,7 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: NewBooks/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Create([Bind("Author,Title,Genre")] Book book)
         {
             try
@@ -134,7 +134,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: NewBooks/Delete/5
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,7 +155,7 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: NewBooks/Delete/5
         [HttpPost, ActionName(nameof(Delete))]
         [ValidateAntiForgeryToken]
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var book = await Context.Books.FindAsync(id);

@@ -98,7 +98,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Create
-        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public IActionResult Create()
         {
             return View();
@@ -107,7 +107,7 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Requests/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Create([Bind("Title,Author,Genre")] Request request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -153,7 +153,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Edit/5
-        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -175,7 +175,7 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Requests/Edit/5
         [HttpPost, ActionName(nameof(Edit))]
         [ValidateAntiForgeryToken]
-        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> EditPost(int? id)
         {
             if (id is null)
@@ -208,7 +208,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Delete/5
-        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -230,7 +230,7 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Requests/Delete/5
         [HttpPost, ActionName(nameof(Delete))]
         [ValidateAntiForgeryToken]
-        [AuthorizeEnum(Role.Reader, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var request = await Context.Requests.FindAsync(id);

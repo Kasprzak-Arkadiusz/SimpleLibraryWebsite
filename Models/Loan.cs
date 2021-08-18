@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using SimpleLibraryWebsite.Models.Authorization;
 
 namespace SimpleLibraryWebsite.Models
 {
@@ -29,13 +28,15 @@ namespace SimpleLibraryWebsite.Models
             LentTo = lentFrom.Add(time);
         }
 
-        public Loan() { }
-
-        public void FillMissingFields()
+        public Loan(int bookId, string readerId)
         {
-            LentFrom = DateTime.Now;
+            BookId = bookId;
+            ReaderId = readerId;
+            LentFrom = DateTime.Today;
             TimeSpan time = new TimeSpan(14, 0, 0, 0);
-            LentTo = LentFrom.Add(time);
+            LentTo = DateTime.Today.Add(time);
         }
+
+        public Loan() { }
     }
 }

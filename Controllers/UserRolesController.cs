@@ -9,7 +9,7 @@ using SimpleLibraryWebsite.Models.ViewModels;
 
 namespace SimpleLibraryWebsite.Controllers
 {
-    [AuthorizeEnum( Role.Admin)]
+    [AuthorizeWithEnumRoles( Role.Admin)]
     public class UserRolesController : Controller
     {
         private readonly UserManager<User> _userManager;

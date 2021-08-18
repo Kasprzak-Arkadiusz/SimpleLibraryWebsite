@@ -37,9 +37,6 @@ namespace SimpleLibraryWebsite
 
             services.AddScoped<ApplicationDbContext>();
 
-            services.AddScoped<IBookRepository, BookRepository>();
-
-
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             var builder = services.AddControllersWithViews();

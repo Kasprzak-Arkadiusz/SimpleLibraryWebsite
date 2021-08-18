@@ -23,7 +23,7 @@ namespace SimpleLibraryWebsite.Controllers
         { }
 
         // GET: Loans
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Index(string readerName, string readerLastName, string bookTitle, string sortOrder,
                                                 string currentFirstNameFilter, string currentLastNameFilter, string currentTitleFilter, int? pageNumber)
         {
@@ -91,7 +91,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans/Details/5
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -112,7 +112,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Loans/Return/5
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Return(int? id)
         {
             if (id == null)
@@ -135,7 +135,7 @@ namespace SimpleLibraryWebsite.Controllers
 
         // POST: Books/Return/5
         [HttpPost, ActionName(nameof(Return))]
-        [AuthorizeEnum(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> ReturnPost(int? id)
         {
             if (id == null)

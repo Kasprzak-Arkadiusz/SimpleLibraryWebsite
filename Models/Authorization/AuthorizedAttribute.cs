@@ -13,9 +13,9 @@ namespace SimpleLibraryWebsite.Models
     }
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-    public class AuthorizeEnumAttribute : AuthorizeAttribute
+    public class AuthorizeWithEnumRolesAttribute : AuthorizeAttribute
     {
-        public AuthorizeEnumAttribute(params object[] roles)
+        public AuthorizeWithEnumRolesAttribute(params object[] roles)
         {
             if (roles.Any(r => r.GetType().BaseType != typeof(Enum)))
                 throw new ArgumentException("The specified role is not of the Enum type.");
