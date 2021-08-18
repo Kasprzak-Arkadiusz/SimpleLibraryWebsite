@@ -188,7 +188,7 @@ namespace SimpleLibraryWebsite.Controllers
             if (await TryUpdateModelAsync(
                 requestToUpdate,
                 "",
-                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId, r => r.NumberOfUpvotes))
+                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId))
             {
                 try
                 {

@@ -2,7 +2,7 @@
 using SimpleLibraryWebsite.Models.Authorization;
 
 namespace SimpleLibraryWebsite.Models
-{
+{   
     public class Request
     {
         [Key]
@@ -12,9 +12,6 @@ namespace SimpleLibraryWebsite.Models
         [Display(Name = "Book author")]
         public string Author { get; set; }
         public Genres Genre { get; set; }
-        [Display(Name = "Number of upvotes")]
-        [Range(0, int.MaxValue)]
-        public uint NumberOfUpvotes { get; set; }
 
         public string ReaderId { get; set; }
         public Reader Reader { get; set; }
@@ -25,7 +22,6 @@ namespace SimpleLibraryWebsite.Models
             Title = title;
             Author = author;
             Genre = genre;
-            NumberOfUpvotes = 0;
         }
 
         public Request()

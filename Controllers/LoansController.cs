@@ -100,7 +100,8 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             var loan = await Context.Loans
-                .Include(r => r.Reader).AsNoTracking()
+                .Include(l => l.Reader).AsNoTracking()
+                .Include(l => l.Book).AsNoTracking()
                 .FirstOrDefaultAsync(m => m.LoanId == id);
             if (loan == null)
             {

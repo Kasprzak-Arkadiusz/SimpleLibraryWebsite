@@ -17,9 +17,6 @@ namespace SimpleLibraryWebsite.Data.ModelConfiguration
                 .HasMaxLength(120);
             builder.Property(r => r.Genre)
                 .IsRequired();
-            builder.Property(r => r.NumberOfUpvotes)
-                .HasDefaultValue(1)
-                .HasColumnName("Number of upvotes");
         }
     }
 }
