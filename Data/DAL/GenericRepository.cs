@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SimpleLibraryWebsite.Data.DAL
 {
-     public sealed class GenericRepository<TEntity> where TEntity : class
+    public sealed class GenericRepository<TEntity> where TEntity : class
     {
         private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
@@ -31,7 +31,7 @@ namespace SimpleLibraryWebsite.Data.DAL
             }
 
             foreach (var includeProperty in includeProperties.Split
-                (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);
             }
@@ -49,14 +49,25 @@ namespace SimpleLibraryWebsite.Data.DAL
             return await _dbSet.FindAsync(id);
         }
 
-        public void Insert(TEntity entity)
+        public async Task<TEntity> GetByIdAsync(int id, IEnumerable<string> includes)
         {
-            _dbSet.Add(entity);
+            TEntity model = await _dbSet.FindAsync(id);
+
+            foreach (string path in includes)
+            {
+               await _context.Entry(model).Reference(path).LoadAsync();
+            }
+            return model;
         }
 
-        public void Delete(object id)
+        public async Task InsertAsync(TEntity entity)
         {
-            TEntity entityToDelete = _dbSet.Find(id);
+            await _dbSet.AddAsync(entity);
+        }
+
+        public async Task DeleteAsync(object id)
+        {
+            TEntity entityToDelete = await _dbSet.FindAsync(id);
             Delete(entityToDelete);
         }
 

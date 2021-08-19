@@ -1,12 +1,10 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
+using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
 using X.PagedList;
@@ -16,17 +14,46 @@ namespace SimpleLibraryWebsite.Controllers
     public class RequestsController : CustomController
     {
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly UnitOfWork _unitOfWork;
 
-        public RequestsController(
-            ApplicationDbContext context,
-            IAuthorizationService authorizationService,
-            UserManager<User> userManager)
-            : base(context, authorizationService, userManager)
-        { }
+        public RequestsController(ApplicationDbContext context)
+        {
+            _unitOfWork = new UnitOfWork(context);
+        }
 
         // GET: Requests
         public async Task<IActionResult> Index(string bookTitle, string author, string sortOrder,
                                                 string currentTitleFilter, string currentAuthorFilter, int? pageNumber)
+        {
+            SaveCurrentSortingAndFiltering(ref bookTitle, ref author, sortOrder,
+                 currentTitleFilter, currentAuthorFilter, ref pageNumber);
+
+            var requests = _unitOfWork.RequestRepository.Get();
+
+            if (!string.IsNullOrWhiteSpace(author))
+            {
+                requests = requests.Where(r => r.Author.Contains(author));
+            }
+
+            if (!string.IsNullOrWhiteSpace(bookTitle))
+            {
+                requests = requests.Where(r => r.Title.Contains(bookTitle));
+            }
+
+            requests = SortRequests(requests, sortOrder);
+
+            const int pageSize = 1;
+
+            RequestViewModel requestViewModel = new()
+            {
+                PaginatedList = await requests.ToPagedListAsync(pageNumber ?? 1, pageSize)
+            };
+
+            return View(requestViewModel);
+        }
+
+        private void SaveCurrentSortingAndFiltering(ref string bookTitle, ref string author, string sortOrder,
+            string currentTitleFilter, string currentAuthorFilter, ref int? pageNumber)
         {
             ViewBag.TitleSortParam = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewBag.AuthorSortParam = sortOrder == "Author" ? "author_desc" : "Author";
@@ -34,36 +61,17 @@ namespace SimpleLibraryWebsite.Controllers
 
             ViewBag.CurrentTitleFilter = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
             ViewBag.CurrentAuthorFilter = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
+        }
 
-            var requests = from req in Context.Requests select req;
-            if (!string.IsNullOrWhiteSpace(author))
+        private IQueryable<Request> SortRequests(IQueryable<Request> requests, string sortOrder)
+        {
+            return sortOrder switch
             {
-                requests = from r in requests where r.Author == author select r;
-            }
-
-            if (!string.IsNullOrWhiteSpace(bookTitle))
-            {
-                requests = from r in requests where r.Title.Contains(bookTitle) select r;
-            }
-
-            RequestViewModel requestViewModel = new RequestViewModel
-            {
-                Requests = await requests.ToListAsync()
+                "title_desc" => requests.OrderByDescending(b => b.Title),
+                "Author" => requests.OrderBy(b => b.Author),
+                "author_desc" => requests.OrderByDescending(b => b.Author),
+                _ => requests.OrderBy(b => b.Title)
             };
-
-            var results = sortOrder switch
-            {
-                "title_desc" => requestViewModel.Requests.OrderByDescending(r => r.Title),
-                "Author" => requestViewModel.Requests.OrderBy(r => r.Author),
-                "author_desc" => requestViewModel.Requests.OrderByDescending(r => r.Author),
-                _ => requestViewModel.Requests.OrderBy(r => r.Title)
-            };
-            requestViewModel.Requests = results.ToList();
-
-            const int pageSize = 1;
-            requestViewModel.PaginatedList = requestViewModel.Requests.ToPagedList(pageNumber ?? 1, pageSize);
-
-            return View(requestViewModel);
         }
 
         // GET: Requests/Details/5
@@ -74,27 +82,15 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var request = await Context.Requests
-                .Include(r => r.Reader).AsNoTracking()
-                .FirstOrDefaultAsync(m => m.RequestId == id);
+            Request request = await _unitOfWork.RequestRepository
+                .GetByIdAsync(id.Value, new[] { nameof(Loan.Reader) });
+
             if (request == null)
             {
                 return NotFound();
             }
 
             return View(request);
-        }
-
-        private void CreateReaderIdList()
-        {
-            var readerIdList = (from r in Context.Readers
-                                select new SelectListItem()
-                                {
-                                    Text = r.ReaderId.ToString(),
-                                    Value = r.ReaderId.ToString()
-                                }).ToList();
-
-            ViewBag.ListOfReaderId = readerIdList;
         }
 
         // GET: Requests/Create
@@ -111,9 +107,10 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> Create([Bind("Title,Author,Genre")] Request request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Reader requestingReader = await Context.Readers.SingleOrDefaultAsync(r => r.ReaderId == userId);
 
-            if (requestingReader.NumberOfRequests == Reader.BookRequestLimit)
+            Reader requestingReader = await _unitOfWork.ReaderRepository.GetByIdAsync(userId);
+
+            if (requestingReader.NumberOfRequests >= Reader.BookRequestLimit)
             {
                 ModelState.AddModelError("", "You have exceeded the limit of requested books.\n "
                                              + $"You can request a maximum of {Reader.BookRequestLimit} books.\n"
@@ -137,8 +134,8 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 request.ReaderId = userId;
                 requestingReader.NumberOfRequests++;
-                Context.Add(request);
-                await Context.SaveChangesAsync();
+                await _unitOfWork.RequestRepository.InsertAsync(request);
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -161,13 +158,12 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var request = await Context.Requests.FindAsync(id);
+            Request request = await _unitOfWork.RequestRepository.GetByIdAsync(id);
+
             if (request == null)
             {
                 return NotFound();
             }
-
-            CreateReaderIdList();
 
             return View(request);
         }
@@ -183,25 +179,19 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var requestToUpdate = await Context.Requests.FirstOrDefaultAsync(r => r.RequestId == id);
+            Request requestToUpdate = await _unitOfWork.RequestRepository.GetByIdAsync(id);
 
-            if (await TryUpdateModelAsync(
-                requestToUpdate,
-                "",
-                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId))
+            try
             {
-                try
-                {
-                    await Context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException ex)
-                {
-                    _logger.Error(ex.Message);
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                                                 "Try again, and if the problem persists " +
-                                                 "see your system administrator.");
-                }
+                await _unitOfWork.SaveAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.Error(ex.Message);
+                ModelState.AddModelError("", "Unable to save changes. " +
+                                             "Try again, and if the problem persists " +
+                                             "see your system administrator.");
             }
 
             return View(requestToUpdate);
@@ -216,9 +206,9 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            var request = await Context.Requests
-                .Include(r => r.Reader)
-                .FirstOrDefaultAsync(m => m.RequestId == id);
+            Request request = await _unitOfWork.RequestRepository
+                .GetByIdAsync(id.Value, new[] { nameof(Loan.Reader) })
+                ;
             if (request == null)
             {
                 return NotFound();
@@ -233,7 +223,8 @@ namespace SimpleLibraryWebsite.Controllers
         [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var request = await Context.Requests.FindAsync(id);
+            Request request = await _unitOfWork.RequestRepository.GetByIdAsync(id);
+
             if (request is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -241,8 +232,8 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
-                Context.Requests.Remove(request);
-                await Context.SaveChangesAsync();
+                _unitOfWork.RequestRepository.Delete(request);
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)

@@ -25,7 +25,7 @@ namespace SimpleLibraryWebsite.Data.DAL
 
         public GenericRepository<Request> RequestRepository => _requestRepository ??= new GenericRepository<Request>(_context);
 
-        public async Task Save()
+        public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
         }

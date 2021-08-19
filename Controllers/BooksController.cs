@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +19,7 @@ namespace SimpleLibraryWebsite.Controllers
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly UnitOfWork _unitOfWork;
 
-        public BooksController(ApplicationDbContext context, IAuthorizationService authorizationService,
-            UserManager<User> userManager)
-            : base(context, authorizationService, userManager)
+        public BooksController(ApplicationDbContext context)
         {
             _unitOfWork = new UnitOfWork(context);
         }
@@ -50,28 +47,19 @@ namespace SimpleLibraryWebsite.Controllers
 
             books = SortBooks(books, sortOrder);
 
-            var stringGenres = _unitOfWork.BookRepository.Get().OrderBy(b => b.Genre).Select(b => b.Genre.ToString());
+            var stringGenres = _unitOfWork.BookRepository.Get()
+                .OrderBy(b => b.Genre)
+                .Select(b => b.Genre.ToString());
 
             const int pageSize = 5;
 
             BookGenreViewModel bookGenreViewModel = new()
             {
                 Genres = new SelectList(await stringGenres.Distinct().ToListAsync()),
-                PaginatedList = books.ToPagedList(pageNumber ?? 1, pageSize)
+                PaginatedList = await books.ToPagedListAsync(pageNumber ?? 1, pageSize)
             };
 
             return View(bookGenreViewModel);
-        }
-
-        private IQueryable<Book> SortBooks(IQueryable<Book> books, string sortOrder)
-        {
-            return sortOrder switch
-            {
-                "title_desc" => books.OrderByDescending(b => b.Title),
-                "Author" => books.OrderBy(b => b.Author),
-                "author_desc" => books.OrderByDescending(b => b.Author),
-                _ => books.OrderBy(b => b.Title)
-            };
         }
 
         private void SaveCurrentSortingAndFiltering(ref string bookGenre, ref string bookTitle, string sortOrder,
@@ -85,6 +73,16 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentGenreFilter = SaveFilterValue(ref bookGenre, currentGenreFilter, ref pageNumber);
         }
 
+        private IQueryable<Book> SortBooks(IQueryable<Book> books, string sortOrder)
+        {
+            return sortOrder switch
+            {
+                "title_desc" => books.OrderByDescending(b => b.Title),
+                "Author" => books.OrderBy(b => b.Author),
+                "author_desc" => books.OrderByDescending(b => b.Author),
+                _ => books.OrderBy(b => b.Title)
+            };
+        }
 
         // GET: Books/Details/
         [AllowAnonymous]
@@ -159,9 +157,9 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 borrowedBook.IsBorrowed = true;
 
-                _unitOfWork.LoanRepository.Insert(new Loan(id.Value, userId));
+                await _unitOfWork.LoanRepository.InsertAsync(new Loan(id.Value, userId));
                 borrowingReader.NumberOfLoans++;
-                await _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -199,8 +197,8 @@ namespace SimpleLibraryWebsite.Controllers
                 if (ModelState.IsValid)
                 {
                     book.FillMissingProperties();
-                    _unitOfWork.BookRepository.Insert(book);
-                    await _unitOfWork.Save();
+                    await _unitOfWork.BookRepository.InsertAsync(book);
+                    await _unitOfWork.SaveAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -249,7 +247,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
-                await _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -298,7 +296,7 @@ namespace SimpleLibraryWebsite.Controllers
             try
             {
                 _unitOfWork.BookRepository.Delete(book);
-                await _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)

@@ -21,7 +21,7 @@
         </select>
 
         Title:
-        <input type="text" asp-for="BookTitle" value="@ViewData["CurrentFilter"]"/>
+        <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentFilter"/>
         <input type="submit" value="Filter"/>
     </p>
 </form>
