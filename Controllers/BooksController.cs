@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,12 +28,64 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Books
         [AllowAnonymous]
         public async Task<IActionResult> Index(string bookGenre, string bookTitle, string sortOrder,
-            string currentGenreFilter, string currentTitleFilter, int? pageNumber)
+            string currentGenreFilter, string currentTitleFilter, int? pageNumber, bool isNewBooksView)
         {
             SaveCurrentSortingAndFiltering(ref bookGenre, ref bookTitle, sortOrder,
                 currentGenreFilter, currentTitleFilter, ref pageNumber);
 
             var books = _unitOfWork.BookRepository.Get();
+
+            if (isNewBooksView)
+            {
+                var culture = CultureInfo.CreateSpecificCulture("en-US");
+
+                DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
+                TimeSpan.TryParse(TimeSpan.FromDays(14).ToString(), out TimeSpan borrowingTime);
+                books = books.Where(b => b.DateOfAdding.Date >= today - borrowingTime);
+            }
+
+            if (!string.IsNullOrEmpty(bookTitle))
+            {
+                books = books.Where(b => b.Title.Contains(bookTitle));
+            }
+
+            if (!string.IsNullOrEmpty(bookGenre))
+            {
+                _ = Enum.TryParse(bookGenre, out Genres genre);
+                books = books.Where(b => b.Genre == genre);
+            }
+
+            books = SortBooks(books, sortOrder);
+
+            var stringGenres = _unitOfWork.BookRepository.Get()
+                .OrderBy(b => b.Genre)
+                .Select(b => b.Genre.ToString());
+
+            const int pageSize = 5;
+
+            BookGenreViewModel bookGenreViewModel = new()
+            {
+                Genres = new SelectList(await stringGenres.Distinct().ToListAsync()),
+                PaginatedList = await books.ToPagedListAsync(pageNumber ?? 1, pageSize)
+            };
+
+            return View(bookGenreViewModel);
+        }
+
+        // GET: Books
+        [AllowAnonymous]
+        public async Task<IActionResult> NewBooksIndex(string bookGenre, string bookTitle, string sortOrder,
+            string currentGenreFilter, string currentTitleFilter, int? pageNumber)
+        {
+            SaveCurrentSortingAndFiltering(ref bookGenre, ref bookTitle, sortOrder,
+                currentGenreFilter, currentTitleFilter, ref pageNumber);
+
+            var culture = CultureInfo.CreateSpecificCulture("en-US");
+
+            DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
+            TimeSpan.TryParse(TimeSpan.FromDays(14).ToString(), out TimeSpan borrowingTime);
+
+            var books = _unitOfWork.BookRepository.Get(b => b.DateOfAdding.Date >= today - borrowingTime);
 
             if (!string.IsNullOrEmpty(bookTitle))
             {

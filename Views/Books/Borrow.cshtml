@@ -38,8 +38,8 @@
     </dl>
     
     <form asp-action="Borrow">
-        <a asp-action="Index">Back to List</a> |
         <input type="submit" value="Borrow" asp-route-id="@Model.BorrowedBook.BookId" class="btn-primary" />
+        <a href="##" onclick="history.go(-1); return false;">Back</a>
     </form>
 </div>
 

@@ -36,15 +36,23 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.BookId">Edit</a> |
+    @if ((await _authorizationService.AuthorizeAsync(
+        User, Model,
+        Operations.Update)).Succeeded)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.BookId">Edit</a> 
+        <text>|</text>
+    }
+
     @if ((await _authorizationService.AuthorizeAsync(
         User, Model,
         Operations.Borrow)).Succeeded)
     {
         @if (!Model.IsBorrowed)
         {
-            <a asp-action="Borrow" asp-route-id="@Model.BookId">Borrow</a> <text>|</text>
+            <a asp-action="Borrow" asp-route-id="@Model.BookId">Borrow</a>
+            <text>|</text>
         }
     }
-    <a asp-action="Index">Back to List</a>
+    <a href="##" onclick="history.go(-1);return false;">Back</a>
 </div>
