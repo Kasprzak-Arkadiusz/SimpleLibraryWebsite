@@ -27,14 +27,12 @@
                 <label asp-for="Genre" class="control-label"></label>
                 <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<Genres>()" ></select>
             </div>
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a href="##" onclick="history.go(-1);return false;">Back</a>
         </form>
     </div>
 </div>
 
-<div>
-    <input type="submit" value="Save" class="btn btn-primary" />
-    <a href="##" onclick="history.go(-1);return false;">Back</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

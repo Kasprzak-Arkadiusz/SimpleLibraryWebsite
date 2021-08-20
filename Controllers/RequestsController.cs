@@ -181,20 +181,77 @@ namespace SimpleLibraryWebsite.Controllers
 
             Request requestToUpdate = await _unitOfWork.RequestRepository.GetByIdAsync(id);
 
-            try
+            if (await TryUpdateModelAsync(
+                requestToUpdate,
+                "",
+                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId))
             {
-                await _unitOfWork.SaveAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.Error(ex.Message);
-                ModelState.AddModelError("", "Unable to save changes. " +
-                                             "Try again, and if the problem persists " +
-                                             "see your system administrator.");
+                try
+                {
+                    await _unitOfWork.SaveAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.Error(ex.Message);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
+                }
             }
 
             return View(requestToUpdate);
+        }
+
+        // GET: Requests/Fulfill/5
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
+        public async Task<IActionResult> Fulfill(int? id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            Request request = await _unitOfWork.RequestRepository.GetByIdAsync(id);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            return View(request);
+        }
+
+        
+        // POST: Requests/Fulfill/5
+        [HttpPost, ActionName(nameof(Fulfill))]
+        [ValidateAntiForgeryToken]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
+        public async Task<IActionResult> FulfillPost(int? id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            Request request = await _unitOfWork.RequestRepository.GetByIdAsync(id);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            Book requestedBook = new()
+            {
+                Author = request.Author,
+                Title = request.Title,
+                Genre = request.Genre
+            };
+
+            _unitOfWork.RequestRepository.Delete(request);
+            await _unitOfWork.SaveAsync();
+
+            return RedirectToActionPreserveMethod("Create", "Books", requestedBook);
         }
 
         // GET: Requests/Delete/5

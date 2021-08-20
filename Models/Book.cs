@@ -31,6 +31,8 @@ namespace SimpleLibraryWebsite.Models
 
         public Book()
         {
+            DateOfAdding = DateTime.Now;
+            IsBorrowed = false;
         }
 
         public bool AnyFieldIsNullOrEmpty()

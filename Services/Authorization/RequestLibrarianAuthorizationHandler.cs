@@ -17,7 +17,8 @@ namespace SimpleLibraryWebsite.Models.Authorization
                 return Task.CompletedTask;
             }
 
-            if (requirement.Name != Constants.DeleteOperationName)
+            if (requirement.Name != Constants.DeleteOperationName
+            && requirement.Name != Constants.CreateOperationName)
             {
                 return Task.CompletedTask;
             }

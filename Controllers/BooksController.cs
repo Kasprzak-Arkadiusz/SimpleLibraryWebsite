@@ -298,17 +298,23 @@ namespace SimpleLibraryWebsite.Controllers
 
             Book bookToUpdate = await _unitOfWork.BookRepository.GetByIdAsync(id);
 
-            try
+            if (await TryUpdateModelAsync(
+                bookToUpdate,
+                "",
+                b => b.Title, b => b.Author, b => b.Genre))
             {
-                await _unitOfWork.SaveAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.Error(ex);
-                ModelState.AddModelError("", "Unable to save changes. " +
-                                             "Try again, and if the problem persists " +
-                                             "see your system administrator.");
+                try
+                {
+                    await _unitOfWork.SaveAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.Error(ex);
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                                                 "Try again, and if the problem persists " +
+                                                 "see your system administrator.");
+                }
             }
 
             return View(bookToUpdate);

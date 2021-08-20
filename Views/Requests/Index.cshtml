@@ -84,6 +84,14 @@
                     }
 
                     <a asp-action="Details" asp-route-id="@item.RequestId">Details</a>
+                    
+                    @if ((await _authorizationService.AuthorizeAsync(
+                        User, item,
+                        Operations.Delete)).Succeeded)
+                    {
+                        <text>|</text>
+                        <a asp-action="Fulfill" asp-route-id="@item.RequestId">Fulfill</a>
+                    }
 
                     @if ((await _authorizationService.AuthorizeAsync(
                         User, item,
