@@ -99,7 +99,7 @@
             </td>
             <td>@if ((await _authorizationService.AuthorizeAsync(
                     User, item,
-                    ContactOperations.Return)).Succeeded)
+                    Operations.Return)).Succeeded)
                 {
                     <a asp-action="Return" asp-route-id="@item.LoanId">Return</a>
                 <text>| </text>

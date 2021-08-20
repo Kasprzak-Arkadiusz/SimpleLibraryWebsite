@@ -39,7 +39,7 @@
     <a asp-action="Edit" asp-route-id="@Model.BookId">Edit</a> |
     @if ((await _authorizationService.AuthorizeAsync(
         User, Model,
-        ContactOperations.Borrow)).Succeeded)
+        Operations.Borrow)).Succeeded)
     {
         @if (!Model.IsBorrowed)
         {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace SimpleLibraryWebsite.Models.Authorization
 {
-    public static class ContactOperations
+    public static class Operations
     {
         public static OperationAuthorizationRequirement Create =   
             new OperationAuthorizationRequirement {Name=Constants.CreateOperationName};

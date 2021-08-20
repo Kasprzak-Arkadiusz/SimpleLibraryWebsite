@@ -54,7 +54,7 @@
 <div>
     @if ((await _authorizationService.AuthorizeAsync(
         User, Model,
-        ContactOperations.Return)).Succeeded)
+        Operations.Return)).Succeeded)
     {
         <a asp-action="Return" asp-route-id="@Model.LoanId">Return</a>
         <text> | </text>

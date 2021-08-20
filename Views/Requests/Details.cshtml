@@ -37,7 +37,7 @@
 <div>
     @if ((await _authorizationService.AuthorizeAsync(
         User, Model,
-        ContactOperations.Update)).Succeeded)
+        Operations.Update)).Succeeded)
     {
         <a asp-action="Edit" asp-route-id="@Model.RequestId">Edit</a> <text>|</text>
     }

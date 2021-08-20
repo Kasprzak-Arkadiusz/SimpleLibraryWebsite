@@ -77,7 +77,7 @@
                 </td>
                 <td>@if ((await _authorizationService.AuthorizeAsync(
                         User, item,
-                        ContactOperations.Update)).Succeeded)
+                        Operations.Update)).Succeeded)
                     {
                         <a asp-action="Edit" asp-route-id="@item.RequestId">Edit</a>
                     <text>|</text>
@@ -87,7 +87,7 @@
 
                     @if ((await _authorizationService.AuthorizeAsync(
                         User, item,
-                        ContactOperations.Delete)).Succeeded)
+                        Operations.Delete)).Succeeded)
                     {
                         <text>|</text>
                     <a asp-action="Delete" asp-route-id="@item.RequestId">Delete</a>
