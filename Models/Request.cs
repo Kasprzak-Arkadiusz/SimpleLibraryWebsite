@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SimpleLibraryWebsite.Models.Authorization;
 
 namespace SimpleLibraryWebsite.Models
-{   
+{
     public class Request
     {
         [Key]
@@ -16,6 +15,9 @@ namespace SimpleLibraryWebsite.Models
         public string ReaderId { get; set; }
         public Reader Reader { get; set; }
 
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
         public Request(string readerId, string title, string author, Genres genre)
         {
             ReaderId = readerId;
@@ -24,10 +26,7 @@ namespace SimpleLibraryWebsite.Models
             Genre = genre;
         }
 
-        public Request()
-        {
-            
-        }
+        public Request() { }
 
         public bool AnyFieldIsNullOrEmpty()
         {

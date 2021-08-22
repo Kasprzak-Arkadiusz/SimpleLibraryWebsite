@@ -4,9 +4,12 @@
     ViewData["Title"] = "Fulfill";
 }
 
-<h1>Fulfill the book request</h1>
+<h1>Fulfill</h1>
 
 <h3>Are you sure you want to fulfill this request?</h3>
+
+<p class="text-danger">@ViewBag.ConcurrencyError</p>
+
 <div>
     <h4>Request</h4>
     <hr />
@@ -33,6 +36,7 @@
     
     <form asp-action="Fulfill">
         <input type="hidden" asp-for="RequestId" />
+        <input type="hidden" asp-for="RowVersion" />
         <input type="submit" value="Fulfill" class="btn btn-info"/> |
         <a asp-action="Index">Back to List</a>
     </form>

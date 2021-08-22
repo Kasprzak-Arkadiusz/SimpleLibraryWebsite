@@ -115,9 +115,6 @@ namespace SimpleLibraryWebsite.Controllers
             Loan loan = await _unitOfWork.LoanRepository
                 .GetByIdAsync(id.Value, new[] { nameof(Loan.Book), nameof(Loan.Reader) });
 
-            /*.Include(l => l.Reader).AsNoTracking()
-            .Include(l => l.Book).AsNoTracking()
-            .FirstOrDefaultAsync(m => m.LoanId == id);*/
             if (loan == null)
             {
                 return NotFound();

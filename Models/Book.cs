@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimpleLibraryWebsite.Models
 {
-    public enum Genres { Adventure, Novel, SciFi, Fantasy, Romance, Thriller, Horror, Biography, Poetry, Scientific }
+    public enum Genres { Adventure, Novel, SciFi, Fantasy, Romance, Thriller, Horror, Biography, Poetry, Scientific, Essay}
     public class Book
     {
         [Key]
@@ -19,11 +19,13 @@ namespace SimpleLibraryWebsite.Models
         public DateTime DateOfAdding { get; set; }
         [Display(Name = "Is book borrowed?")]
         public bool IsBorrowed { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public Book(string author, string title, Genres genre)
         {
-            Author = author;
-            Title = title;
+            Author = author.Trim();
+            Title = title.Trim();
             Genre = genre;
             DateOfAdding = DateTime.Now;
             IsBorrowed = false;
@@ -38,12 +40,6 @@ namespace SimpleLibraryWebsite.Models
         public bool AnyFieldIsNullOrEmpty()
         {
             return Author is null || Title is null;
-        }
-
-        public void FillMissingProperties()
-        {
-            DateOfAdding = DateTime.Now;
-            IsBorrowed = false;
         }
     }
 }

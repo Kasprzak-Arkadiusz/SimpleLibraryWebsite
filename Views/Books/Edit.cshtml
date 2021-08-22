@@ -13,6 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BookId" />
+            <input type="hidden" asp-for="RowVersion" />
             <div class="form-group">
                 <label asp-for="Author" class="control-label"></label>
                 <input asp-for="Author" class="form-control" />
@@ -26,6 +27,7 @@
             <div class="form-group">
                 <label asp-for="Genre" class="control-label"></label>
                 <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<Genres>()" ></select>
+                <span asp-validation-for="Genre" class="text-danger"></span>
             </div>
             <input type="submit" value="Save" class="btn btn-primary" />
             <a href="##" onclick="history.go(-1);return false;">Back</a>

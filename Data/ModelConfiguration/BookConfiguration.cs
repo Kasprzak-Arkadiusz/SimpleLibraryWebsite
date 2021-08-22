@@ -25,6 +25,8 @@ namespace SimpleLibraryWebsite.Data.ModelConfiguration
                 .IsRequired()
                 .HasColumnType("bit")
                 .HasColumnName("Is borrowed?");
+            builder.Property(b => b.RowVersion)
+                .IsRowVersion();
         }
     }
 }

@@ -35,15 +35,6 @@ namespace SimpleLibraryWebsite.Controllers
 
             var books = _unitOfWork.BookRepository.Get();
 
-            if (isNewBooksView)
-            {
-                var culture = CultureInfo.CreateSpecificCulture("en-US");
-
-                DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
-                TimeSpan.TryParse(TimeSpan.FromDays(14).ToString(), out TimeSpan borrowingTime);
-                books = books.Where(b => b.DateOfAdding.Date >= today - borrowingTime);
-            }
-
             if (!string.IsNullOrEmpty(bookTitle))
             {
                 books = books.Where(b => b.Title.Contains(bookTitle));
@@ -137,7 +128,7 @@ namespace SimpleLibraryWebsite.Controllers
             };
         }
 
-        // GET: Books/Details/
+        // GET: Books/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -249,7 +240,8 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    book.FillMissingProperties();
+                    book.Author = book.Author.Trim();
+                    book.Title = book.Title.Trim();
                     await _unitOfWork.BookRepository.InsertAsync(book);
                     await _unitOfWork.SaveAsync();
                     return RedirectToAction(nameof(Index));
@@ -289,7 +281,7 @@ namespace SimpleLibraryWebsite.Controllers
         [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         [HttpPost, ActionName(nameof(Edit))]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> Edit(int? id, byte[] rowVersion)
         {
             if (id is null)
             {
@@ -298,6 +290,16 @@ namespace SimpleLibraryWebsite.Controllers
 
             Book bookToUpdate = await _unitOfWork.BookRepository.GetByIdAsync(id);
 
+            if (bookToUpdate == null)
+            {
+                Book deletedBook = new();
+                await TryUpdateModelAsync(deletedBook);
+                ModelState.AddModelError(string.Empty, "Unable to save changes. The book was deleted by another user.");
+                return View(deletedBook);
+            }
+
+            _unitOfWork.BookRepository.SetRowVersionOriginalValue(bookToUpdate, rowVersion);
+
             if (await TryUpdateModelAsync(
                 bookToUpdate,
                 "",
@@ -305,18 +307,54 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
+                    bookToUpdate.Author = bookToUpdate.Author.Trim();
+                    bookToUpdate.Title = bookToUpdate.Title.Trim();
+
                     await _unitOfWork.SaveAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex)
                 {
-                    _logger.Error(ex);
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                                                 "Try again, and if the problem persists " +
-                                                 "see your system administrator.");
+                    var exceptionEntry = ex.Entries.Single();
+                    var clientValues = (Book)exceptionEntry.Entity;
+                    var databaseEntry = await exceptionEntry.GetDatabaseValuesAsync();
+                    if (databaseEntry == null)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "Unable to save changes. The book was deleted by another user.");
+                    }
+                    else
+                    {
+                        var databaseValues = (Book)databaseEntry.ToObject();
+
+                        if (databaseValues.Author != clientValues.Author)
+                        {
+                            ModelState.AddModelError(nameof(databaseValues.Author),
+                                $"Current value: {databaseValues.Author}");
+                        }
+
+                        if (databaseValues.Title != clientValues.Title)
+                        {
+                            ModelState.AddModelError(nameof(databaseValues.Title),
+                                $"Current value: {databaseValues.Title}");
+                        }
+
+                        if (databaseValues.Genre != clientValues.Genre)
+                        {
+                            ModelState.AddModelError(nameof(databaseValues.Genre),
+                                $"Current value: {databaseValues.Genre}");
+                        }
+
+                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                               + "was modified by another user after you got the original value. The "
+                                                               + "edit operation was canceled and the current values in the database "
+                                                               + "have been displayed. If you still want to edit this record, click "
+                                                               + "the Save button again. Otherwise click the Back hyperlink.");
+                        bookToUpdate.RowVersion = databaseValues.RowVersion;
+                        ModelState.Remove("RowVersion");
+                    }
                 }
             }
-
             return View(bookToUpdate);
         }
 
@@ -361,7 +399,7 @@ namespace SimpleLibraryWebsite.Controllers
             catch (DbUpdateException ex)
             {
                 _logger.Error(ex.Message);
-                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+                return RedirectToAction(nameof(Delete), new { id });
             }
         }
     }

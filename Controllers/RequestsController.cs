@@ -108,6 +108,11 @@ namespace SimpleLibraryWebsite.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (request == null || userId == null)
+            {
+                return NotFound();
+            }
+
             Reader requestingReader = await _unitOfWork.ReaderRepository.GetByIdAsync(userId);
 
             if (requestingReader.NumberOfRequests >= Reader.BookRequestLimit)
@@ -119,11 +124,6 @@ namespace SimpleLibraryWebsite.Controllers
                 return View(request);
             }
 
-            if (request == null || userId == null)
-            {
-                return NotFound();
-            }
-
             if (request.AnyFieldIsNullOrEmpty())
             {
                 ModelState.AddModelError("", "All fields must be filled");
@@ -132,8 +132,11 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
+                request.Author = request.Author.Trim();
+                request.Title = request.Title.Trim();
                 request.ReaderId = userId;
                 requestingReader.NumberOfRequests++;
+
                 await _unitOfWork.RequestRepository.InsertAsync(request);
                 await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(Index));
@@ -169,10 +172,10 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // POST: Requests/Edit/5
-        [HttpPost, ActionName(nameof(Edit))]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> Edit(int? id, byte[] rowVersion)
         {
             if (id is null)
             {
@@ -181,6 +184,17 @@ namespace SimpleLibraryWebsite.Controllers
 
             Request requestToUpdate = await _unitOfWork.RequestRepository.GetByIdAsync(id);
 
+            if (requestToUpdate == null)
+            {
+                Request deletedRequest = new();
+                await TryUpdateModelAsync(deletedRequest);
+                ModelState.AddModelError(string.Empty, "Unable to save changes. The request was deleted" 
+                                                       + " or fulfilled by another user.");
+                return View(deletedRequest);
+            }
+
+            _unitOfWork.RequestRepository.SetRowVersionOriginalValue(requestToUpdate, rowVersion);
+
             if (await TryUpdateModelAsync(
                 requestToUpdate,
                 "",
@@ -188,15 +202,52 @@ namespace SimpleLibraryWebsite.Controllers
             {
                 try
                 {
+                    requestToUpdate.Author = requestToUpdate.Author.Trim();
+                    requestToUpdate.Title = requestToUpdate.Title.Trim();
+
                     await _unitOfWork.SaveAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex)
                 {
-                    _logger.Error(ex.Message);
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                                                 "Try again, and if the problem persists " +
-                                                 "see your system administrator.");
+                    var exceptionEntry = ex.Entries.Single();
+                    var clientValues = (Request)exceptionEntry.Entity;
+                    var databaseEntry = await exceptionEntry.GetDatabaseValuesAsync();
+                    if (databaseEntry == null)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "Unable to save changes. The request was deleted by another user.");
+                    }
+                    else
+                    {
+                        var databaseValues = (Request)databaseEntry.ToObject();
+
+                        if (databaseValues.Author != clientValues.Author)
+                        {
+                            ModelState.AddModelError(nameof(databaseValues.Author),
+                                $"Current value: {databaseValues.Author}");
+                        }
+
+                        if (databaseValues.Title != clientValues.Title)
+                        {
+                            ModelState.AddModelError(nameof(databaseValues.Title),
+                                $"Current value: {databaseValues.Title}");
+                        }
+
+                        if (databaseValues.Genre != clientValues.Genre)
+                        {
+                            ModelState.AddModelError(nameof(databaseValues.Genre),
+                                $"Current value: {databaseValues.Genre}");
+                        }
+
+                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                               + "was modified by another user after you got the original value. The "
+                                                               + "edit operation was canceled and the current values in the database "
+                                                               + "have been displayed. If you still want to edit this record, click "
+                                                               + "the Save button again. Otherwise click the Back to ist hyperlink.");
+                        requestToUpdate.RowVersion = databaseValues.RowVersion;
+                        ModelState.Remove("RowVersion");
+                    }
                 }
             }
 
@@ -204,7 +255,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Fulfill/5
-        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin, Role.Reader)]
         public async Task<IActionResult> Fulfill(int? id)
         {
             if (id is null)
@@ -222,12 +273,12 @@ namespace SimpleLibraryWebsite.Controllers
             return View(request);
         }
 
-        
+
         // POST: Requests/Fulfill/5
         [HttpPost, ActionName(nameof(Fulfill))]
         [ValidateAntiForgeryToken]
-        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
-        public async Task<IActionResult> FulfillPost(int? id)
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin, Role.Reader)]
+        public async Task<IActionResult> FulfillPost(int? id, byte[] rowVersion)
         {
             if (id is null)
             {
@@ -238,7 +289,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (request == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             Book requestedBook = new()
@@ -248,8 +299,28 @@ namespace SimpleLibraryWebsite.Controllers
                 Genre = request.Genre
             };
 
-            _unitOfWork.RequestRepository.Delete(request);
-            await _unitOfWork.SaveAsync();
+            _unitOfWork.RequestRepository.SetRowVersionOriginalValue(request, rowVersion);
+
+            try
+            {
+                _unitOfWork.RequestRepository.Delete(request);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                ViewBag.ConcurrencyError = "The request you attempted to fulfill was modified by another user"
+                                           + " after you got the original value. The fulfill operation was"
+                                           + " canceled and the current values in the database have been"
+                                           + " displayed. If you still want to edit this record, click "
+                                           + "the Fulfill button again. Otherwise click the Back to List hyperlink.";
+                
+                var databaseEntry = await ex.Entries.Single().GetDatabaseValuesAsync();
+                var databaseValues = (Request)databaseEntry.ToObject();
+                request.RowVersion = databaseValues.RowVersion;
+                 ModelState.Remove("RowVersion");
+
+                return View(request);
+            }
 
             return RedirectToActionPreserveMethod("Create", "Books", requestedBook);
         }

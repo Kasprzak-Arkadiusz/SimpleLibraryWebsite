@@ -55,7 +55,7 @@ namespace SimpleLibraryWebsite.Data.DAL
 
             foreach (string path in includes)
             {
-               await _context.Entry(model).Reference(path).LoadAsync();
+                await _context.Entry(model).Reference(path).LoadAsync();
             }
             return model;
         }
@@ -84,6 +84,11 @@ namespace SimpleLibraryWebsite.Data.DAL
         {
             _dbSet.Attach(entityToUpdate);
             _context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+
+        public void SetRowVersionOriginalValue(TEntity entity, byte[] rowVersion)
+        {
+            _context.Entry(entity).Property("RowVersion").OriginalValue = rowVersion;
         }
     }
 }
