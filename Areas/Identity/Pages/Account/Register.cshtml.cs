@@ -34,7 +34,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             ApplicationDbContext context)
-            
+
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -52,14 +52,24 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [RegularExpression(@"^(?=.{2,20}$)[a-zA-Z]+$", ErrorMessage = "The first name should only consist of alphabetic characters" + 
+                                                                          " and be between 2 and 20 characters long.")]
             [Required]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
 
+            [RegularExpression(@"^(?=.{2,20}$)[a-zA-Z]+$", ErrorMessage = "The last name should only consist of alphabetic characters" +
+                                                              " and be between 2 and 20 characters long.")]
             [Required]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
+
+            [RegularExpression(@"^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$",
+                ErrorMessage = "* User name should be 8 to 20 characters long.<br>" +
+                               "* Consist of only A-Z, '_', '.' characters.<br>" +
+                               "* '_' and '.' can't be at the end or start of a username.<br>" +
+                               "* '_' or '.' can't be used multiple times in a row.")]
             [Required]
             [Display(Name = "User Name")]
             public string UserName { get; set; }
