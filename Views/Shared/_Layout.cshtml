@@ -1,6 +1,11 @@
-﻿@using SimpleLibraryWebsite.Models.Authorization
-@using Microsoft.AspNetCore.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService _authorizationService
+
+@{
+    bool isReader = ViewContext.HttpContext.User.IsInRole(Role.Reader.ToString());
+    bool isLibrarian = ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString());
+    bool isAdmin = ViewContext.HttpContext.User.IsInRole(Role.Admin.ToString());
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,8 +35,7 @@
                         </li>
                         @if(User.Identity.IsAuthenticated)
                         {
-                            @if (!ViewContext.HttpContext.User.IsInRole(Role.Reader.ToString())
-                                || ViewContext.HttpContext.User.IsInRole(Role.Admin.ToString()))
+                            @if (isLibrarian || isAdmin)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Loans" asp-action="Index">Loans</a>
@@ -40,10 +44,16 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Requests" asp-action="Index">Book requests</a>
                             </li>
-                            @if (ViewContext.HttpContext.User.IsInRole(Role.Admin.ToString()))
+                            @if (isAdmin)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="UserRoles" asp-action="Index">User roles</a>
+                                </li>
+                            }
+                            @if (isReader || isAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="UserLoans" asp-action="Index">My loans</a>
                                 </li>
                             }
                         }
