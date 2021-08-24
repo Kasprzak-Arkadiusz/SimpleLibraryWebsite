@@ -1,0 +1,43 @@
+﻿@model IEnumerable<SimpleLibraryWebsite.Models.Request>
+    @{
+    ViewData["Title"] = "Book requests";
+}
+    <h1>My book requests</h1>
+
+    <p>Here you can view book requests you've submitted.</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Author)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Genre)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Author)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Genre)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.RequestId">Edit</a><text>|</text>
+                            <a asp-action="Delete" asp-route-id="@item.RequestId">Delete</a>
+                        </td>
+                    </tr>
+            }
+        </tbody>
+    </table>

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Models.Authorization;
 
-namespace SimpleLibraryWebsite.Models.Authorization
+namespace SimpleLibraryWebsite.Services.Authorization
 {
     public static class ServiceConfigurationForAuthorizationHandlers
     {

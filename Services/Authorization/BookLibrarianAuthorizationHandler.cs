@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using SimpleLibraryWebsite.Services.Authorization;
 
 namespace SimpleLibraryWebsite.Models.Authorization
 {

@@ -137,7 +137,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            Book book = await _unitOfWork.BookRepository.GetByIdAsync(id.Value);
+            Book book = await _unitOfWork.BookRepository.GetByIdAsync(id);
 
             if (book == null)
             {

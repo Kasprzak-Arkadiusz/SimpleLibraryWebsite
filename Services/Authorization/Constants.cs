@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
+﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace SimpleLibraryWebsite.Models.Authorization
+namespace SimpleLibraryWebsite.Services.Authorization
 {
     public static class Operations
     {
-        public static OperationAuthorizationRequirement Create =   
-            new OperationAuthorizationRequirement {Name=Constants.CreateOperationName};
-        public static OperationAuthorizationRequirement Read = 
-            new OperationAuthorizationRequirement {Name=Constants.ReadOperationName};  
         public static OperationAuthorizationRequirement Update = 
             new OperationAuthorizationRequirement {Name=Constants.UpdateOperationName}; 
         public static OperationAuthorizationRequirement Delete = 
@@ -20,6 +12,8 @@ namespace SimpleLibraryWebsite.Models.Authorization
             new OperationAuthorizationRequirement {Name=Constants.ReturnOperationName};
         public static OperationAuthorizationRequirement Borrow = 
             new OperationAuthorizationRequirement {Name=Constants.BorrowOperationName};
+        public static OperationAuthorizationRequirement Fulfill = 
+            new OperationAuthorizationRequirement {Name=Constants.FulfillOperationName};
     }
 
     public static class Constants
@@ -30,5 +24,6 @@ namespace SimpleLibraryWebsite.Models.Authorization
         public static readonly string DeleteOperationName = "Delete";
         public static readonly string ReturnOperationName = "Return";
         public static readonly string BorrowOperationName = "Borrow";
+        public static readonly string FulfillOperationName = "Fulfill";
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Models.Authorization;
 
-namespace SimpleLibraryWebsite.Models.Authorization
+namespace SimpleLibraryWebsite.Services.Authorization
 {
     public class RequestLibrarianAuthorizationHandler  :
         AuthorizationHandler<OperationAuthorizationRequirement, Request>
@@ -18,7 +20,8 @@ namespace SimpleLibraryWebsite.Models.Authorization
             }
 
             if (requirement.Name != Constants.DeleteOperationName
-            && requirement.Name != Constants.CreateOperationName)
+            && requirement.Name != Constants.CreateOperationName
+            && requirement.Name != Constants.FulfillOperationName)
             {
                 return Task.CompletedTask;
             }

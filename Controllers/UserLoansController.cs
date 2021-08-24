@@ -9,7 +9,7 @@ using SimpleLibraryWebsite.Models;
 namespace SimpleLibraryWebsite.Controllers
 {
     [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
-    public class UserLoansController : CustomController
+    public class UserLoansController : Controller
     {
         private readonly UnitOfWork _unitOfWork;
 
@@ -22,7 +22,8 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var loans = _unitOfWork.LoanRepository.Get(l => l.ReaderId == userId, includeProperties: nameof(Loan.Book));
+            var loans = _unitOfWork.LoanRepository
+                .Get(l => l.ReaderId == userId, includeProperties: nameof(Loan.Book));
 
             return View(await loans.ToListAsync());
         }
@@ -35,8 +36,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return NotFound();
             }
 
-            Loan loan = await _unitOfWork.LoanRepository
-                .GetByIdAsync(id.Value, new[] { nameof(Loan.Book) });
+            Loan loan = await _unitOfWork.LoanRepository.GetByIdAsync(id, new[] { nameof(Loan.Book) });
 
             if (loan == null)
             {

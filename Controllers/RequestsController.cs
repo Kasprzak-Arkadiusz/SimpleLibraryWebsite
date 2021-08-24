@@ -83,7 +83,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             Request request = await _unitOfWork.RequestRepository
-                .GetByIdAsync(id.Value, new[] { nameof(Loan.Reader) });
+                .GetByIdAsync(id, new[] { nameof(Loan.Reader) });
 
             if (request == null)
             {
@@ -255,7 +255,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         // GET: Requests/Fulfill/5
-        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin, Role.Reader)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> Fulfill(int? id)
         {
             if (id is null)
@@ -277,7 +277,7 @@ namespace SimpleLibraryWebsite.Controllers
         // POST: Requests/Fulfill/5
         [HttpPost, ActionName(nameof(Fulfill))]
         [ValidateAntiForgeryToken]
-        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin, Role.Reader)]
+        [AuthorizeWithEnumRoles(Role.Librarian, Role.Admin)]
         public async Task<IActionResult> FulfillPost(int? id, byte[] rowVersion)
         {
             if (id is null)
@@ -292,6 +292,7 @@ namespace SimpleLibraryWebsite.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            Reader requestingReader = await _unitOfWork.ReaderRepository.GetByIdAsync(request.ReaderId);
             Book requestedBook = new()
             {
                 Author = request.Author,
@@ -303,6 +304,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             try
             {
+                requestingReader.NumberOfRequests--;
                 _unitOfWork.RequestRepository.Delete(request);
                 await _unitOfWork.SaveAsync();
             }
@@ -335,7 +337,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
 
             Request request = await _unitOfWork.RequestRepository
-                .GetByIdAsync(id.Value, new[] { nameof(Loan.Reader) })
+                .GetByIdAsync(id, new[] { nameof(Loan.Reader) })
                 ;
             if (request == null)
             {

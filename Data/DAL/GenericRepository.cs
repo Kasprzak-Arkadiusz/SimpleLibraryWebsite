@@ -49,7 +49,7 @@ namespace SimpleLibraryWebsite.Data.DAL
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<TEntity> GetByIdAsync(int id, IEnumerable<string> includes)
+        public async Task<TEntity> GetByIdAsync(object id, IEnumerable<string> includes)
         {
             TEntity model = await _dbSet.FindAsync(id);
 

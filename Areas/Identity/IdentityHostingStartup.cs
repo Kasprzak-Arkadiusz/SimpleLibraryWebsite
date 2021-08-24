@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.Authorization;
+using SimpleLibraryWebsite.Services.Authorization;
 
 [assembly: HostingStartup(typeof(SimpleLibraryWebsite.Areas.Identity.IdentityHostingStartup))]
 namespace SimpleLibraryWebsite.Areas.Identity

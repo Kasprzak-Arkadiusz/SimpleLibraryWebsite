@@ -1,6 +1,7 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.RequestViewModel
 @using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
+@using SimpleLibraryWebsite.Services.Authorization
 @using X.PagedList
 @using X.PagedList.Mvc.Core
 @inject IAuthorizationService _authorizationService
@@ -87,7 +88,7 @@
                     
                     @if ((await _authorizationService.AuthorizeAsync(
                         User, item,
-                        Operations.Delete)).Succeeded)
+                        Operations.Fulfill)).Succeeded)
                     {
                         <text>|</text>
                         <a asp-action="Fulfill" asp-route-id="@item.RequestId">Fulfill</a>
