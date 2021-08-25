@@ -2,7 +2,6 @@
 @inject IAuthorizationService _authorizationService
 
 @{
-    bool isReader = ViewContext.HttpContext.User.IsInRole(Role.Reader.ToString());
     bool isLibrarian = ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString());
     bool isAdmin = ViewContext.HttpContext.User.IsInRole(Role.Admin.ToString());
 }
@@ -48,15 +47,6 @@
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="UserRoles" asp-action="Index">User roles</a>
-                                </li>
-                            }
-                            @if (isReader || isAdmin)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="UserLoans" asp-action="Index">My loans</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="UserRequests" asp-action="Index">My requests</a>
                                 </li>
                             }
                         }
