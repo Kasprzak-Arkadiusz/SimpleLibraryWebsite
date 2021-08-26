@@ -74,7 +74,7 @@ namespace SimpleLibraryWebsite.Controllers
             var culture = CultureInfo.CreateSpecificCulture("en-US");
 
             DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
-            TimeSpan.TryParse(TimeSpan.FromDays(14).ToString(), out TimeSpan borrowingTime);
+            TimeSpan.TryParse(TimeSpan.FromDays(Book.DaysToStopBeingANewBook).ToString(), out TimeSpan borrowingTime);
 
             var books = _unitOfWork.BookRepository.Get(b => b.DateOfAdding.Date >= today - borrowingTime);
 

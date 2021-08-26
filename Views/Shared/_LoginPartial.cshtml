@@ -10,27 +10,25 @@
 <ul class="navbar-nav">
 @if (_signInManager.IsSignedIn(User))
 {
-    <li class="nav-item">
-        <div class="dropdown">
-            <a id="drop1" class="dropdown-toggle dropdown-custom" href="#" role="button" data-toggle="dropdown">
+    <li class="nav-item dropdown">
+    <a id="drop1" class="dropdown-toggle dropdown-custom" href="#" role="button" data-toggle="dropdown">
                 Hello @User.Identity.Name!
             </a>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
-                @if (isReader || isAdmin)
-                {
-                    <li role="presentation">
-                        <a class="nav-link text-dark dropdown-content" asp-area="" asp-controller="UserLoans" asp-action="Index">My loans</a>
-                    </li>
-
-                    <li role="presentation">
-                        <a class="nav-link text-dark dropdown-content" asp-area="" asp-controller="UserRequests" asp-action="Index">My requests</a>
-                    </li>
-                }
-                <li>
-                    <a class="nav-link text-dark dropdown-content" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Account settings</a>
+        <ul class="dropdown-menu" aria-labelledby="drop1">
+            @if (isReader || isAdmin)
+            {
+                <li role="presentation">
+                    <a class="nav-link text-dark dropdown-item dropdown-content" asp-area="" asp-controller="UserLoans" asp-action="Index">My loans</a>
                 </li>
-            </ul>
-        </div>
+
+                <li role="presentation">
+                    <a class="nav-link text-dark dropdown-item dropdown-content" asp-area="" asp-controller="UserRequests" asp-action="Index">My requests</a>
+                </li>
+            }
+            <li>
+                <a class="nav-link text-dark dropdown-item dropdown-content" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Account settings</a>
+            </li>
+        </ul>
     </li>
     
 

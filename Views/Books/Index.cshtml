@@ -1,5 +1,4 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.BookGenreViewModel
-@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using SimpleLibraryWebsite.Services.Authorization
 @using X.PagedList
@@ -12,27 +11,40 @@
         bookPages = Model.PaginatedList;
 }
 
-    <h1>Book list</h1>
+    <h1>@ViewData["Title"]</h1>
 
         <p>Here you can view and search for books.</p>
 
-        <form asp-controller="Books" asp-action="Index" method="get">
-            <p>
-                Genre:
-        <select asp-for="BookGenre" asp-items="Model.Genres">
-            <option value="">All</option>
-        </select>
+<form asp-controller="Books" asp-action="Index" method="get">
+    <div class="container">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-auto">
+                    <b>Book genre:</b><br/>
+                    <select asp-for="BookGenre" asp-items="Model.Genres">
+                        <option value="">All</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-                Title:
-        <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
-                <input type="submit" value="Filter" />
-            </p>
-        </form>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-auto">
+                    <b>Book title:</b><br/>
+                    <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
+                </div>
+            </div>
+        </div>
 
+        <input type="submit" value="Filter" style="margin-bottom:20px"/>
 
-        <p>
-            <a asp-action="Create">Create New</a>
-        </p>
+    </div>
+</form>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
         <table class="table">
             <thead>
                 <tr>

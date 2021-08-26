@@ -6,6 +6,8 @@ namespace SimpleLibraryWebsite.Models
     public enum Genres { Adventure, Novel, SciFi, Fantasy, Romance, Thriller, Horror, Biography, Poetry, Scientific, Essay}
     public class Book
     {
+        public const int DaysToStopBeingANewBook = 14;
+
         [Key]
         public int BookId { get; set; }
         [Display(Name = "Book author")]

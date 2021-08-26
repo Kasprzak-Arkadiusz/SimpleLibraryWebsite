@@ -1,5 +1,4 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.LoanViewModel
-@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using SimpleLibraryWebsite.Services.Authorization
 @using X.PagedList
@@ -19,8 +18,8 @@
             <div class="container">
                 <div class="row">
                     <div class="form-group">
-                        <div class="col-md-8">
-                            <b>Reader name:</b>
+                        <div class="col-md-auto">
+                            <b>Reader name:</b><br/>
                             <input type="text" asp-for="ReaderFirstName" value="@ViewBag.CurrentNameFilter" />
                         </div>
                     </div>
@@ -28,8 +27,8 @@
 
                 <div class="row">
                     <div class="form-group">
-                        <div class="col-md-8">
-                            <b>Reader LastName:</b>
+                        <div class="col-md-auto">
+                            <b>Reader last name:</b><br/>
                             <input type="text" asp-for="ReaderLastName" value="@ViewBag.CurrentLastNameFilter" />
                         </div>
                     </div>
@@ -37,14 +36,14 @@
 
                 <div class="row">
                     <div class="form-group">
-                        <div class="col-md-8">
-                            <b>Book title:</b>
+                        <div class="col-md-auto">
+                            <b>Book title:</b><br/>
                             <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
                         </div>
                     </div>
                 </div>
 
-                <input type="submit" value="Filter" />
+                <input type="submit" value="Filter" style="margin-bottom:20px"/>
             </div>
         </form>
 

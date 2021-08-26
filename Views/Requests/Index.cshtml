@@ -1,5 +1,4 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.RequestViewModel
-@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using SimpleLibraryWebsite.Services.Authorization
 @using X.PagedList
@@ -12,100 +11,106 @@
         requestPages = Model.PaginatedList;
 }
 
-        <h1>Book requests</h1>
+<h1>Book requests</h1>
 
-        <p>
-            Here you can view requests submitted by other users. 
+<p>
+    Here you can view requests submitted by other users. 
     <br />
-            Feel free to add new requests and view others requests.
-        </p>
+    Feel free to add new requests and view others requests.
+</p>
 
-        <form asp-controller="Requests" asp-action="Index" method="get">
-            <div class="container">
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-8">
-                            <b>Book title:</b>
-                            <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
-                        </div>
-                    </div>
+<form asp-controller="Requests" asp-action="Index" method="get">
+    <div class="container">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-auto">
+                    <b>Book title:</b><br/>
+                    <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
                 </div>
-
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-8">
-                            <b>Book author:</b>
-                            <input type="text" asp-for="Author" value="@ViewBag.CurrentAuthorFilter" />
-                        </div>
-                    </div>
-                </div>
-                <input type="submit" value="Filter" />
             </div>
-        </form>
+        </div>
 
-        <br />
-        <a asp-action="Create">Create New</a>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        <a asp-action="Index" asp-route-sortorder="@Html.ViewBag.TitleSortParam"
-                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
-                            asp-route-currentauthorfilter="@ViewBag.CurrentAuthorFilter"
-                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
-                        </a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortorder="@Html.ViewBag.AuthorSortParam"
-                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
-                            asp-route-currentauthorfilter="@ViewBag.CurrentAuthorFilter"
-                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
-                        </a>
-                    </th>
-                    <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.PaginatedList)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.Author)
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.Genre)
-                </td>
-                <td>@if ((await _authorizationService.AuthorizeAsync(
-                        User, item,
-                        Operations.Update)).Succeeded)
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.RequestId">Edit</a>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-auto">
+                    <b>Book author:</b><br/>
+                    <input type="text" asp-for="Author" value="@ViewBag.CurrentAuthorFilter" />
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Filter" />
+    </div>
+</form>
+
+        
+@if (!ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString()))
+{
+    <br/>
+    <a asp-action="Create">Create New</a>
+}
+
+
+<table class="table" style="margin-top:20px">
+    <thead>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortorder="@Html.ViewBag.TitleSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentauthorfilter="@ViewBag.CurrentAuthorFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortorder="@Html.ViewBag.AuthorSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentauthorfilter="@ViewBag.CurrentAuthorFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
+            </a>
+        </th>
+        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.PaginatedList)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Author)
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Genre)
+            </td>
+            <td>@if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    Operations.Update)).Succeeded)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.RequestId">Edit</a>
                     <text>|</text>
-                    }
-
-                    <a asp-action="Details" asp-route-id="@item.RequestId">Details</a>
-                    
-                    @if ((await _authorizationService.AuthorizeAsync(
-                        User, item,
-                        Operations.Fulfill)).Succeeded)
-                    {
-                        <text>|</text>
-                        <a asp-action="Fulfill" asp-route-id="@item.RequestId">Fulfill</a>
-                    }
-
-                    @if ((await _authorizationService.AuthorizeAsync(
-                        User, item,
-                        Operations.Delete)).Succeeded)
-                    {
-                        <text>|</text>
-                    <a asp-action="Delete" asp-route-id="@item.RequestId">Delete</a>
-                    }
-                </td>
-            </tr>
                 }
-            </tbody>
-        </table>
+
+                <a asp-action="Details" asp-route-id="@item.RequestId">Details</a>
+                    
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    Operations.Fulfill)).Succeeded)
+                {
+                    <text>|</text>
+                    <a asp-action="Fulfill" asp-route-id="@item.RequestId">Fulfill</a>
+                }
+
+                @if ((await _authorizationService.AuthorizeAsync(
+                    User, item,
+                    Operations.Delete)).Succeeded)
+                {
+                    <text>|</text>
+                    <a asp-action="Delete" asp-route-id="@item.RequestId">Delete</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
         
 Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
 @Html.PagedListPager(requestPages, pageNumber => 

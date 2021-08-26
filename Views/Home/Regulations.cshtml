@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Website Regulations";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="pb-3 regulations-box">
+    <ul>
+        <li class="list-parent">
+            It's forbidden to:
+            <ol class="list-nested">
+                <li>Use any offensive usernames including racist, fascist, ideological, sexist or similar.</li>
+                <li>Create book requests with mentioned above prohibitions.</li>
+                <li>Create book requests with non-existent books.</li>
+                <li>Keep books after the deadline for returning the book.</li>
+            </ol>
+        </li>
+        <li class="list-parent">
+            Limitations:
+            <ol class="list-nested">
+                <li>An unregistered user can only view the book list and new books.
+                    An account is required to be able to borrow books and create requests for books </li>
+                <li>A user cannot have more than one account associated with the same email address.</li>
+                <li>The reader cannot create more than @Reader.BookRequestLimit book requests.</li>
+                <li>The reader may borrow a maximum of @Reader.BookLoansLimit books.</li>
+                <li>The book can be borrowed for a maximum of @Loan.DaysOfLoan days.</li>
+            </ol>
+        </li>
+        <li class="list-parent">
+            Additional information:
+            <ol class="list-nested">
+                <li>The book request will not be fulfilled earlier than one month after the request was created.</li>
+                <li>New books are added at the beginning of the month.</li>
+                <li>In case of any problems or doubts, please contact the librarian or website administrator.</li>
+            </ol>
+        </li>
+    </ul>
+</div>
+

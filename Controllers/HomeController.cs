@@ -27,7 +27,7 @@ namespace SimpleLibraryWebsite.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Privacy()
+        public IActionResult Regulations()
         {
             return View();
         }

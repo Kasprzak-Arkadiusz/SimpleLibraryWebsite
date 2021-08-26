@@ -5,6 +5,8 @@ namespace SimpleLibraryWebsite.Models
 {
     public class Loan
     {
+        public const int DaysOfLoan = 21;
+
         [Key]
         public int LoanId { get; set; }
         [Display(Name = "Lent from")]
@@ -24,7 +26,7 @@ namespace SimpleLibraryWebsite.Models
             BookId = bookId;
             ReaderId = readerId;
             LentFrom = lentFrom;
-            TimeSpan time = new TimeSpan(14, 0, 0, 0);
+            TimeSpan time = new TimeSpan(DaysOfLoan, 0, 0, 0);
             LentTo = lentFrom.Add(time);
         }
 
@@ -33,7 +35,7 @@ namespace SimpleLibraryWebsite.Models
             BookId = bookId;
             ReaderId = readerId;
             LentFrom = DateTime.Today;
-            TimeSpan time = new TimeSpan(14, 0, 0, 0);
+            TimeSpan time = new TimeSpan(DaysOfLoan, 0, 0, 0);
             LentTo = DateTime.Today.Add(time);
         }
 
