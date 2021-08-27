@@ -110,6 +110,10 @@ body {
 /*Custom styles
 -------------------------------------------------- */
 
+h1 {
+    text-align: center;
+}
+
 /* Navbar container */
 .navbar {
     background-color: #333;
@@ -160,15 +164,36 @@ li {
     font-size: 1.5rem;
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
+    padding-left: 0px;
 }
 
 .list-nested {
     font-size: 0.7em;
     padding-block: 0.5em;
+    padding-left: 0px;
 }
 
 .regulations-box {
     max-width: 720px;
     margin-top: 50px;
     margin-right: 20px;
+}
+
+/*Home page styles*/
+
+.centered-text {
+    max-width: 720px;
+    text-align: center;
+    margin: 0 auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+ul.no-bullets {
+    list-style-type: none;
+    padding-top: 20px;
+}
+
+li {
+    margin: 10px 0;
 }

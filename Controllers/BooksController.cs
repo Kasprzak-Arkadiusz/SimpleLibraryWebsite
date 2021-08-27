@@ -390,6 +390,12 @@ namespace SimpleLibraryWebsite.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            if (book.IsBorrowed)
+            {
+                ModelState.AddModelError(String.Empty, "The book you attempted to delete is borrowed by some user.");
+                return View(book);
+            }
+
             try
             {
                 _unitOfWork.BookRepository.Delete(book);

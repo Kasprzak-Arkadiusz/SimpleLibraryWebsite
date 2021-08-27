@@ -3,6 +3,42 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="container-fluid">
+        <h1 class="display-4">Welcome to My Library</h1>
+    </div>
+    <h2 style="margin-top: 60px">What is My Library?</h2>
+    <p class="centered-text">
+        My Library is a library website designed as a free-time project.
+        It was created using ASP.NET Core 5 MVC (including ASP.NET Identity, Blazor and Bootstrap), Entity Framework Core 5.0.8 and MSSQL.
+        It's main goal was to gain new skills related mainly to backend and website development.
+    </p>
+
+    <h2 style="margin-top: 60px">What does the My Library offer?</h2>
+    <p class="centered-text">
+        There are 3 types of accounts on the website (Reader, Librarian, Administrator). 
+        Each of them allows you to perform different actions.
+    </p>
+    <ul class="centered-text list-parent no-bullets">
+        <li>Readers can:
+            <ul class="centered-text list-nested">
+                <li>Borrow books</li>
+                <li>Make book requests</li>
+                <li>Manage user settings</li>
+                <li>View books they have borrowed and their own book requests</li>
+            </ul>
+        </li>
+        <li>Librarians may perform this actions:
+            <ul class="centered-text list-nested">
+                <li>Create, update and delete books from library</li>
+                <li>View and fulfill book requests</li>
+                <li>View reader loans</li>
+                <li>Return books</li>
+            </ul>
+        </li>
+        <li style="line-height: 30px">Administrators can do the same as the reader and librarian, and in addition they can:
+            <ul class="centered-text list-nested">
+                <li>Manage users roles</li>
+            </ul>
+        </li>
+    </ul>
 </div>
