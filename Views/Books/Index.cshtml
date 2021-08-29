@@ -6,14 +6,13 @@
 @inject IAuthorizationService _authorizationService
 
 @{
-    ViewData["Title"] = "Book list";
-    IPagedList<Book>
-        bookPages = Model.PaginatedList;
+    ViewBag.Title = "Book list";
+    IPagedList<Book> bookPages = Model.PaginatedList;
 }
 
-    <h1>@ViewData["Title"]</h1>
+<h1>@ViewBag.Title</h1>
 
-        <p>Here you can view and search for books.</p>
+<p>Here you can view and search for books.</p>
 
 <form asp-controller="Books" asp-action="Index" method="get">
     <div class="container">
@@ -68,35 +67,35 @@
             </thead>
             <tbody>
                 @foreach (var item in Model.PaginatedList) {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Author)</td>
-            <td>@Html.DisplayFor(modelItem => item.Title)</td>
-            <td>@Html.DisplayFor(modelItem => item.Genre)</td>
-            <td>@Html.DisplayFor(modelItem => item.IsBorrowed)</td>
-            <td>@if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Borrow)).Succeeded)
-                {
-                    @if (!item.IsBorrowed)
-                    {
-                        <a asp-action="Borrow" asp-route-id="@item.BookId">Borrow</a>
-                        <text>|</text>
-                    }
-                }
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Author)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Genre)</td>
+                        <td>@Html.DisplayFor(modelItem => item.IsBorrowed)</td>
+                        <td>@if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Borrow)).Succeeded)
+                            {
+                                @if (!item.IsBorrowed)
+                                {
+                                    <a asp-action="Borrow" asp-route-id="@item.BookId">Borrow</a>
+                                    <text>|</text>
+                                }
+                            }
 
-                @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Update)).Succeeded)
-                {
-                    <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a>
-                    <text>|</text>
-                }
+                            @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Update)).Succeeded)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a>
+                                <text>|</text>
+                            }
 
-                <a asp-action="Details" asp-route-id="@item.BookId">Details</a>
+                            <a asp-action="Details" asp-route-id="@item.BookId">Details</a>
 
-                @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Delete)).Succeeded)
-                {
-                    <text>|</text>
-                    <a asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
-                }
-            </td>
-        </tr>
+                            @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Delete)).Succeeded)
+                            {
+                                <text>|</text>
+                                <a asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
+                            }
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>

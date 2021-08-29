@@ -1,18 +1,16 @@
 ﻿@model SimpleLibraryWebsite.Models.Book
-@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using SimpleLibraryWebsite.Services.Authorization
 @inject IAuthorizationService _authorizationService
 
 @{
-    ViewData["Title"] = "Details";
+    ViewBag.Title = "Details";
 }
 
-<h1>Details</h1>
+<h1>@ViewBag.Title</h1>
+<hr />
 
 <div>
-    <h4>Book</h4>
-    <hr />
     <dl class="row">
         <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Author)
         </dt>
@@ -55,5 +53,5 @@
             <text>|</text>
         }
     }
-    <a href="##" onclick="history.go(-1);return false;">Back</a>
+    <a href="#" onclick="history.go(-1);return false;">Back</a>
 </div>

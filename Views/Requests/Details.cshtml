@@ -1,17 +1,15 @@
 ﻿@model SimpleLibraryWebsite.Models.Request
-@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using SimpleLibraryWebsite.Services.Authorization
 @inject IAuthorizationService _authorizationService
 
 @{
-    ViewData["Title"] = "Details";
+    ViewBag.Title = "Details";
 }
 
-<h1>Details</h1>
+<h1>@ViewBag.Title</h1>
 
 <div>
-    <h4>Request</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Title)

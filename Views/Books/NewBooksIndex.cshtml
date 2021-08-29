@@ -1,5 +1,4 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.BookGenreViewModel
-@using SimpleLibraryWebsite.Models.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using SimpleLibraryWebsite.Services.Authorization
 @using X.PagedList
@@ -7,71 +6,69 @@
 @inject IAuthorizationService _authorizationService
 
 @{
-    ViewData["Title"] = "New books";
-    IPagedList<Book>
-        bookPages = Model.PaginatedList;
+    ViewBag.Title = "New books";
+    IPagedList<Book> bookPages = Model.PaginatedList;
 }
 
   
-        <h1>New books</h1>
+<h1>@ViewBag.Title</h1>
 
-        <p>Here you can view the newly added books.</p>
+<p>Here you can view the newly added books.</p>
 
 
-        <form asp-controller="Books" asp-action="Index" method="get">
-        <div class="container">
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-md-auto">
-                        <b>Book genre:</b><br/>
-                        <select asp-for="BookGenre" asp-items="Model.Genres">
-                            <option value="">All</option>
-                        </select>
-                    </div>
+<form asp-controller="Books" asp-action="Index" method="get">
+    <div class="container">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-auto">
+                    <b>Book genre:</b><br/>
+                    <select asp-for="BookGenre" asp-items="Model.Genres">
+                        <option value="">All</option>
+                    </select>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-md-auto">
-                        <b>Book title:</b><br/>
-                        <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
-                    </div>
-                </div>
-            </div>
-
-            <input type="submit" value="Filter" style="margin-bottom:20px"/>
         </div>
-        </form>
 
-        <p>
-            <a asp-action="Create">Create New</a>
-        </p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        <a asp-action="Index" asp-route-sortorder="@ViewBag.AuthorSortParam"
-                           asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
-                           asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
-                           asp-route-pagenumber="@Model.PaginatedList.PageNumber">
-                            @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
-                        </a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortorder="@ViewBag.TitleSortParam"
-                           asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
-                           asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
-                           asp-route-pagenumber="@Model.PaginatedList.PageNumber">
-                            @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
-                        </a>
-                    </th>
-                    <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)</th>
-                    <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.PaginatedList) {
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-auto">
+                    <b>Book title:</b><br/>
+                    <input type="text" asp-for="BookTitle" value="@ViewBag.CurrentTitleFilter" />
+                </div>
+            </div>
+        </div>
+
+        <input type="submit" value="Filter" style="margin-bottom:20px"/>
+    </div>
+</form>
+
+<p><a asp-action="Create">Create New</a></p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortorder="@ViewBag.AuthorSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortorder="@ViewBag.TitleSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">
+                @Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
+            </a>
+        </th>
+        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)</th>
+        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.PaginatedList) {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.Author)</td>
             <td>@Html.DisplayFor(modelItem => item.Title)</td>
@@ -101,9 +98,10 @@
                 }
             </td>
         </tr>
-                }
-            </tbody>
-        </table>
+    }
+    </tbody>
+</table>
+
 Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
 @Html.PagedListPager(bookPages, pageNumber => 
     Url.Action("NewBooksIndex", new

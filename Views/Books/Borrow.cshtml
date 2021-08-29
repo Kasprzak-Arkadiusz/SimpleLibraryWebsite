@@ -1,10 +1,10 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.BookBorrowViewModel
 
 @{
-    ViewData["Title"] = "Borrow";
+    ViewBag.Title = "Borrow a book";
 }
 
-<h1>Book borrow</h1>
+<h1>@ViewBag.Title</h1>
 <h3>Are you sure you want to borrow this book?</h3>
 
 <div>
@@ -39,7 +39,7 @@
     
     <form asp-action="Borrow">
         <input type="submit" value="Borrow" asp-route-id="@Model.BorrowedBook.BookId" class="btn-primary" />
-        <a href="##" onclick="history.go(-1); return false;">Back</a>
+        <a href="#" onclick="history.go(-1); return false;">Back</a>
     </form>
 </div>
 

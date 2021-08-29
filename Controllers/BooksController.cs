@@ -383,6 +383,8 @@ namespace SimpleLibraryWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            
+
             Book book = await _unitOfWork.BookRepository.GetByIdAsync(id);
 
             if (book is null)
@@ -392,7 +394,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             if (book.IsBorrowed)
             {
-                ModelState.AddModelError(String.Empty, "The book you attempted to delete is borrowed by some user.");
+                ModelState.AddModelError(string.Empty, "The book you attempted to delete is borrowed by some user.");
                 return View(book);
             }
 
@@ -404,7 +406,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
             catch (DbUpdateException ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error(ex);
                 return RedirectToAction(nameof(Delete), new { id });
             }
         }

@@ -1,15 +1,15 @@
 ﻿@model SimpleLibraryWebsite.Models.Request
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewBag.Title = "Delete";
 }
 
-<h1>Delete</h1>
+<h1>@ViewBag.Title</h1>
 <p class="text-danger">@ViewData["ErrorMessage"]</p>
 <h3>Are you sure you want to delete this?</h3>
+<hr />
+
 <div>
-    <h4>Request</h4>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Title)

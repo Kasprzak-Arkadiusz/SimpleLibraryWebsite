@@ -6,12 +6,11 @@
 @inject IAuthorizationService _authorizationService
 
 @{
-    ViewData["Title"] = "Book requests";
-    IPagedList<Request>
-        requestPages = Model.PaginatedList;
+    ViewBag.Title = "Book requests";
+    IPagedList<Request> requestPages = Model.PaginatedList;
 }
 
-<h1>Book requests</h1>
+<h1>@ViewBag.Title</h1>
 
 <p>
     Here you can view requests submitted by other users. 

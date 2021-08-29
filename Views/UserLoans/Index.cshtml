@@ -1,50 +1,50 @@
 ﻿@model IEnumerable<SimpleLibraryWebsite.Models.Loan>
 
 @{
-    ViewData["Title"] = "List of loans";
+    ViewBag.Title = "My book loans";
 }
 
-    <h1>My book loans</h1>
+<h1>@ViewBag.Title</h1>
 
-    <p>Here you can see all your book loans.</p>
+<p>Here you can see all your book loans.</p>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Book.Author)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Book.Title)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LentFrom)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LentTo)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model) 
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Book.Author)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Book.Title)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LentFrom)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LentTo)
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Book.Author)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Book.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LentFrom)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LentTo)
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) 
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Book.Author)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Book.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LentFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LentTo)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
