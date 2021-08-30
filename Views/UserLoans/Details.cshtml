@@ -6,41 +6,40 @@
 
 <h1>@ViewBag.Title</h1>
 
-<div>
+<div class="justify-content-md-center">
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
+    <div class="row justify-content-center">
+        <b class="col-sm-2 center">
             @Html.DisplayNameFor(model => model.Book.Title)
-        </dt>
-        <dd class="col-sm-10">
+        </b>
+        <div class="col-sm-4 center">
             @Html.DisplayFor(model => model.Book.Title)
-        </dd>
-        <dt class="col-sm-2">
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">
             @Html.DisplayNameFor(model => model.Book.Author)
-        </dt>
-        <dd class="col-sm-10">
+        </b>
+        <div class="col-sm-4 center">
             @Html.DisplayFor(model => model.Book.Author)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Book.Genre)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Book.Genre)
-        </dd>
-        <dt class="col-sm-2">
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">
             @Html.DisplayNameFor(model => model.LentFrom)
-        </dt>
-        <dd class="col-sm-10">
+        </b>
+        <div class="col-sm-4 center">
             @Html.DisplayFor(model => model.LentFrom)
-        </dd>
-        <dt class="col-sm-2">
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">
             @Html.DisplayNameFor(model => model.LentTo)
-        </dt>
-        <dd class="col-sm-10">
+        </b>
+        <div class="col-sm-4 center">
             @Html.DisplayFor(model => model.LentTo)
-        </dd>
-    </dl>
+        </div>
+        <div class="w-100"></div>
+    </div>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
+
+<div class="container center" style="margin-top: 25px">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

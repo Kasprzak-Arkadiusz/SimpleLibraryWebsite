@@ -8,39 +8,46 @@
 }
 
 <h1>@ViewBag.Title</h1>
-<hr />
 
-<div>
-    <dl class="row">
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.DateOfAdding)
-        </dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.DateOfAdding)
-        </dd>
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.IsBorrowed)
-        </dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.IsBorrowed)
-        </dd>
-    </dl>
+
+<div clas="justify-content-md-center">
+    <hr />
+    <div class="row justify-content-center">
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.Author)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Author)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.Title)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Title)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.Genre)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Genre)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.DateOfAdding)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.DateOfAdding)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.IsBorrowed)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.IsBorrowed)
+        </div>
+        <div class="w-100"></div>
+    </div>
 </div>
-<div>
+
+<div class="container center" style="margin-top: 25px">
+    <a href="#" onclick="history.go(-1);return false;" class="btn btn-secondary">Back</a>
     @if ((await _authorizationService.AuthorizeAsync(
         User, Model,
         Operations.Update)).Succeeded)
     {
-        <a asp-action="Edit" asp-route-id="@Model.BookId">Edit</a> 
-        <text>|</text>
+        <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn btn-warning">Edit</a>
     }
 
     @if ((await _authorizationService.AuthorizeAsync(
@@ -49,9 +56,7 @@
     {
         @if (!Model.IsBorrowed)
         {
-            <a asp-action="Borrow" asp-route-id="@Model.BookId">Borrow</a>
-            <text>|</text>
+            <a asp-action="Borrow" asp-route-id="@Model.BookId" class="btn btn-success">Borrow</a>
         }
     }
-    <a href="#" onclick="history.go(-1);return false;">Back</a>
 </div>

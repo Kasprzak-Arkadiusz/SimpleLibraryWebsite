@@ -19,8 +19,8 @@
 </p>
 
 <form asp-controller="Requests" asp-action="Index" method="get">
-    <div class="container">
-        <div class="row">
+    <div class="container center">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Book title:</b><br/>
@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Book author:</b><br/>
@@ -44,12 +44,11 @@
         
 @if (!ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString()))
 {
-    <br/>
-    <a asp-action="Create">Create New</a>
+    <p><a asp-action="Create" class="center">Create New</a></p>
 }
 
 
-<table class="table" style="margin-top:20px">
+<table class="table center" style="margin-top:20px">
     <thead>
     <tr>
         <th>
@@ -68,6 +67,7 @@
         </th>
         <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)
         </th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -84,26 +84,23 @@
                     User, item,
                     Operations.Update)).Succeeded)
                 {
-                    <a asp-action="Edit" asp-route-id="@item.RequestId">Edit</a>
-                    <text>|</text>
+                    <a asp-action="Edit" asp-route-id="@item.RequestId" class="btn btn-warning">Edit</a>
                 }
 
-                <a asp-action="Details" asp-route-id="@item.RequestId">Details</a>
+                <a asp-action="Details" asp-route-id="@item.RequestId" class="btn btn-primary">Details</a>
                     
                 @if ((await _authorizationService.AuthorizeAsync(
                     User, item,
                     Operations.Fulfill)).Succeeded)
                 {
-                    <text>|</text>
-                    <a asp-action="Fulfill" asp-route-id="@item.RequestId">Fulfill</a>
+                    <a asp-action="Fulfill" asp-route-id="@item.RequestId" class="btn btn-info">Fulfill</a>
                 }
 
                 @if ((await _authorizationService.AuthorizeAsync(
                     User, item,
                     Operations.Delete)).Succeeded)
                 {
-                    <text>|</text>
-                    <a asp-action="Delete" asp-route-id="@item.RequestId">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.RequestId" class="btn btn-danger">Delete</a>
                 }
             </td>
         </tr>
@@ -111,6 +108,8 @@
     </tbody>
 </table>
         
+
+<div class="center justify-content-center">
 Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
 @Html.PagedListPager(requestPages, pageNumber => 
     Url.Action("Index", new
@@ -120,3 +119,4 @@ Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Mode
         currentTitleFilter = ViewBag.CurrentTitleFilter,
         currentAuthorFilter = ViewBag.CurrentAuthorFilter
     }) )
+</div>

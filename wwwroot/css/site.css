@@ -16,6 +16,14 @@ a {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
+    margin: 5px;
+}
+
+.btn-return {
+    color: #000000;
+    background-color: #a0fc6a;
+    border-color: #7df03a;
+    margin: 5px;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
@@ -110,13 +118,45 @@ body {
 /*Custom styles
 -------------------------------------------------- */
 
+/*Centering*/
+
 h1 {
     text-align: center;
 }
 
-/* Navbar container */
-.navbar {
-    background-color: #333;
+h3 {
+    text-align: center;
+}
+
+span {
+    text-align: center;
+}
+
+label {
+    text-align: center;
+    display: block;
+    margin: 0, auto;
+}
+
+input {
+    text-align: center;
+}
+
+select {
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+p {
+    text-align: center;
+}
+
+ul.pagination {
+    text-align: center;
+    justify-content: center;
 }
 
 /* Links inside the navbar */
@@ -196,4 +236,15 @@ ul.no-bullets {
 
 li {
     margin: 10px 0;
+}
+
+table {
+    table-layout: fixed;
+    text-align: center;
+}
+
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
 }

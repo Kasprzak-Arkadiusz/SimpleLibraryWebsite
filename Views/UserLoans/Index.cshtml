@@ -23,6 +23,7 @@
         <th>
             @Html.DisplayNameFor(model => model.LentTo)
         </th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -42,7 +43,7 @@
                 @Html.DisplayFor(modelItem => item.LentTo)
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
+                <a asp-action="Details" asp-route-id="@item.LoanId" class="btn btn-primary">Details</a>
             </td>
         </tr>
     }

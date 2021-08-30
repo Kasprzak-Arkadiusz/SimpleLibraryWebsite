@@ -9,34 +9,37 @@
 <h3>Are you sure you want to fulfill this request?</h3>
 <hr/>
 
-<p class="text-danger">@ViewBag.ConcurrencyError</p>
+<p class="text-danger center">@ViewBag.ConcurrencyError</p>
 
 <div>
-    <dl class="row">
-        <dt class = "col-sm-2">
+    <div class="row justify-content-center">
+        <b class = "col-sm-2 center">
             @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
+        </div>
+        <div class="w-100"></div>
+        <b class = "col-sm-2 center">
             @Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class = "col-sm-10">
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class = "col-sm-2">
+        </div>
+        <div class="w-100"></div>
+        <b class = "col-sm-2 center">
             @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd class = "col-sm-10">
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.Genre)
-        </dd>
-    </dl>
+        </div>
+        <div class="w-100"></div>
+    </div>
     
-    <form asp-action="Fulfill">
+    <form asp-action="Fulfill" class="container center" style="margin-top: 25px">
         <input type="hidden" asp-for="RequestId" />
         <input type="hidden" asp-for="RowVersion" />
-        <input type="submit" value="Fulfill" class="btn btn-info"/> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <input type="submit" value="Fulfill" class="btn btn-info"/>
     </form>
 </div>

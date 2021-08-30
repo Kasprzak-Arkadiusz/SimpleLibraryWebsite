@@ -7,39 +7,46 @@
 <h1>@ViewBag.Title</h1>
 <h3>Are you sure you want to borrow this book?</h3>
 
-<div>
+<div clas="justify-content-md-center">
     <hr />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BorrowedBook.Author)
-        </dt>
-        <dd class = "col-sm-10">
+    <div class="row justify-content-center">
+        <b class = "col-sm-2 center">
+            @Html.DisplayNameFor(model => model.BorrowedBook.Author):
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.BorrowedBook.Author)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BorrowedBook.Title)
-        </dt>
-        <dd class = "col-sm-10">
+        </div>
+        <div class="w-100"></div>
+        <b class = "col-sm-2 center">
+            @Html.DisplayNameFor(model => model.BorrowedBook.Title):
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.BorrowedBook.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BorrowedBook.Genre)
-        </dt>
-        <dd class = "col-sm-10">
+        </div>
+        <div class="w-100"></div>
+        <b class = "col-sm-2 center">
+            @Html.DisplayNameFor(model => model.BorrowedBook.Genre):
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.BorrowedBook.Genre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnDate)
-        </dt>
-        <dd class = "col-sm-10">
+        </div>
+        <div class="w-100"></div>
+        <b class = "col-sm-2 center">
+            @Html.DisplayNameFor(model => model.ReturnDate):
+        </b>
+        <div class = "col-sm-4 center">
             @Html.DisplayFor(model => model.ReturnDate)
-        </dd>
-    </dl>
+        </div>
+        <div class="w-100"></div>
+    </div>
     
+
     <form asp-action="Borrow">
-        <input type="submit" value="Borrow" asp-route-id="@Model.BorrowedBook.BookId" class="btn-primary" />
-        <a href="#" onclick="history.go(-1); return false;">Back</a>
+        <div class="container" style="text-align: center; margin-top: 25px">
+            <a href="#" onclick="history.go(-1);return false;" class="btn btn-secondary">Back</a>
+            <input type="submit" value="Borrow" asp-route-id="@Model.BorrowedBook.BookId" class="btn btn-success"/>
+        </div>
     </form>
 </div>
 

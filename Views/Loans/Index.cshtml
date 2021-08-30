@@ -15,8 +15,8 @@
 <p>Here you can see all book loans.</p>
 
 <form asp-controller="Loans" asp-action="Index" method="get">
-    <div class="container">
-        <div class="row">
+    <div class="container center">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Reader name:</b><br/>
@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Reader last name:</b><br/>
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Book title:</b><br/>
@@ -82,6 +82,7 @@
                asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().LentTo)
             </a>
         </th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -100,17 +101,17 @@
                     User, item,
                     Operations.Return)).Succeeded)
                 {
-                    <a asp-action="Return" asp-route-id="@item.LoanId">Return</a>
-                    <text>| </text>
+                    <a asp-action="Return" asp-route-id="@item.LoanId" class="btn btn-return">Return</a>
                 }
-                <a asp-action="Details" asp-route-id="@item.LoanId">Details</a>
+                <a asp-action="Details" asp-route-id="@item.LoanId" class="btn btn-primary">Details</a>
             </td>
         </tr>
     }
 
     </tbody>
 </table>
-
+        
+<div class="center justify-content-center">
 Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
 @Html.PagedListPager(loanPages, pageNumber => 
     Url.Action("Index", new
@@ -121,3 +122,4 @@ Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Mode
         currentFirstNameFilter = ViewBag.CurrentFirstNameFilter,
         currentLastNameFilter = ViewBag.CurrentLastNameFilter,
     }) )
+</div>

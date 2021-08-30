@@ -9,37 +9,41 @@
 
 <h1>@ViewBag.Title</h1>
 
-<div>
+<div class="justify-content-md-center">
     <hr />
-    <dl class="row">
-        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt class="col-sm-4">@Html.DisplayName("Adding reader name")
-        </dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Reader.FirstName)
-        </dd>
-        <dt class="col-sm-4">@Html.DisplayName("Adding reader surname")
-        </dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Reader.LastName)</dd>
-    </dl>
+    <div class="row justify-content-center">
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.Title)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Title)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.Author)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Author)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayNameFor(model => model.Genre)
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Genre)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayName("Adding reader name")
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Reader.FirstName)
+        </div>
+        <div class="w-100"></div>
+        <b class="col-sm-2 center">@Html.DisplayName("Adding reader surname")
+        </b>
+        <div class="col-sm-4 center">@Html.DisplayFor(model => model.Reader.LastName)</div>
+        <div class="w-100"></div>
+    </div>
 </div>
-<div>
+<div class="container center" style="margin-top: 25px">
+    <a asp-action="Index" class="btn btn-secondary" >Back to List</a>
     @if ((await _authorizationService.AuthorizeAsync(
         User, Model,
         Operations.Update)).Succeeded)
     {
-        <a asp-action="Edit" asp-route-id="@Model.RequestId">Edit</a> <text>|</text>
+        <a asp-action="Edit" asp-route-id="@Model.RequestId" class="btn btn-warning">Edit</a>
     }
-
-    <a asp-action="Index">Back to List</a>
 </div>

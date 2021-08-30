@@ -144,7 +144,7 @@ namespace SimpleLibraryWebsite.Data
                 new Book("Jules Verne", "Twenty Thousand Leagues Under the Seas", Genres.Adventure),
                 new Book("Herman Melville","Moby Dick", Genres.Novel),
                 new Book("George Orwell", "Nineteen Eighty-Four", Genres.SciFi),
-                new Book("J.R.R. Tolkien", "Lord of the rings", Genres.Fantasy),
+                new Book("J.R.R. Tolkien", "Lord of the Rings", Genres.Fantasy),
                 new Book("Jane Austen", "Pride and Prejudice", Genres.Romance),
                 new Book("Walter Isaacson", "Steve Jobs", Genres.Biography)
             };

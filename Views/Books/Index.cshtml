@@ -8,6 +8,9 @@
 @{
     ViewBag.Title = "Book list";
     IPagedList<Book> bookPages = Model.PaginatedList;
+
+    bool isAdmin = ViewContext.HttpContext.User.IsInRole(Role.Admin.ToString());
+    bool isLibrarian = ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString());
 }
 
 <h1>@ViewBag.Title</h1>
@@ -15,8 +18,8 @@
 <p>Here you can view and search for books.</p>
 
 <form asp-controller="Books" asp-action="Index" method="get">
-    <div class="container">
-        <div class="row">
+    <div class="container center">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Book genre:</b><br/>
@@ -27,7 +30,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Book title:</b><br/>
@@ -41,70 +44,73 @@
     </div>
 </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        <a asp-action="Index" asp-route-sortorder="@ViewBag.AuthorSortParam"
-                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
-                            asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
-                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
-                        </a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortorder="@ViewBag.TitleSortParam"
-                            asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
-                            asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
-                            asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
-                        </a>
-                    </th>
-                    <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)</th>
-                    <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.PaginatedList) {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.Author)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Genre)</td>
-                        <td>@Html.DisplayFor(modelItem => item.IsBorrowed)</td>
-                        <td>@if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Borrow)).Succeeded)
-                            {
-                                @if (!item.IsBorrowed)
-                                {
-                                    <a asp-action="Borrow" asp-route-id="@item.BookId">Borrow</a>
-                                    <text>|</text>
-                                }
-                            }
+@if (isLibrarian || isAdmin)
+{
+    <p><a asp-action="Create">Create New</a></p>
+}
 
-                            @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Update)).Succeeded)
-                            {
-                                <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a>
-                                <text>|</text>
-                            }
-
-                            <a asp-action="Details" asp-route-id="@item.BookId">Details</a>
-
-                            @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Delete)).Succeeded)
-                            {
-                                <text>|</text>
-                                <a asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
-                            }
-                        </td>
-                    </tr>
+<table class="table center">
+    <thead>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortorder="@ViewBag.AuthorSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Author)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortorder="@ViewBag.TitleSortParam"
+               asp-route-currenttitlefilter="@ViewBag.CurrentTitleFilter"
+               asp-route-currentgenrefilter="@ViewBag.CurrentGenreFilter"
+               asp-route-pagenumber="@Model.PaginatedList.PageNumber">@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Title)
+            </a>
+        </th>
+        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().Genre)</th>
+        <th>@Html.DisplayNameFor(model => model.PaginatedList.FirstOrDefault().IsBorrowed)</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.PaginatedList) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Author)</td>
+            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+            <td>@Html.DisplayFor(modelItem => item.Genre)</td>
+            <td>@Html.DisplayFor(modelItem => item.IsBorrowed)</td>
+            <td>@if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Borrow)).Succeeded)
+                {
+                    @if (!item.IsBorrowed)
+                    {
+                        <a asp-action="Borrow" asp-route-id="@item.BookId" class="btn btn-info">Borrow</a>
+                    }
                 }
-            </tbody>
-        </table>
-Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
-@Html.PagedListPager(bookPages, pageNumber => 
-    Url.Action("Index", new
-    {
-        pageNumber,
-        sortOrder = ViewBag.CurrentSort,
-        currentTitleFilter = ViewBag.CurrentTitleFilter,
-        currentGenreFilter = ViewBag.CurrentGenreFilter
-    }) )
+
+                @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Update)).Succeeded)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.BookId" class="btn btn-warning">Edit</a>
+                }
+
+                <a asp-action="Details" asp-route-id="@item.BookId" class="btn btn-primary">Details</a>
+
+                @if ((await _authorizationService.AuthorizeAsync(User, item, Operations.Delete)).Succeeded)
+                {
+                    <a asp-action="Delete" asp-route-id="@item.BookId" class="btn btn-danger">Delete</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="center justify-content-center">
+    Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Model.PaginatedList.PageNumber) of @Model.PaginatedList.PageCount
+    @Html.PagedListPager(bookPages, pageNumber => 
+        Url.Action("Index", new
+        {
+            pageNumber,
+            sortOrder = ViewBag.CurrentSort,
+            currentTitleFilter = ViewBag.CurrentTitleFilter,
+            currentGenreFilter = ViewBag.CurrentGenreFilter
+        }) )
+</div>
