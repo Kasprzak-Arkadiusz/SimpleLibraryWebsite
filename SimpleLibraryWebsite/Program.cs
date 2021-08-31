@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Data;
 
@@ -21,10 +20,8 @@ namespace SimpleLibraryWebsite
 
                 try
                 {
-                    var config = services.GetRequiredService<IConfiguration>();
-                    var testUserPw = config["SeedUserPW"];
-
-                    DbInitializer.Initialize(services, testUserPw).Wait();
+                    var dbInitializer = new DbInitializer(services);
+                    dbInitializer.Initialize().Wait();
                 }
                 catch (Exception ex)
                 {
@@ -35,7 +32,7 @@ namespace SimpleLibraryWebsite
             await host.RunAsync();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging =>
                 {

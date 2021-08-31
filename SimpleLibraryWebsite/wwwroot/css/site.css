@@ -215,8 +215,9 @@ li {
 
 .regulations-box {
     max-width: 720px;
-    margin-top: 50px;
-    margin-right: 20px;
+    margin: 0 auto;
+    margin-top: 40px;
+    float: none;
 }
 
 /*Home page styles*/

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleLibraryWebsite", "SimpleLibraryWebsite.csproj", "{1803A275-B5E7-46DC-A5BD-6D22E14825FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLibraryWebsiteTests", "..\SimpleLibraryWebsiteTests\SimpleLibraryWebsiteTests.csproj", "{EED1143D-BE8F-4CFE-90E4-DCC592B81956}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleLibraryWebsiteTests", "..\SimpleLibraryWebsiteTests\SimpleLibraryWebsiteTests.csproj", "{EED1143D-BE8F-4CFE-90E4-DCC592B81956}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

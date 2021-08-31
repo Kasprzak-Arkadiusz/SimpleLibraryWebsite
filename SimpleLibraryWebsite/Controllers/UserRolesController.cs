@@ -73,6 +73,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, string role, string userId)
         {
