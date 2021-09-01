@@ -1,10 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SimpleLibraryWebsite.Data;
+using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Services.Authorization;
 
 namespace SimpleLibraryWebsite
 {
@@ -36,6 +40,40 @@ namespace SimpleLibraryWebsite
             {
                 builder.AddRazorRuntimeCompilation();
             }
+
+            services.AddIdentity<User, IdentityRole>(
+                    options =>
+                    {
+                        options.Password.RequiredLength = 7;
+                        options.Password.RequireDigit = false;
+                        options.Password.RequireUppercase = false;
+                        options.SignIn.RequireConfirmedAccount = true;
+                        options.User.RequireUniqueEmail = true;
+                        options.SignIn.RequireConfirmedEmail = true;
+                    })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    IConfigurationSection googleAuthNSection =
+                        Configuration.GetSection("Authentication:Google");
+
+                    options.ClientId = googleAuthNSection["ClientId"];
+                    options.ClientSecret = googleAuthNSection["ClientSecret"];
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+            ServiceConfigurationForAuthorizationHandlers.Configure(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
