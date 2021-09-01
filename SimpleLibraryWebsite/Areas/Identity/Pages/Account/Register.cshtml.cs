@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Services.Authorization;
 
 namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
 {

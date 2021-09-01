@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Services.Authorization;
+using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
 {

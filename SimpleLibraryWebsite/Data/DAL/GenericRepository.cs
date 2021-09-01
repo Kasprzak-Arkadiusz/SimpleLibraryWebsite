@@ -18,7 +18,7 @@ namespace SimpleLibraryWebsite.Data.DAL
             _dbSet = context.Set<TEntity>();
         }
 
-        public IQueryable<TEntity> Get(
+        public IEnumerable<TEntity> Get(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "")
@@ -38,10 +38,10 @@ namespace SimpleLibraryWebsite.Data.DAL
 
             if (orderBy != null)
             {
-                return orderBy(query);
+                return orderBy(query).AsEnumerable();
             }
 
-            return query;
+            return query.AsEnumerable();
         }
 
         public async Task<TEntity> GetByIdAsync(object id)

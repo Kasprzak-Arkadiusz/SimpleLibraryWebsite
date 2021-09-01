@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace SimpleLibraryWebsite.Models.Authorization
+namespace SimpleLibraryWebsite.Services.Authorization
 {
     public class AdministratorsAuthorizationHandler<T>
         : AuthorizationHandler<OperationAuthorizationRequirement, T>

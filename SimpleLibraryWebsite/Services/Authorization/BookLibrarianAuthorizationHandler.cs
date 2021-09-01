@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using SimpleLibraryWebsite.Services.Authorization;
+using SimpleLibraryWebsite.Models;
 
-namespace SimpleLibraryWebsite.Models.Authorization
+namespace SimpleLibraryWebsite.Services.Authorization
 {
     public class BookLibrarianAuthorizationHandler :
         AuthorizationHandler<OperationAuthorizationRequirement, Book>

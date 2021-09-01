@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using SimpleLibraryWebsite.Services.Authorization;
 using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
@@ -88,7 +90,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentTitleFilter = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
         }
 
-        private IQueryable<Loan> SortLoans(IQueryable<Loan> loans, string sortOrder)
+        private IEnumerable<Loan> SortLoans(IEnumerable<Loan> loans, string sortOrder)
         {
             return sortOrder switch
             {

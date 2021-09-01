@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using SimpleLibraryWebsite.Services.Authorization;
 using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
@@ -63,7 +65,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentAuthorFilter = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
         }
 
-        private IQueryable<Request> SortRequests(IQueryable<Request> requests, string sortOrder)
+        private IEnumerable<Request> SortRequests(IEnumerable<Request> requests, string sortOrder)
         {
             return sortOrder switch
             {

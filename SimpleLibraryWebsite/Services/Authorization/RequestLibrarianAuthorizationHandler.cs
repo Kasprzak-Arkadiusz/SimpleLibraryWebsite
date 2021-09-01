@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using SimpleLibraryWebsite.Models;
-using SimpleLibraryWebsite.Models.Authorization;
 
 namespace SimpleLibraryWebsite.Services.Authorization
 {

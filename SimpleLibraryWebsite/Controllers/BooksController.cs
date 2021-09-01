@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -11,6 +12,7 @@ using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
 using SimpleLibraryWebsite.Models.ViewModels;
+using SimpleLibraryWebsite.Services.Authorization;
 using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
@@ -117,7 +119,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentGenreFilter = SaveFilterValue(ref bookGenre, currentGenreFilter, ref pageNumber);
         }
 
-        private IQueryable<Book> SortBooks(IQueryable<Book> books, string sortOrder)
+        private IEnumerable<Book> SortBooks(IEnumerable<Book> books, string sortOrder)
         {
             return sortOrder switch
             {

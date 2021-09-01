@@ -1,10 +1,11 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SimpleLibraryWebsite.Data;
 using SimpleLibraryWebsite.Data.DAL;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Services.Authorization;
+using X.PagedList;
 
 namespace SimpleLibraryWebsite.Controllers
 {

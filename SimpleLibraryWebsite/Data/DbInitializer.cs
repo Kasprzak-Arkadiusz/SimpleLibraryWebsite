@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleLibraryWebsite.Models;
+using SimpleLibraryWebsite.Services.Authorization;
 
 namespace SimpleLibraryWebsite.Data
 {

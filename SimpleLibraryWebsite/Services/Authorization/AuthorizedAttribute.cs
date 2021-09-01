@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 
-namespace SimpleLibraryWebsite.Models
+namespace SimpleLibraryWebsite.Services.Authorization
 {
 
     public enum Role
