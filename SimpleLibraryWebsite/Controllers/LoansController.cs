@@ -66,7 +66,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             loans = SortLoans(loans, sortOrder);
 
-            const int pageSize = 2;
+            const int pageSize = 5;
 
             LoanViewModel loanViewModel = new()
             {
