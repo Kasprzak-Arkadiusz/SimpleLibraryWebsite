@@ -1,7 +1,4 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
+﻿.navbar-brand {
     white-space: normal;
     text-align: center;
     word-break: break-all;
@@ -56,17 +53,13 @@ html {
     box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
-button.accept-policy {
-    font-size: 1rem;
-    line-height: inherit;
-}
-
+/*
 .inputField {
     display: inline-block;
     width: 130px;
     margin: 0;
     margin: 0 0 7px 0;
-}
+}*/
 
 ​
 /* Sticky footer styles
@@ -85,21 +78,20 @@ body {
 }
 
 .body-for-sticky {
-    position: relative; /* for the footer to move with the page size */
-    min-height: 100%; /* for the footer to be at the bottom */
-    padding-bottom: 6rem; /* Space available between last element and bottom border of the page */
+    position: relative;
+    min-height: 100%;
+    padding-bottom: 6rem;
 }
 
 .sticky-footer {
-    position: absolute; /* for it to disappear under last body element */
-    bottom: 0; /* so the footer can stick to the bottom*/
+    position: absolute;
+    bottom: 0;
 }
 
 #container {
     color: white;
     background: #363636;
     padding: 2em;
-    background: #363636;
     flex: 1 1 auto;
     width: 55%;
     text-align: center;
@@ -124,6 +116,11 @@ h1 {
     text-align: center;
 }
 
+h2 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 h3 {
     text-align: center;
 }
@@ -135,7 +132,7 @@ span {
 label {
     text-align: center;
     display: block;
-    margin: 0, auto;
+    margin: 0 auto;
 }
 
 input {
@@ -177,6 +174,7 @@ li {
 }
 
 /* The dropdown container */
+
 .dropdown-menu > li > a {
     display: block;
     padding: 3px 20px;
@@ -218,6 +216,8 @@ li {
     margin: 0 auto;
     margin-top: 40px;
     float: none;
+    text-align: center;
+    justify-content: center;
 }
 
 /*Home page styles*/

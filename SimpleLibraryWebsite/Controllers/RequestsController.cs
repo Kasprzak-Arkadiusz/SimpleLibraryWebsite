@@ -44,7 +44,7 @@ namespace SimpleLibraryWebsite.Controllers
 
             requests = SortRequests(requests, sortOrder);
 
-            const int pageSize = 1;
+            const int pageSize = 5;
 
             RequestViewModel requestViewModel = new()
             {

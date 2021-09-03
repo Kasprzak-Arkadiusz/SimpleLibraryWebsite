@@ -33,14 +33,14 @@
                 </div>
             </div>
         </div>
-        <input type="submit" value="Filter" />
+        <input type="submit" value="Filter" style="margin-bottom:20px"/>
     </div>
 </form>
 
         
 @if (!ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString()))
 {
-    <p><a asp-action="Create" class="center">Create New</a></p>
+    <p><a asp-action="Create" class="btn btn-success">Create New</a></p>
 }
 
 
