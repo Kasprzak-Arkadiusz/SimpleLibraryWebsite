@@ -4,9 +4,9 @@ namespace SimpleLibraryWebsite.Models.ViewModels
 {
     public class LoanViewModel
     {
-        public IPagedList<Loan> PaginatedList { get; set; }
-        public string ReaderFirstName { get; set; }
-        public string ReaderLastName { get; set; }
-        public string BookTitle { get; set; }
+        public IPagedList<Loan> PaginatedList { get; init; }
+        public string ReaderFirstName { get; init; }
+        public string ReaderLastName { get; init; }
+        public string BookTitle { get; init; }
     }
 }

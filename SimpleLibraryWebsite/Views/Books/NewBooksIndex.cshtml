@@ -1,13 +1,9 @@
 ﻿@model SimpleLibraryWebsite.Models.ViewModels.BookGenreViewModel
-@using Microsoft.AspNetCore.Authorization
-@using SimpleLibraryWebsite.Services.Authorization
-@using X.PagedList
-@using X.PagedList.Mvc.Core
 @inject IAuthorizationService _authorizationService
 
 @{
     ViewBag.Title = "New books list";
-    IPagedList<Book> bookPages = Model.PaginatedList;
+    var bookPages = Model.PaginatedList;
 
     bool isAdmin = ViewContext.HttpContext.User.IsInRole(Role.Admin.ToString());
     bool isLibrarian = ViewContext.HttpContext.User.IsInRole(Role.Librarian.ToString());
@@ -75,7 +71,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.PaginatedList) {
+    @foreach (Book item in Model.PaginatedList) {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.Author)</td>
             <td>@Html.DisplayFor(modelItem => item.Title)</td>

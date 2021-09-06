@@ -53,15 +53,15 @@ namespace SimpleLibraryWebsite.Controllers
                 isAnySearchFieldFilled = true;
             }
 
-            var loans =
-                _unitOfWork.LoanRepository.Get(includeProperties: nameof(Loan.Reader) + "," + nameof(Loan.Book));
+            var loans = await
+                _unitOfWork.LoanRepository.Get(includeProperties: nameof(Loan.Reader) + "," + nameof(Loan.Book)).ToListAsync();
 
             if (isAnySearchFieldFilled)
             {
                 loans = loans
                     .Where(l =>
                         readers.Any(r => r.ReaderId == l.ReaderId) &&
-                        books.Any(b => b.BookId == l.BookId));
+                        books.Any(b => b.BookId == l.BookId)).ToList();
             }
 
             loans = SortLoans(loans, sortOrder);
@@ -90,18 +90,18 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentTitleFilter = SaveFilterValue(ref bookTitle, currentTitleFilter, ref pageNumber);
         }
 
-        private IEnumerable<Loan> SortLoans(IEnumerable<Loan> loans, string sortOrder)
+        private static List<Loan> SortLoans(IEnumerable<Loan> loans, string sortOrder)
         {
             return sortOrder switch
             {
-                "title_desc" => loans.OrderByDescending(l => l.Book.Title),
-                "ReaderName" => loans.OrderBy(l => l.Reader.FirstName),
-                "readerName_desc" => loans.OrderByDescending(l => l.Reader.FirstName),
-                "ReaderLastName" => loans.OrderBy(l => l.Reader.LastName),
-                "readerLastName_desc" => loans.OrderByDescending(l => l.Reader.LastName),
-                "LentTo" => loans.OrderBy(l => l.LentTo),
-                "lentTo_desc" => loans.OrderByDescending(l => l.LentTo),
-                _ => loans.OrderBy(l => l.Book.Title)
+                "title_desc" => loans.OrderByDescending(l => l.Book.Title).ToList(),
+                "ReaderName" => loans.OrderBy(l => l.Reader.FirstName).ToList(),
+                "readerName_desc" => loans.OrderByDescending(l => l.Reader.FirstName).ToList(),
+                "ReaderLastName" => loans.OrderBy(l => l.Reader.LastName).ToList(),
+                "readerLastName_desc" => loans.OrderByDescending(l => l.Reader.LastName).ToList(),
+                "LentTo" => loans.OrderBy(l => l.LentTo).ToList(),
+                "lentTo_desc" => loans.OrderByDescending(l => l.LentTo).ToList(),
+                _ => loans.OrderBy(l => l.Book.Title).ToList()
             };
         }
 

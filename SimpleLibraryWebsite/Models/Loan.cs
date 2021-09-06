@@ -26,7 +26,7 @@ namespace SimpleLibraryWebsite.Models
             BookId = bookId;
             ReaderId = readerId;
             LentFrom = lentFrom;
-            TimeSpan time = new TimeSpan(DaysOfLoan, 0, 0, 0);
+            TimeSpan time = new (DaysOfLoan, 0, 0, 0);
             LentTo = lentFrom.Add(time);
         }
 
@@ -35,7 +35,7 @@ namespace SimpleLibraryWebsite.Models
             BookId = bookId;
             ReaderId = readerId;
             LentFrom = DateTime.Today;
-            TimeSpan time = new TimeSpan(DaysOfLoan, 0, 0, 0);
+            TimeSpan time = new (DaysOfLoan, 0, 0, 0);
             LentTo = DateTime.Today.Add(time);
         }
 

@@ -65,7 +65,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentAuthorFilter = SaveFilterValue(ref author, currentAuthorFilter, ref pageNumber);
         }
 
-        private IEnumerable<Request> SortRequests(IEnumerable<Request> requests, string sortOrder)
+        private static IEnumerable<Request> SortRequests(IEnumerable<Request> requests, string sortOrder)
         {
             return sortOrder switch
             {
@@ -108,7 +108,7 @@ namespace SimpleLibraryWebsite.Controllers
         [AuthorizeWithEnumRoles(Role.Reader, Role.Admin)]
         public async Task<IActionResult> Create([Bind("Title,Author,Genre")] Request request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (request == null || userId == null)
             {
@@ -197,59 +197,57 @@ namespace SimpleLibraryWebsite.Controllers
 
             _unitOfWork.RequestRepository.SetRowVersionOriginalValue(requestToUpdate, rowVersion);
 
-            if (await TryUpdateModelAsync(
+            if (!await TryUpdateModelAsync(
                 requestToUpdate,
                 "",
-                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId))
+                r => r.Title, r => r.Author, r => r.Genre, r => r.ReaderId)) return View(requestToUpdate);
+            try
             {
-                try
-                {
-                    requestToUpdate.Author = requestToUpdate.Author.Trim();
-                    requestToUpdate.Title = requestToUpdate.Title.Trim();
+                requestToUpdate.Author = requestToUpdate.Author.Trim();
+                requestToUpdate.Title = requestToUpdate.Title.Trim();
 
-                    await _unitOfWork.SaveAsync();
-                    return RedirectToAction(nameof(Index));
+                await _unitOfWork.SaveAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                var exceptionEntry = ex.Entries.Single();
+                var clientValues = (Request)exceptionEntry.Entity;
+                var databaseEntry = await exceptionEntry.GetDatabaseValuesAsync();
+                if (databaseEntry == null)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        "Unable to save changes. The request was deleted by another user.");
                 }
-                catch (DbUpdateException ex)
+                else
                 {
-                    var exceptionEntry = ex.Entries.Single();
-                    var clientValues = (Request)exceptionEntry.Entity;
-                    var databaseEntry = await exceptionEntry.GetDatabaseValuesAsync();
-                    if (databaseEntry == null)
+                    var databaseValues = (Request)databaseEntry.ToObject();
+
+                    if (databaseValues.Author != clientValues.Author)
                     {
-                        ModelState.AddModelError(string.Empty,
-                            "Unable to save changes. The request was deleted by another user.");
+                        ModelState.AddModelError(nameof(databaseValues.Author),
+                            $"Current value: {databaseValues.Author}");
                     }
-                    else
+
+                    if (databaseValues.Title != clientValues.Title)
                     {
-                        var databaseValues = (Request)databaseEntry.ToObject();
-
-                        if (databaseValues.Author != clientValues.Author)
-                        {
-                            ModelState.AddModelError(nameof(databaseValues.Author),
-                                $"Current value: {databaseValues.Author}");
-                        }
-
-                        if (databaseValues.Title != clientValues.Title)
-                        {
-                            ModelState.AddModelError(nameof(databaseValues.Title),
-                                $"Current value: {databaseValues.Title}");
-                        }
-
-                        if (databaseValues.Genre != clientValues.Genre)
-                        {
-                            ModelState.AddModelError(nameof(databaseValues.Genre),
-                                $"Current value: {databaseValues.Genre}");
-                        }
-
-                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                                               + "was modified by another user after you got the original value. The "
-                                                               + "edit operation was canceled and the current values in the database "
-                                                               + "have been displayed. If you still want to edit this record, click "
-                                                               + "the Save button again. Otherwise click the Back to ist hyperlink.");
-                        requestToUpdate.RowVersion = databaseValues.RowVersion;
-                        ModelState.Remove("RowVersion");
+                        ModelState.AddModelError(nameof(databaseValues.Title),
+                            $"Current value: {databaseValues.Title}");
                     }
+
+                    if (databaseValues.Genre != clientValues.Genre)
+                    {
+                        ModelState.AddModelError(nameof(databaseValues.Genre),
+                            $"Current value: {databaseValues.Genre}");
+                    }
+
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                           + "was modified by another user after you got the original value. The "
+                                                           + "edit operation was canceled and the current values in the database "
+                                                           + "have been displayed. If you still want to edit this record, click "
+                                                           + "the Save button again. Otherwise click the Back to ist hyperlink.");
+                    requestToUpdate.RowVersion = databaseValues.RowVersion;
+                    ModelState.Remove("RowVersion");
                 }
             }
 

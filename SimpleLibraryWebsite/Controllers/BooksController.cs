@@ -76,7 +76,7 @@ namespace SimpleLibraryWebsite.Controllers
             var culture = CultureInfo.CreateSpecificCulture("en-US");
 
             DateTime.TryParse(DateTime.Today.ToString(culture), culture, DateTimeStyles.None, out DateTime today);
-            TimeSpan.TryParse(TimeSpan.FromDays(Book.DaysToStopBeingANewBook).ToString(), out TimeSpan borrowingTime);
+            _ = TimeSpan.TryParse(TimeSpan.FromDays(Book.DaysToStopBeingANewBook).ToString(), out TimeSpan borrowingTime);
 
             var books = _unitOfWork.BookRepository.Get(b => b.DateOfAdding.Date >= today - borrowingTime);
 
@@ -119,7 +119,7 @@ namespace SimpleLibraryWebsite.Controllers
             ViewBag.CurrentGenreFilter = SaveFilterValue(ref bookGenre, currentGenreFilter, ref pageNumber);
         }
 
-        private IEnumerable<Book> SortBooks(IEnumerable<Book> books, string sortOrder)
+        private static IEnumerable<Book> SortBooks(IEnumerable<Book> books, string sortOrder)
         {
             return sortOrder switch
             {
@@ -174,7 +174,7 @@ namespace SimpleLibraryWebsite.Controllers
         [HttpPost, ActionName(nameof(Borrow))]
         public async Task<IActionResult> BorrowPost(int? id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (id == null || userId == null)
             {
@@ -302,59 +302,57 @@ namespace SimpleLibraryWebsite.Controllers
 
             _unitOfWork.BookRepository.SetRowVersionOriginalValue(bookToUpdate, rowVersion);
 
-            if (await TryUpdateModelAsync(
+            if (!await TryUpdateModelAsync(
                 bookToUpdate,
                 "",
-                b => b.Title, b => b.Author, b => b.Genre))
+                b => b.Title, b => b.Author, b => b.Genre)) return View(bookToUpdate);
+            try
             {
-                try
-                {
-                    bookToUpdate.Author = bookToUpdate.Author.Trim();
-                    bookToUpdate.Title = bookToUpdate.Title.Trim();
+                bookToUpdate.Author = bookToUpdate.Author.Trim();
+                bookToUpdate.Title = bookToUpdate.Title.Trim();
 
-                    await _unitOfWork.SaveAsync();
-                    return RedirectToAction(nameof(Index));
+                await _unitOfWork.SaveAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                var exceptionEntry = ex.Entries.Single();
+                var clientValues = (Book)exceptionEntry.Entity;
+                var databaseEntry = await exceptionEntry.GetDatabaseValuesAsync();
+                if (databaseEntry == null)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        "Unable to save changes. The book was deleted by another user.");
                 }
-                catch (DbUpdateException ex)
+                else
                 {
-                    var exceptionEntry = ex.Entries.Single();
-                    var clientValues = (Book)exceptionEntry.Entity;
-                    var databaseEntry = await exceptionEntry.GetDatabaseValuesAsync();
-                    if (databaseEntry == null)
+                    var databaseValues = (Book)databaseEntry.ToObject();
+
+                    if (databaseValues.Author != clientValues.Author)
                     {
-                        ModelState.AddModelError(string.Empty,
-                            "Unable to save changes. The book was deleted by another user.");
+                        ModelState.AddModelError(nameof(databaseValues.Author),
+                            $"Current value: {databaseValues.Author}");
                     }
-                    else
+
+                    if (databaseValues.Title != clientValues.Title)
                     {
-                        var databaseValues = (Book)databaseEntry.ToObject();
-
-                        if (databaseValues.Author != clientValues.Author)
-                        {
-                            ModelState.AddModelError(nameof(databaseValues.Author),
-                                $"Current value: {databaseValues.Author}");
-                        }
-
-                        if (databaseValues.Title != clientValues.Title)
-                        {
-                            ModelState.AddModelError(nameof(databaseValues.Title),
-                                $"Current value: {databaseValues.Title}");
-                        }
-
-                        if (databaseValues.Genre != clientValues.Genre)
-                        {
-                            ModelState.AddModelError(nameof(databaseValues.Genre),
-                                $"Current value: {databaseValues.Genre}");
-                        }
-
-                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                                               + "was modified by another user after you got the original value. The "
-                                                               + "edit operation was canceled and the current values in the database "
-                                                               + "have been displayed. If you still want to edit this record, click "
-                                                               + "the Save button again. Otherwise click the Back hyperlink.");
-                        bookToUpdate.RowVersion = databaseValues.RowVersion;
-                        ModelState.Remove("RowVersion");
+                        ModelState.AddModelError(nameof(databaseValues.Title),
+                            $"Current value: {databaseValues.Title}");
                     }
+
+                    if (databaseValues.Genre != clientValues.Genre)
+                    {
+                        ModelState.AddModelError(nameof(databaseValues.Genre),
+                            $"Current value: {databaseValues.Genre}");
+                    }
+
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                           + "was modified by another user after you got the original value. The "
+                                                           + "edit operation was canceled and the current values in the database "
+                                                           + "have been displayed. If you still want to edit this record, click "
+                                                           + "the Save button again. Otherwise click the Back hyperlink.");
+                    bookToUpdate.RowVersion = databaseValues.RowVersion;
+                    ModelState.Remove("RowVersion");
                 }
             }
             return View(bookToUpdate);

@@ -20,8 +20,8 @@ namespace SimpleLibraryWebsite
             Env = env;
         }
 
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Env { get; }
+        private IConfiguration Configuration { get; }
+        private IWebHostEnvironment Env { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -114,8 +114,8 @@ namespace SimpleLibraryWebsite
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

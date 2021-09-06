@@ -16,7 +16,7 @@ namespace SimpleLibraryWebsite
 
             using (var scope = host.Services.CreateScope())
             {
-                var services = scope.ServiceProvider;
+                IServiceProvider services = scope.ServiceProvider;
 
                 try
                 {

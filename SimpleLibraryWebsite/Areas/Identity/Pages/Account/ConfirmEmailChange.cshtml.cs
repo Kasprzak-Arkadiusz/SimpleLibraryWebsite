@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +22,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
         }
 
         [TempData]
-        public string StatusMessage { get; set; }
+        public string StatusMessage { get; private set; }
 
         public async Task<IActionResult> OnGetAsync(string userId, string email, string code)
         {
@@ -34,7 +31,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                 return RedirectToPage("/Index");
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            User user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{userId}'.");
@@ -48,8 +45,6 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            // In our UI email and user name are one and the same, so when we update the email
-            // we need to update the user name.
             var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
             if (!setUserNameResult.Succeeded)
             {

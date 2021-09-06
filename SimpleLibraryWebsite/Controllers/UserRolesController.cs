@@ -47,7 +47,7 @@ namespace SimpleLibraryWebsite.Controllers
         public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
-            var user = await _userManager.FindByIdAsync(userId);
+            User user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
@@ -55,7 +55,7 @@ namespace SimpleLibraryWebsite.Controllers
             }
             ViewBag.UserName = user.UserName;
             var model = new List<ManageUserRolesViewModel>();
-            foreach (var role in _roleManager.Roles.ToList())
+            foreach (IdentityRole role in _roleManager.Roles.ToList())
             {
                 var userRolesViewModel = new ManageUserRolesViewModel
                 {
@@ -78,7 +78,7 @@ namespace SimpleLibraryWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, string role, string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            User user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return View();
@@ -91,12 +91,9 @@ namespace SimpleLibraryWebsite.Controllers
                 return View(model);
             }
             result = await _userManager.AddToRolesAsync(user, model.Where(x => x.RoleName == role).Select(y => y.RoleName));
-            if (!result.Succeeded)
-            {
-                ModelState.AddModelError("", "Cannot add selected roles to user");
-                return View(model);
-            }
-            return RedirectToAction(nameof(Index));
+            if (result.Succeeded) return RedirectToAction(nameof(Index));
+            ModelState.AddModelError("", "Cannot add selected roles to user");
+            return View(model);
         }
     }
 }

@@ -3,7 +3,7 @@
 
 @{
     ViewBag.Title = "Book requests";
-    IPagedList<Request> requestPages = Model.PaginatedList;
+    var requestPages = Model.PaginatedList;
 }
 
 <h1>@ViewBag.Title</h1>
@@ -67,7 +67,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.PaginatedList)
+    @foreach (Request item in Model.PaginatedList)
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.Title)

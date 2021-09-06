@@ -30,7 +30,7 @@ namespace SimpleLibraryWebsite.Data.DAL
                 query = query.Where(filter);
             }
 
-            foreach (var includeProperty in includeProperties.Split
+            foreach (string includeProperty in includeProperties.Split
                 (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);

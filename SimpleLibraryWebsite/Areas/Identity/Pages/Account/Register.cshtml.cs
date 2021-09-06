@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net.Mail;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -44,11 +43,11 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; init; }
 
-        public string ReturnUrl { get; set; }
+        public string ReturnUrl { get; private set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
+        private IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
         {
@@ -56,13 +55,13 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                                                                           " and be between 2 and 20 characters long.")]
             [Required]
             [Display(Name = "First Name")]
-            public string FirstName { get; set; }
+            public string FirstName { get; init; }
 
             [RegularExpression(@"^(?=.{2,20}$)[a-zA-Z]+$", ErrorMessage = "The last name should only consist of alphabetic characters" +
                                                               " and be between 2 and 20 characters long.")]
             [Required]
             [Display(Name = "Last Name")]
-            public string LastName { get; set; }
+            public string LastName { get; init; }
 
 
             [RegularExpression(@"^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$",
@@ -72,23 +71,23 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                                "* '_' or '.' can't be used multiple times in a row.")]
             [Required]
             [Display(Name = "User Name")]
-            public string UserName { get; set; }
+            public string UserName { get; init; }
 
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
-            public string Email { get; set; }
+            public string Email { get; init; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
-            public string Password { get; set; }
+            public string Password { get; init; }
 
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            public string ConfirmPassword { get; init; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -107,8 +106,7 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
 
             }
 
-            MailAddress address = new MailAddress(Input.Email);
-            var user = new User()
+            var user = new User
             {
                 UserName = Input.UserName,
                 Email = Input.Email,
@@ -123,33 +121,30 @@ namespace SimpleLibraryWebsite.Areas.Identity.Pages.Account
                 await _context.Readers.AddAsync(new Reader(user));
                 await _context.SaveChangesAsync();
 
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
+                string callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                    protocol: Request.Scheme);
+                    null,
+                    new { area = "Identity", userId = user.Id, code, returnUrl },
+                    Request.Scheme);
 
                 await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
                 }
-                else
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
-                }
+
+                await _signInManager.SignInAsync(user, false);
+                return LocalRedirect(returnUrl);
             }
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }

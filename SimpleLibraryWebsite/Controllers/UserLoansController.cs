@@ -22,11 +22,11 @@ namespace SimpleLibraryWebsite.Controllers
         // GET: Loans
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var loans = _unitOfWork.LoanRepository
-                .Get(l => l.ReaderId == userId, includeProperties: nameof(Loan.Book));
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var loans = await _unitOfWork.LoanRepository
+                .Get(l => l.ReaderId == userId, includeProperties: nameof(Loan.Book)).ToListAsync();
 
-            return View(await loans.ToListAsync());
+            return View(loans);
         }
 
         // GET: Loans/Details/5

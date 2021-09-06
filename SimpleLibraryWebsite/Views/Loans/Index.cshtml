@@ -3,7 +3,7 @@
 
 @{
     ViewBag.Title = "List of book loans";
-    IPagedList<Loan> loanPages = Model.PaginatedList;
+    var loanPages = Model.PaginatedList;
 }
 
 <h1>@ViewBag.Title</h1>
@@ -16,7 +16,7 @@
             <div class="form-group">
                 <div class="col-md-auto">
                     <b>Reader name:</b><br/>
-                    <input type="text" asp-for="ReaderFirstName" value="@ViewBag.CurrentNameFilter" />
+                    <input type="text" asp-for="ReaderFirstName" value="@ViewBag.CurrentFirstNameFilter" />
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.PaginatedList) {
+    @foreach (Loan item in Model.PaginatedList) {
         <tr>
 
             <td>@Html.DisplayFor(modelItem => item.Book.Title)
@@ -116,6 +116,6 @@ Page @(Model.PaginatedList.PageCount < Model.PaginatedList.PageNumber ? 0 : Mode
         sortOrder = ViewBag.CurrentSort,
         currentTitleFilter = ViewBag.CurrentTitleFilter,
         currentFirstNameFilter = ViewBag.CurrentFirstNameFilter,
-        currentLastNameFilter = ViewBag.CurrentLastNameFilter,
+        currentLastNameFilter = ViewBag.CurrentLastNameFilter
     }) )
 </div>

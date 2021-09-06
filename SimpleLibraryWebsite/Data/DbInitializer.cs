@@ -185,7 +185,7 @@ namespace SimpleLibraryWebsite.Data
                 new Loan(1, readers[0].ReaderId,  DateTime.Now),
                 new Loan(4, readers[1].ReaderId, DateTime.Parse("01/02/2021")),
                 new Loan(6, readers[3].ReaderId, DateTime.Parse("15/04/2021")),
-                new Loan(7, readers[3].ReaderId, DateTime.Parse("16/05/2021")),
+                new Loan(7, readers[3].ReaderId, DateTime.Parse("16/05/2021"))
             };
 
             foreach (Loan l in loans)

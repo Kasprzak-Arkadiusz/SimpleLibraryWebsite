@@ -1,5 +1,5 @@
 ﻿@{
-    if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
+    if (ViewData.TryGetValue("ParentLayout", out object parentLayout))
     {
         Layout = (string)parentLayout;
     }
@@ -25,5 +25,5 @@
 </div>
 
 @section Scripts {
-    @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", false)
 }

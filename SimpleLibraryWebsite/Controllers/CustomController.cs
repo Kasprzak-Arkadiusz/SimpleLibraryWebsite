@@ -4,7 +4,7 @@ namespace SimpleLibraryWebsite.Controllers
 {
     public class CustomController : Controller
     {
-        protected string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
+        protected static string SaveFilterValue(ref string value, string valueToSave, ref int? pageNumber)
         {
             if (value is not null)
             {

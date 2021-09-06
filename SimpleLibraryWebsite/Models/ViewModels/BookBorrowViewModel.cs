@@ -5,10 +5,10 @@ namespace SimpleLibraryWebsite.Models.ViewModels
 {
     public class BookBorrowViewModel
     {
-        public Book BorrowedBook { get; set; }
+        public Book BorrowedBook { get; init; }
         [Display(Name = "Return date")]
         [DataType(DataType.Date)]
-        public DateTime ReturnDate { get; set; }
+        public DateTime ReturnDate { get; init; }
 
         public BookBorrowViewModel(Book borrowedBook)
         {
