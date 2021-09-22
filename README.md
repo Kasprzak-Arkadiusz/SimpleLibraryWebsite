@@ -15,14 +15,14 @@ To login as a librarian or an administator please view [Setup](#setup).
 
 The following functionalities have been implemented:
 
-- Book management
-![Book Managment](./images/Book Managment.png)
+- Book management  
+![Book Managment](https://github.com/Kasprzak-Arkadiusz/SimpleLibraryWebsite/blob/master/images/Book%20management.png)
 
-- Book loan management
-![Loan Management](./images/Loan Managment.png)
+- Book loan management  
+![Loan Management](https://github.com/Kasprzak-Arkadiusz/SimpleLibraryWebsite/blob/master/images/Loan%20management.png)
 
-- Book request management
-![Request Management](./images/Request Managment.png)
+- Book request management  
+![Request Management](https://github.com/Kasprzak-Arkadiusz/SimpleLibraryWebsite/blob/master/images/Request%20management.png)
 
 - Logging in with external service
 - User roles management
