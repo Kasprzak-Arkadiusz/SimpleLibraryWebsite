@@ -281,11 +281,6 @@ namespace SimpleLibraryWebsite.Migrations
                     b.Property<string>("ReaderId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("LoanId");
 
                     b.HasIndex("BookId");

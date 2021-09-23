@@ -10,8 +10,8 @@ using SimpleLibraryWebsite.Data;
 namespace SimpleLibraryWebsite.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210822131736_AddedRowVersionField")]
-    partial class AddedRowVersionField
+    [Migration("20210923082213_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -282,11 +282,6 @@ namespace SimpleLibraryWebsite.Migrations
 
                     b.Property<string>("ReaderId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
 
                     b.HasKey("LoanId");
 

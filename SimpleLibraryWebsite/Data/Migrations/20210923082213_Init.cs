@@ -21,7 +21,8 @@ namespace SimpleLibraryWebsite.Migrations
                     Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     Genre = table.Column<int>(type: "int", nullable: false),
                     Dateofadding = table.Column<DateTime>(name: "Date of adding", type: "date", nullable: false),
-                    Isborrowed = table.Column<bool>(name: "Is borrowed?", type: "bit", nullable: false)
+                    Isborrowed = table.Column<bool>(name: "Is borrowed?", type: "bit", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -220,7 +221,7 @@ namespace SimpleLibraryWebsite.Migrations
                 {
                     LoanId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Dateofadding = table.Column<DateTime>(name: "Date of adding", type: "date", nullable: false),
+                    Lentfrom = table.Column<DateTime>(name: "Lent from", type: "date", nullable: false),
                     Lentto = table.Column<DateTime>(name: "Lent to", type: "date", nullable: false),
                     BookId = table.Column<int>(type: "int", nullable: false),
                     ReaderId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -254,8 +255,8 @@ namespace SimpleLibraryWebsite.Migrations
                     Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     Author = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     Genre = table.Column<int>(type: "int", nullable: false),
-                    Numberofupvotes = table.Column<long>(name: "Number of upvotes", type: "bigint", nullable: false, defaultValue: 1L),
-                    ReaderId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ReaderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
