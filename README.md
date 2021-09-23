@@ -63,3 +63,11 @@ To set up a website, follow these steps:
   or in Package Manager Console run  
   `Update-Database`
 6. Start program
+
+To login as a librarian use this password and login:  
+__User:__ justALibrarian  
+__Password (same as in User Secrets file):__ Pa$$word?  
+
+To login as an administrator use this password and login:  
+__User:__ superAdmin  
+__Password (same as in User Secrets file):__ Passw0rd!  
